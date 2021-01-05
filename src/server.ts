@@ -32,7 +32,7 @@ async function init() {
     context
   });
 
-//  server.applyMiddleware({ app });
+  server.applyMiddleware({ app });
 
   app.get(
     "/",

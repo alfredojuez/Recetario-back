@@ -1,9 +1,8 @@
 "Definiciones de los tipos de raiz lista de tipos User registrados en a la BD - la admiración tras el tipo significa que es obligatorio - la admiracion del final significa que no sea nulo"
-type query
+type Query
 {
     Users: [User!]!
 }
-
 
 """
 Vamos a especificar la información detallada del usuario.
@@ -21,7 +20,7 @@ type User{
     "Usuario que se usará par los comentarios"
     usuario: String!
     "password"
-    pass: String!
+    pass: String! 
     "foto de perfil del usuario"
     foto: String
     "Nacionalidad para situar las recetas"

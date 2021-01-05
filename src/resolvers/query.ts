@@ -9,7 +9,7 @@ import { IResolvers } from "graphql-tools";
 // info:    informacion de la operación ejecutada
 //*********************************************************
 const resolversQuerys: IResolvers = {
-  query: {
+  Query: {
     Users(root, args, context, info) {
       console.log("Ejecucion GraphQL...")
       return [

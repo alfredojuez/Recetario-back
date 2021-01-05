@@ -11,7 +11,8 @@ import { COLLECTIONS } from "../config/constant";
 //*********************************************************
 const resolversMutation: IResolvers = {
   Mutation: {
-    async register(_, { user }, { db }) {
+    async register(_, { User }, { db }) {
+      let user = User
       //sumamos 1 al ID actual
       const lastUser = await db
         .collection(COLLECTIONS.USER)
@@ -20,14 +21,24 @@ const resolversMutation: IResolvers = {
         .sort({ alta: -1 })
         .toArray();
 
-      if (lastUser === 0) {
-        user.id = 1;
-      } else {
-        user.id = lastUser[0].id + 1;
-      }
+       if (lastUser.length === 0) {
+         console.log("Primer registro" );
+         user.id = 1;
+       } else {
+        console.log("Nuevo registro" );
+         user.id = lastUser[0].id + 1;
+       }
 
       //asignar la fecha actual en formato ISO
-      user.alta = new Date().toISOString();
+
+      const now = new Date().toISOString();
+      
+      user.alta = now;
+      user.ultimoLogin = now;
+      user.activo = true;
+
+      console.log("user: " );
+      console.log(user );
 
       //guardar el registro
       return await db
@@ -45,3 +56,5 @@ const resolversMutation: IResolvers = {
 };
 
 export default resolversMutation;
+
+
