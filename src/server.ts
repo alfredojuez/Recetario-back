@@ -5,9 +5,11 @@ import { createServer } from "http";
 //servidor Apollo
 import { ApolloServer } from "apollo-server-express";
 import schema from "./schema";
-import expressPlayground from 'graphql-playground-middleware-express'
+import expressPlayground from "graphql-playground-middleware-express";
 //configuracion de las VBLes de Entorno
 import environment from "./config/environments";
+import Database from "./lib/database";
+
 if (process.env.NODE_ENV !== "production") {
   const env = environment;
 }
@@ -17,15 +19,20 @@ console.log("iniciando servidor...");
 
 async function init() {
   const app = express();
-  app.use(cors());
+  app.use("*", cors());
   app.use(compression());
-  
-    const server = new ApolloServer({
+
+  const database = new Database();
+  const db = await database.init();
+  const context = { db };
+
+  const server = new ApolloServer({
     schema,
     introspection: true,
+    context
   });
 
-  server.applyMiddleware({ app });
+//  server.applyMiddleware({ app });
 
   app.get(
     "/",
