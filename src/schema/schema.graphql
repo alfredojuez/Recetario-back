@@ -1,5 +1,5 @@
 "Definiciones de los tipos de raiz lista de tipos User registrados en a la BD - la admiración tras el tipo significa que es obligatorio - la admiracion del final significa que no sea nulo"
-type Query
+type query
 {
     Users: [User!]!
 }
@@ -23,13 +23,43 @@ type User{
     "password"
     pass: String!
     "foto de perfil del usuario"
-    foto: String!
+    foto: String
     "Nacionalidad para situar las recetas"
-    nacionalidad: String!
+    nacionalidad: String
     "Tipo de perfil: ADMIN / USER"
-    perfil: String!
+    perfil: Perfil!
     "Fecha en la que se dió de alta el usuario"
     alta: String!
+    "Fecha en la que se dió de alta el usuario"
+    ultimoLogin: String!
     "Estado del usuario"
-    activo: String!
+    activo: Boolean!
+}
+
+"Acciones de escritura"
+type Mutation{
+    register(User: UserInput!): User
+}
+
+"Tipos de perfiles permitidos"
+enum Perfil
+{
+    ADMIN
+    COOKER
+    USER
+}
+
+input UserInput
+{
+    id:ID
+    email: String!
+    nombre: String!
+    apellidos:  String!
+    usuario: String!
+    pass: String!
+    foto: String
+    nacionalidad: String
+    perfil: Perfil=USER
+    activo: Boolean=true
+
 }
