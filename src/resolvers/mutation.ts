@@ -11,11 +11,11 @@ import { COLLECTIONS } from "../config/constant";
 //*********************************************************
 const resolversMutation: IResolvers = {
   Mutation: {
-    async register(_, { User }, { db }) {
+    async register(_, { RegistroBD: RegistroBD }, { db }) {
       console.log(".....................................................")
-      console.log("User: " + User);
-      let user = User
-      console.log("user: " + user);
+      console.log("User: " + RegistroBD);
+      let user = RegistroBD
+      console.log("user: " + RegistroBD);
       //sumamos 1 al ID actual
       const lastUser = await db
         .collection(COLLECTIONS.USERS)

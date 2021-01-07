@@ -2,7 +2,7 @@ import { IResolvers } from "graphql-tools";
 import { COLLECTIONS } from "../config/constant";
 
 //*********************************************************
-// Usuarios(root, args, context, info)
+// ListadoUsuarios(root, args, context, info)
 //---------------------------------------------------------
 // root:    informacion de raiz
 // args:    argumentos que hayamos definido en el tipo raiz
@@ -11,15 +11,39 @@ import { COLLECTIONS } from "../config/constant";
 //*********************************************************
 const resolversQuerys: IResolvers = {
   Query: {
-    async Usuarios(_, __, {db}) {
-      console.log("Ejecucion GraphQL...")
+    async ListadoUsuarios(_, __, {db}) {
+      // para el calculo del tiempo de ejecución
+      console.time('Ejecución GraphQL');
+
+      //por defecto la respuesta es que no se ha podido hacer, salvo que obtengamos datos
+      let respuesta = {
+        status: false,
+        message: "No se han podido leer usuarios de la base de datos",
+        Usuarios: []
+      };
+
       try{
-        return await db.collection(COLLECTIONS.USERS).find().toArray();
+        const resultado =  await db.collection(COLLECTIONS.USERS).find().toArray();
+        let mensaje = "No hay ningún registro en la base de datos";
+        if(resultado.length > 0)
+        {
+          mensaje = "Lista de usuarios leida correctamente, total de registros: " + resultado.length;
+        }
+
+        respuesta = { 
+          status: true,
+          message: mensaje,
+          Usuarios: resultado
+        };
       }
-      catch(err){
+      catch(err)
+      {
           console.log(err);
-        return [];
       }
+      
+      // Nos muestra el tiempo transcurrido finalmente
+      console.timeEnd('Ejecución GraphQL');
+      return respuesta;
     },
   },
 };

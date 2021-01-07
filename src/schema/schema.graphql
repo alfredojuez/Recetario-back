@@ -3,9 +3,7 @@
    significa que no sea nulo"""
 type Query
 {
-    Usuarios: [Usuario!]!
-    # TipoIngredientes: [TipoIngrediente!]!
-    # Ingredientes: [Ingrediente!]!
+    ListadoUsuarios: ResultUsuarios
 }
 
 """
@@ -39,41 +37,29 @@ type Usuario{
     activo: Boolean!
 }
 
-# type TipoIngrediente
-# {
-#     "Nombre del ingrediente"
-#     nombre: [String!]!
-#     "Información acerca del ingrediente"
-#     descripcion:  String
-#     "foto del ingrediente"
-#     foto: String
-#     "Calorias"
-#     calorias: String
-#     "Nutriscore"
-#     nutriscore: Int
-#     "Fecha en la que se dió de alta el ingrediente"
-#     fechaAlta: [String!]!
-#     "Usuario que dió de alta el ingrediente"
-#     usuarioAlta: [String!]!
-#     "Usuario que modificó el ingrediente"
-#     usuarioModificacion: [String!]!
-# }
-
-# "Los ingredientes son necesario cumplimentarlos completamente"
-# type Ingrediente
-# {
-#     idReceta: [Int!]!
-#     cantidad: [String!]!
-#     ingrediente: [TipoIngrediente!]!
-# }
 
 "Acciones de escritura"
 type Mutation{
     # Nombre de la variable, Campos que vamos a necesitar...!) Tipo de dato
-    register(User: UserInput!): Usuario,
-    # register(IngredientType: TipoIngredienteInput!): TipoIngrediente,
-    # register(Ingredient: IngredienteInput!): Ingrediente,
+    register(RegistroBD: UserInput!): Usuario,
 }
+
+interface Result
+{
+     status: Boolean!
+     message: String!
+}
+
+type ResultUsuarios implements Result
+{
+    # "Estado de la operacion"
+    status: Boolean!
+    #  "mensaje de la operacion para dar feedback"
+    message: String!
+    "Lista de usuarios registrados en la app"
+    Usuarios: [Usuario!]!
+}
+
 
 "Tipos de perfiles permitidos"
 enum Perfil
@@ -94,21 +80,4 @@ input UserInput
     nacionalidad: String
     perfil: Perfil=USER
     activo: Boolean=true
-
 }
-
-# input TipoIngredienteInput
-# {
-#     nombre: [String!]!
-#     descripcion:  String
-#     foto: String
-#     calorias: String
-#     nutriscore: Int
-# }
-
-# input IngredienteInput
-# {
-#     idReceta: [Int!]!
-#     cantidad: [String!]!
-#     ingrediente: [TipoIngrediente!]!
-# }
