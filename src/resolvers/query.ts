@@ -1,7 +1,8 @@
 import { IResolvers } from "graphql-tools";
+import { COLLECTIONS } from "../config/constant";
 
 //*********************************************************
-// Users(root, args, context, info)
+// Usuarios(root, args, context, info)
 //---------------------------------------------------------
 // root:    informacion de raiz
 // args:    argumentos que hayamos definido en el tipo raiz
@@ -10,23 +11,15 @@ import { IResolvers } from "graphql-tools";
 //*********************************************************
 const resolversQuerys: IResolvers = {
   Query: {
-    Users(root, args, context, info) {
+    async Usuarios(_, __, {db}) {
       console.log("Ejecucion GraphQL...")
-      return [
-        {
-          id: 1,
-          email: "puesto_a_pelo@query.ts",
-          nombre: "alfredo",
-          apellidos: "juez",
-          usuario: "alfredojuez",
-          pass: "",
-          foto: "",
-          nacionalidad: "española",
-          perfil: "ADMIN",
-          alta: "",
-          activo: "true",
-        },
-      ];
+      try{
+        return await db.collection(COLLECTIONS.USERS).find().toArray();
+      }
+      catch(err){
+          console.log(err);
+        return [];
+      }
     },
   },
 };

@@ -1,7 +1,11 @@
-"Definiciones de los tipos de raiz lista de tipos User registrados en a la BD - la admiración tras el tipo significa que es obligatorio - la admiracion del final significa que no sea nulo"
+"""Definiciones de los tipos de raiz lista de tipos Usuarios registrados en a la BD 
+   la admiración tras el tipo significa que es obligatorio - la admiracion del final 
+   significa que no sea nulo"""
 type Query
 {
-    Users: [User!]!
+    Usuarios: [Usuario!]!
+    # TipoIngredientes: [TipoIngrediente!]!
+    # Ingredientes: [Ingrediente!]!
 }
 
 """
@@ -9,7 +13,7 @@ Vamos a especificar la información detallada del usuario.
 Las fechas irán en formato ISO
 Si la pass == null, el usuario deberá cambiarla cuando acceda por primera vez
 """
-type User{
+type Usuario{
     "Identificador único dado por Mongo"
     id: ID!
     "Identificador único para registro en APP"
@@ -28,16 +32,47 @@ type User{
     "Tipo de perfil: ADMIN / USER"
     perfil: Perfil!
     "Fecha en la que se dió de alta el usuario"
-    alta: String!
+    fechaAlta: String!
     "Fecha en la que se dió de alta el usuario"
     ultimoLogin: String!
     "Estado del usuario"
     activo: Boolean!
 }
 
+# type TipoIngrediente
+# {
+#     "Nombre del ingrediente"
+#     nombre: [String!]!
+#     "Información acerca del ingrediente"
+#     descripcion:  String
+#     "foto del ingrediente"
+#     foto: String
+#     "Calorias"
+#     calorias: String
+#     "Nutriscore"
+#     nutriscore: Int
+#     "Fecha en la que se dió de alta el ingrediente"
+#     fechaAlta: [String!]!
+#     "Usuario que dió de alta el ingrediente"
+#     usuarioAlta: [String!]!
+#     "Usuario que modificó el ingrediente"
+#     usuarioModificacion: [String!]!
+# }
+
+# "Los ingredientes son necesario cumplimentarlos completamente"
+# type Ingrediente
+# {
+#     idReceta: [Int!]!
+#     cantidad: [String!]!
+#     ingrediente: [TipoIngrediente!]!
+# }
+
 "Acciones de escritura"
 type Mutation{
-    register(User: UserInput!): User
+    # Nombre de la variable, Campos que vamos a necesitar...!) Tipo de dato
+    register(User: UserInput!): Usuario,
+    # register(IngredientType: TipoIngredienteInput!): TipoIngrediente,
+    # register(Ingredient: IngredienteInput!): Ingrediente,
 }
 
 "Tipos de perfiles permitidos"
@@ -50,7 +85,6 @@ enum Perfil
 
 input UserInput
 {
-    id:ID
     email: String!
     nombre: String!
     apellidos:  String!
@@ -62,3 +96,19 @@ input UserInput
     activo: Boolean=true
 
 }
+
+# input TipoIngredienteInput
+# {
+#     nombre: [String!]!
+#     descripcion:  String
+#     foto: String
+#     calorias: String
+#     nutriscore: Int
+# }
+
+# input IngredienteInput
+# {
+#     idReceta: [Int!]!
+#     cantidad: [String!]!
+#     ingrediente: [TipoIngrediente!]!
+# }
