@@ -15,7 +15,7 @@ const resolversQuerys: IResolvers = {
       return [
         {
           id: 1,
-          email: "alfredo@juez.es",
+          email: "puesto_a_pelo@query.ts",
           nombre: "alfredo",
           apellidos: "juez",
           usuario: "alfredojuez",
