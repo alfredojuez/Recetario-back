@@ -3,7 +3,11 @@
    significa que no sea nulo"""
 type Query
 {
+    "Lista de usuarios registrados en la base de datos"
     ListadoUsuarios: ResultUsuarios
+    "Para iniciar sesión"
+    login(email:String!, pass: String!): ResultLogin
+
 }
 
 """
@@ -52,12 +56,22 @@ interface Result
 
 type ResultUsuarios implements Result
 {
-    # "Estado de la operacion"
+    "Estado de la operacion"
     status: Boolean!
-    #  "mensaje de la operacion para dar feedback"
+    "mensaje de la operacion para dar feedback"
     message: String!
     "Lista de usuarios registrados en la app"
     Usuarios: [Usuario!]!
+}
+
+type ResultLogin implements Result
+{
+    "Estado de la operacion"
+    status: Boolean!
+    "mensaje de la operacion para dar feedback"
+    message: String!
+    "informacion del token del usuario"
+    token:String
 }
 
 

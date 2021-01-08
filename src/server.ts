@@ -1,25 +1,25 @@
-import express from "express";
-import cors from "cors";
-import compression from "compression";
-import { createServer } from "http";
+import express from 'express';
+import cors from 'cors';
+import compression from 'compression';
+import { createServer } from 'http';
 //servidor Apollo
-import { ApolloServer } from "apollo-server-express";
-import schema from "./schema";
-import expressPlayground from "graphql-playground-middleware-express";
+import { ApolloServer } from 'apollo-server-express';
+import schema from './schema';
+import expressPlayground from 'graphql-playground-middleware-express';
 //configuracion de las VBLes de Entorno
-import environment from "./config/environments";
-import Database from "./lib/database";
+import environment from './config/environments';
+import Database from './lib/database';
 
-if (process.env.NODE_ENV !== "production") {
+if (process.env.NODE_ENV !== 'production') {
   const env = environment;
 }
 //FIN configuracion de las VBLes de Entorno
 
-console.log("iniciando servidor...");
+console.log('iniciando servidor...');
 
 async function init() {
   const app = express();
-  app.use("*", cors());
+  app.use('*', cors());
   app.use(compression());
 
   const database = new Database();
@@ -35,9 +35,9 @@ async function init() {
   server.applyMiddleware({ app });
 
   app.get(
-    "/",
+    '/',
     expressPlayground({
-      endpoint: "/graphql",
+      endpoint: '/graphql',
     })
   );
 

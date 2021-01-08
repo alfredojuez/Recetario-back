@@ -1,5 +1,5 @@
-import { IResolvers } from "graphql-tools";
-import { COLLECTIONS } from "../config/constant";
+import { IResolvers } from 'graphql-tools';
+import { COLLECTIONS } from '../config/constant';
 
 //*********************************************************
 // Usuarios(root, args, context, info)
@@ -12,10 +12,10 @@ import { COLLECTIONS } from "../config/constant";
 const resolversMutation: IResolvers = {
   Mutation: {
     async register(_, { RegistroBD: RegistroBD }, { db }) {
-      console.log(".....................................................")
-      console.log("User: " + RegistroBD);
-      let user = RegistroBD
-      console.log("user: " + RegistroBD);
+      console.log('.....................................................')
+      console.log('User: ' + RegistroBD);
+      let user = RegistroBD;
+      console.log('user: ' + RegistroBD);
       //sumamos 1 al ID actual
       const lastUser = await db
         .collection(COLLECTIONS.USERS)
@@ -28,10 +28,10 @@ const resolversMutation: IResolvers = {
       console.log(lastUser.length.toString());
 
        if (lastUser.length === 0) {
-         console.log("Primer registro" );
+         console.log('Primer registro' );
          user.id = 1;
        } else {
-        console.log("Nuevo registro" );
+        console.log('Nuevo registro' );
          user.id = lastUser[0].id + 1;
        }
 
@@ -43,7 +43,7 @@ const resolversMutation: IResolvers = {
       user.ultimoLogin = now;
       user.activo = true;
 
-      console.log("user: " );
+      console.log('user: ' );
       console.log(user );
 
       //guardar el registro
