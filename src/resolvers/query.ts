@@ -1,3 +1,4 @@
+import { Console } from 'console';
 import { IResolvers } from 'graphql-tools';
 import { KnownArgumentNamesOnDirectivesRule } from 'graphql/validation/rules/KnownArgumentNamesRule';
 import { userInfo } from 'os';
@@ -55,6 +56,8 @@ const resolversQuerys: IResolvers = {
     async login(_, { email, pass }, { db }) {
       // para el calculo del tiempo de ejecución
       console.time('Login');
+      console.log('####################################################');
+      console.log('#');
 
       //por defecto la respuesta es que no se ha podido hacer, salvo que obtengamos datos
       var respuesta = null;
@@ -66,30 +69,48 @@ const resolversQuerys: IResolvers = {
         token: null
       };
 
-      try {
-        //verificamos primero que exista el mail.
+      try 
+      {
+        console.log('# Verificamos si existe el mail');
+        let usuarioVerification =null;
         const emailVerification = await db
           .collection(COLLECTIONS.USERS)
           .findOne({ email });
 
-          console.log('Verificamos si existe el mail');
-          console.log(emailVerification);
+        //Si el usuario no es el correo, miramos si es el usuario en si
+        if (emailVerification === null) 
+        {
 
-        //Si el usuario no existe, lo indicamos en la repuesta.
-        if (emailVerification === null) {
-          console.log(MENSAJES.LOGIN_VERIFICATION_NO_MAIL);
-          respuesta = {
-            status: false,
-            message: MENSAJES.LOGIN_VERIFICATION_NO_MAIL,
-            token: null,
+          usuarioVerification = await db
+          .collection(COLLECTIONS.USERS)
+          .findOne({ usuario: email });
+
+          if (usuarioVerification === null)
+          {            
+            respuesta = {
+              status: false,
+              message: MENSAJES.LOGIN_VERIFICATION_NO_MAIL,
+              token: null,
+            };
           }
-        } else {
+          else
+          {
+            //Como la validación la hacemos siempre con el mail, si el usuario 
+            //nos facilita el nombre de usuario en lugar del mail, despues de 
+            //localizarle, hacemos uso de su mail, con la pass que nos dió
+            email=usuarioVerification.email;
+            console.log('# No encontrado el email, pero si el usuario.');
+          }
+        } 
+
+        if(emailVerification!==null || usuarioVerification!==null) {
+          console.log('# Realizando verificacion de credenciales.');
           //luego realizamos el login real
           const resultado = await db
             .collection(COLLECTIONS.USERS)
             .findOne({ email, pass });
 
-          console.log('R: ' + resultado);
+          console.log('# Usuario ' + resultado.usuario +   ' localizado, tiene perfil de ' + resultado.perfil);
           
           if (resultado === null) {            
             respuesta = {
@@ -114,6 +135,9 @@ const resolversQuerys: IResolvers = {
         console.log(err);
       }
       // Nos muestra el tiempo transcurrido finalmente
+      console.log('# ' + respuesta.message);
+      console.log('#')
+      console.log('####################################################')
       console.timeEnd('Login');
       return respuesta;
     },
