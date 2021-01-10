@@ -4,6 +4,7 @@ import bcrypt from 'bcrypt';
 import { COLLECTIONS, LINEAS, LOG_TIME_NAME, MENSAJES } from '../../config/constant';
 import logTime from '../../functions';
 import JWT from '../../lib/jwt';
+import { findElements, findOneElement } from '../../lib/db-operations';
 
 //*********************************************************
 // ListadoUsuarios(root, args, context, info)
@@ -18,19 +19,18 @@ const resolversQueryUsuarios: IResolvers = {
     async ListadoUsuarios(_, __, { db }) {
       // para el calculo del tiempo de ejecución
       console.time('Ejecución GraphQL');
+      const arrayVacio : string[] = [];
 
       //por defecto la respuesta es que no se ha podido hacer, salvo que obtengamos datos
       let respuesta = {
         status: false,
         message: 'No se han podido leer usuarios de la base de datos',
-        Usuarios: [],
+        Usuarios: arrayVacio,
       };
 
       try {
-        const resultado = await db
-          .collection(COLLECTIONS.USERS)
-          .find()
-          .toArray();
+        const resultado = await findElements(db, COLLECTIONS.USERS);
+
         let mensaje = 'No hay ningún registro en la base de datos';
         if (resultado.length > 0) {
           mensaje =
@@ -43,6 +43,7 @@ const resolversQueryUsuarios: IResolvers = {
           message: mensaje,
           Usuarios: resultado,
         };
+
       } catch (err) {
         console.log(err);
       }
@@ -75,9 +76,8 @@ const resolversQueryUsuarios: IResolvers = {
       {
         console.log('· Verificamos si existe el e-mail');
         let accesoCorrecto = false;
-        const verificacionEmail = await db
-          .collection(COLLECTIONS.USERS)
-          .findOne({ email });        
+
+        const verificacionEmail = await findOneElement(db, COLLECTIONS.USERS, {email: email} );
 
         //Si el usuario existe, verificamos la pass
         if (verificacionEmail !== null) 
@@ -94,9 +94,7 @@ const resolversQueryUsuarios: IResolvers = {
         if(!accesoCorrecto)
         {
           console.log('· e-mail erroneo, comprobamos acceso con usuario.');
-          const verificacionUsuario = await db
-          .collection(COLLECTIONS.USERS)
-          .findOne({ usuario: email });
+          const verificacionUsuario = await findOneElement(db, COLLECTIONS.USERS, {usuario: email} );
 
           if (verificacionUsuario !== null)
           {
