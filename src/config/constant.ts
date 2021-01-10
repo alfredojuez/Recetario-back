@@ -1,5 +1,7 @@
 import environment from './environments';
 
+
+
 if(process.env.NODE_ENV !== 'production')
 {
     const env=environment;
@@ -10,6 +12,9 @@ export const SECRET_KEY = process.env.SECRET || '3n un lug4r d3 l4 M4nch4';
 export enum COLLECTIONS{
     USERS='usuarios'
 }
+
+//Mensaje para mostrar en las funciones que queremos evaluar su tiempo de ejecición
+export const LOG_TIME_NAME = 'Tiempo de ejecución';
 
 export enum MENSAJES
 {
@@ -41,10 +46,13 @@ export enum MENSAJES
 
  export enum LINEAS
  {
-     INICIO_FIN_BLOQUE  = '############################################',
-     INICIO_FIN_BLOQUE_X2  = '################################################################################################',
-     TITULO             = '=======================================',
-     TITULO_X2 = '===========================================================================================',
-     SEPARADOR          = ' - - - - - - - - - - - - - - - - - ',
-     SEPARADOR_X2 = ' - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - '
+    
+    IMPORTANTE_X2 = '#############################################################################################',
+    IMPORTANTE    = '#######################################',
+    BLOQUE_X2     = '=============================================================================================',
+    BLOQUE        = '=======================================',
+    TITULO_X2     = '---------------------------------------------------------------------------------------------',
+    TITULO        = '---------------------------------------',
+    SEPARADOR_X2  = '- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -',
+    SEPARADOR     = '- - - - - - - - - - - - - - - - - ',
  }
