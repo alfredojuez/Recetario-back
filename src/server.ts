@@ -10,6 +10,7 @@ import expressPlayground from 'graphql-playground-middleware-express';
 import environment from './config/environments';
 import Database from './lib/database';
 import chalk from 'chalk';
+import IContext from './interfaces/context.interface';
 
 if (process.env.NODE_ENV !== 'production') {
   const env = environment;
@@ -37,7 +38,12 @@ async function init() {
 
   const database = new Database();
   const db = await database.init();
-  const context = { db };
+  
+  //const context = { db };
+  const context = async ({req, connection}:IContext) => {
+    const token = (req) ? req.headers.authorization  : connection.authorization;
+    return {db, token};
+  };
 
   const server = new ApolloServer({
     schema,

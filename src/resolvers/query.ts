@@ -128,7 +128,7 @@ const resolversQuerys: IResolvers = {
             status: false,
             message: MENSAJES.LOGIN_VERIFICATION_NO_MAIL,
             token: null,
-          }
+          };
         }
         
       } catch (err) {
@@ -141,6 +141,26 @@ const resolversQuerys: IResolvers = {
       console.timeEnd(LOG_TIME_NAME);
       return respuesta;
     },
+
+    me(_,__,{ token })
+    {      
+      let info = new JWT().verify(token);
+      console.log(info);
+      if (info === MENSAJES.LOGIN_VERIFICATION_KO)
+      {
+        return {
+          status: false,
+          message: info,
+          usuario: null
+        };
+      }
+
+      return {
+          status: true,
+          message: 'Usuario autenticado correctamente',
+          Usuario: Object.values(info)[0]
+      };
+    }
   },
 };
 

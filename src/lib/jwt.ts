@@ -12,17 +12,18 @@ class JWT{
             { user: data.usuario },
             this.secretKey,
             { expiresIn } 
-        )   
+        );
     }
 
     verify(token:string)
     {
-            try{
-                return jwt.verify(token,this.secretKey) as string;
-            }catch(err){
-                console.log(err);
-                return MENSAJES.LOGIN_VERIFICATION_KO;
-            }
+        console.log('Verificando validez del token');
+        try{
+            return  jwt.verify(token,this.secretKey);
+        }catch(err){
+            console.log(err);
+            return MENSAJES.LOGIN_VERIFICATION_KO;
+        }
     }
 }
 
