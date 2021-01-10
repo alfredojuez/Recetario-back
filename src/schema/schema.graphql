@@ -1,7 +1,14 @@
-"Definiciones de los tipos de raiz lista de tipos User registrados en a la BD - la admiración tras el tipo significa que es obligatorio - la admiracion del final significa que no sea nulo"
+"""Definiciones de los tipos de raiz lista de tipos Usuarios registrados en a la BD 
+   la admiración tras el tipo significa que es obligatorio - la admiracion del final 
+   significa que no sea nulo"""
 type Query
 {
-    Users: [User!]!
+    "Lista de usuarios registrados en la base de datos"
+    ListadoUsuarios: ResultUsuarios
+    "Para iniciar sesión"
+    login(email:String!, pass: String!): ResultLogin
+    "Autenticarnos mediante token"
+    me: ResultUsuario
 }
 
 """
@@ -9,7 +16,7 @@ Vamos a especificar la información detallada del usuario.
 Las fechas irán en formato ISO
 Si la pass == null, el usuario deberá cambiarla cuando acceda por primera vez
 """
-type User{
+type Usuario{
     "Identificador único dado por Mongo"
     id: ID!
     "Identificador único para registro en APP"
@@ -28,17 +35,56 @@ type User{
     "Tipo de perfil: ADMIN / USER"
     perfil: Perfil!
     "Fecha en la que se dió de alta el usuario"
-    alta: String!
+    fechaAlta: String!
     "Fecha en la que se dió de alta el usuario"
     ultimoLogin: String!
     "Estado del usuario"
     activo: Boolean!
 }
 
+
 "Acciones de escritura"
 type Mutation{
-    register(User: UserInput!): User
+    # Nombre de la variable, Campos que vamos a necesitar...!) Tipo de dato
+    register(RegistroBD: UserInput!): ResultUsuario,
 }
+
+interface Result
+{
+     status: Boolean!
+     message: String!
+}
+
+type ResultUsuario implements Result
+{
+    "Estado de la operacion"
+    status: Boolean!
+    "mensaje de la operacion para dar feedback"
+    message: String!
+    "Información del usuario"
+    Usuario: Usuario
+}
+
+type ResultUsuarios implements Result
+{
+    "Estado de la operacion"
+    status: Boolean!
+    "mensaje de la operacion para dar feedback"
+    message: String!
+    "Lista de usuarios registrados en la app"
+    Usuarios: [Usuario!]!
+}
+
+type ResultLogin implements Result
+{
+    "Estado de la operacion"
+    status: Boolean!
+    "mensaje de la operacion para dar feedback"
+    message: String!
+    "informacion del token del usuario"
+    token:String
+}
+
 
 "Tipos de perfiles permitidos"
 enum Perfil
@@ -50,7 +96,6 @@ enum Perfil
 
 input UserInput
 {
-    id:ID
     email: String!
     nombre: String!
     apellidos:  String!
@@ -60,5 +105,4 @@ input UserInput
     nacionalidad: String
     perfil: Perfil=USER
     activo: Boolean=true
-
 }

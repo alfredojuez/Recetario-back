@@ -1,30 +1,49 @@
-import express from "express";
-import cors from "cors";
-import compression from "compression";
-import { createServer } from "http";
+import express from 'express';
+import cors from 'cors';
+import compression from 'compression';
+import { createServer } from 'http';
 //servidor Apollo
-import { ApolloServer } from "apollo-server-express";
-import schema from "./schema";
-import expressPlayground from "graphql-playground-middleware-express";
+import { ApolloServer } from 'apollo-server-express';
+import schema from './schema';
+import expressPlayground from 'graphql-playground-middleware-express';
 //configuracion de las VBLes de Entorno
-import environment from "./config/environments";
-import Database from "./lib/database";
+import environment from './config/environments';
+import Database from './lib/database';
+import chalk from 'chalk';
+import IContext from './interfaces/context.interface';
 
-if (process.env.NODE_ENV !== "production") {
+if (process.env.NODE_ENV !== 'production') {
   const env = environment;
 }
 //FIN configuracion de las VBLes de Entorno
 
-console.log("iniciando servidor...");
+function logStarServer() {
+  let barra = '';
+  let escalon = 4;
+  for (let i = 0; i < 20; i++) {
+    barra += '·';
+    if (i % 5 === 0) {
+      console.log(chalk.gray(barra));
+    }
+  }
+  console.log(chalk.gray('iniciando servidor...'));
+}
+
 
 async function init() {
+  logStarServer();
   const app = express();
-  app.use("*", cors());
+  app.use('*', cors());
   app.use(compression());
 
   const database = new Database();
   const db = await database.init();
-  const context = { db };
+  
+  //const context = { db };
+  const context = async ({req, connection}:IContext) => {
+    const token = (req) ? req.headers.authorization  : connection.authorization;
+    return {db, token};
+  };
 
   const server = new ApolloServer({
     schema,
@@ -35,9 +54,9 @@ async function init() {
   server.applyMiddleware({ app });
 
   app.get(
-    "/",
+    '/',
     expressPlayground({
-      endpoint: "/graphql",
+      endpoint: '/graphql',
     })
   );
 
