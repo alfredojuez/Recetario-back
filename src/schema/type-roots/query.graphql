@@ -1,0 +1,12 @@
+"""Definiciones de los tipos de raiz lista de tipos Usuarios registrados en a la BD 
+   la admiración tras el tipo significa que es obligatorio - la admiracion del final 
+   significa que no sea nulo"""
+type Query
+{
+    "Lista de usuarios registrados en la base de datos"
+    ListadoUsuarios: ResultUsuarios
+    "Para iniciar sesión"
+    login(email:String!, pass: String!): ResultLogin
+    "Autenticarnos mediante token"
+    me: ResultUsuario
+}

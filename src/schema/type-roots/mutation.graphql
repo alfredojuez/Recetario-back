@@ -1,0 +1,6 @@
+
+"Acciones de escritura"
+type Mutation{
+    # Nombre de la variable, Campos que vamos a necesitar...!) Tipo de dato
+    register(RegistroBD: UserInput!): ResultUsuario,
+}

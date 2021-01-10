@@ -1,6 +1,7 @@
 import { EXPIRATION_TIME, MENSAJES, SECRET_KEY } from '../config/constant';
 import jwt from 'jsonwebtoken';
 import { IJwt } from '../interfaces/jwt.interface';
+import chalk from 'chalk';
 
 class JWT{
     private secretKey = SECRET_KEY as string;
@@ -17,11 +18,10 @@ class JWT{
 
     verify(token:string)
     {
-        console.log('Verificando validez del token');
+        console.log('Verificando token...');
         try{
             return  jwt.verify(token,this.secretKey);
-        }catch(err){
-            console.log(err);
+        }catch{            
             return MENSAJES.LOGIN_VERIFICATION_KO;
         }
     }

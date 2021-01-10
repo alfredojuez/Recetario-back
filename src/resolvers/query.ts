@@ -143,11 +143,11 @@ const resolversQuerys: IResolvers = {
     },
 
     me(_,__,{ token })
-    {      
-      let info = new JWT().verify(token);
-      console.log(info);
+    { 
+      let info = new JWT().verify(token);      
       if (info === MENSAJES.LOGIN_VERIFICATION_KO)
       {
+        console.log(`${chalk.yellow(MENSAJES.LOGIN_VERIFICATION_KO)}`)
         return {
           status: false,
           message: info,
@@ -155,9 +155,12 @@ const resolversQuerys: IResolvers = {
         };
       }
 
+      const msg = `Validación correcta del token para el usuario ${Object.values(info)[0].usuario}`;
+      console.log(chalk.greenBright(msg));
       return {
+          
           status: true,
-          message: 'Usuario autenticado correctamente',
+          message:  msg,
           Usuario: Object.values(info)[0]
       };
     }
