@@ -1,0 +1,30 @@
+"""
+Vamos a especificar la información detallada del usuario.
+Las fechas irán en formato ISO
+Si la pass == null, el usuario deberá cambiarla cuando acceda por primera vez
+"""
+type Usuario{
+    "Identificador único dado por Mongo"
+    id: ID!
+    "Identificador único para registro en APP"
+    email: String!
+    "Datos del usuario"
+    nombre: String!
+    apellidos:  String!
+    "Usuario que se usará par los comentarios"
+    usuario: String!
+    "password"
+    pass: String! 
+    "foto de perfil del usuario"
+    foto: String
+    "Nacionalidad para situar las recetas"
+    nacionalidad: String
+    "Tipo de perfil: ADMIN / USER"
+    perfil: Perfil!
+    "Fecha en la que se dió de alta el usuario"
+    fechaAlta: String!
+    "Fecha en la que se dió de alta el usuario"
+    ultimoLogin: String!
+    "Estado del usuario"
+    activo: Boolean!
+}

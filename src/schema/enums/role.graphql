@@ -1,0 +1,8 @@
+
+"Tipos de perfiles permitidos"
+enum Perfil
+{
+    ADMIN
+    COOKER
+    USER
+}

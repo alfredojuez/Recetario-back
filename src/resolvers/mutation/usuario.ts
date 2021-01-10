@@ -1,8 +1,9 @@
 import chalk from 'chalk';
 import { IResolvers } from 'graphql-tools';
-import { COLLECTIONS, LINEAS, LOG_TIME_NAME } from '../config/constant';
-import logTime from '../functions';
+import { COLLECTIONS, LINEAS, LOG_TIME_NAME } from '../../config/constant';
+import logTime from '../../functions';
 import bcrypt from 'bcrypt';
+import { asignacionID, findOneElement, insertOneElement } from '../../lib/db-operations';
 
 
 //*********************************************************
@@ -13,7 +14,7 @@ import bcrypt from 'bcrypt';
 // context: informacion que se comparte en los resolvers
 // info:    informacion de la operación ejecutada
 //*********************************************************
-const resolversMutation: IResolvers = {
+const resolversMutationUsuario: IResolvers = {
   Mutation: {
     async register(_, { RegistroBD: RegistroBD }, { db }) {      
       console.time(LOG_TIME_NAME);
@@ -23,8 +24,8 @@ const resolversMutation: IResolvers = {
       //hay que verificar que no existe ni el mail, ni el usuario
       
       console.log(chalk.blueBright('SOLICITADA ALTA DE USUARIO'));
-      const userCheckEmail = await db.collection(COLLECTIONS.USERS).findOne({email:RegistroBD.email});
-
+      console.log(`Datos - email: ${RegistroBD.email}`);
+      const userCheckEmail = await findOneElement(db, COLLECTIONS.USERS, {email:RegistroBD.email});      
       console.log('Verificando la existencia del email: ' + RegistroBD.email);
       if (userCheckEmail!== null)
       {
@@ -41,8 +42,9 @@ const resolversMutation: IResolvers = {
       console.log('Email NO encontrado');
 
       //verificamos si existe el nombre de usuario 
-      const userCheckUsuario = await db.collection(COLLECTIONS.USERS).findOne({usuario:RegistroBD.usuario});
+      const userCheckUsuario = await findOneElement(db, COLLECTIONS.USERS, {usuario:RegistroBD.usuario});
       console.log('Verificando la existencia del usuario: ' + RegistroBD.usuario);
+      console.log(userCheckUsuario);
       if (userCheckUsuario!== null)
       {
           console.log('Usuario encontrado');
@@ -59,20 +61,22 @@ const resolversMutation: IResolvers = {
       console.log('Usuario NO encontrado');
       let nuevoUsuario = RegistroBD;
 
-      //sumamos 1 al ID actual
-      const lastUser = await db
-        .collection(COLLECTIONS.USERS)
-        .find()
-        .limit(1)
-        .sort({ fechaAlta: -1 })
-        .toArray();
+    //   //sumamos 1 al ID actual
+    //   const lastUser = await db
+    //     .collection(COLLECTIONS.USERS)
+    //     .find()
+    //     .limit(1)
+    //     .sort({ fechaAlta: -1 })
+    //     .toArray();
 
-       if (lastUser.length === 0) {
-         console.log('Es el primer registro de la tabla');
-         nuevoUsuario.id = 1;
-       } else {
-         nuevoUsuario.id = lastUser[0].id + 1;
-       }
+    //    if (lastUser.length === 0) {
+    //      console.log('Es el primer registro de la tabla');
+    //      nuevoUsuario.id = 1;
+    //    } else {
+    //      nuevoUsuario.id = lastUser[0].id + 1;
+    //    }
+    nuevoUsuario.id = await asignacionID(db, COLLECTIONS.USERS, {fechaAlta: -1});
+    // - equivalente a todo lo comentado anteriormente
 
        // Fecha actual en formato ISO
       const now = new Date().toISOString();
@@ -83,12 +87,10 @@ const resolversMutation: IResolvers = {
       nuevoUsuario.activo = true;                 
 
       const longitud = 10;
-      nuevoUsuario.pass = bcrypt.hashSync(nuevoUsuario.pass, longitud)
+      nuevoUsuario.pass = bcrypt.hashSync(nuevoUsuario.pass, longitud);
 
       //guardar el registro
-      return await db
-        .collection(COLLECTIONS.USERS)
-        .insertOne(nuevoUsuario)
+      return await insertOneElement(db, COLLECTIONS.USERS, nuevoUsuario)
         .then(async () => {          
           console.log('Usuario dado de alta: ' );
           console.log(nuevoUsuario);
@@ -116,4 +118,4 @@ const resolversMutation: IResolvers = {
   },
 };
 
-export default resolversMutation;
+export default resolversMutationUsuario;

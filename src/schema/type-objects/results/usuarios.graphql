@@ -1,0 +1,12 @@
+
+type ResultUsuarios implements Result
+{
+    "Estado de la operacion"
+    status: Boolean!
+    "mensaje de la operacion para dar feedback"
+    message: String!
+    "Lista de usuarios registrados en la app"
+    Usuarios: [Usuario!]!
+}
+
+
