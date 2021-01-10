@@ -3,6 +3,7 @@ import { IResolvers } from 'graphql-tools';
 import { COLLECTIONS, LINEAS, LOG_TIME_NAME } from '../../config/constant';
 import logTime from '../../functions';
 import bcrypt from 'bcrypt';
+import { asignacionID } from '../../lib/db-operations';
 
 
 //*********************************************************
@@ -59,20 +60,22 @@ const resolversMutationUsuario: IResolvers = {
       console.log('Usuario NO encontrado');
       let nuevoUsuario = RegistroBD;
 
-      //sumamos 1 al ID actual
-      const lastUser = await db
-        .collection(COLLECTIONS.USERS)
-        .find()
-        .limit(1)
-        .sort({ fechaAlta: -1 })
-        .toArray();
+    //   //sumamos 1 al ID actual
+    //   const lastUser = await db
+    //     .collection(COLLECTIONS.USERS)
+    //     .find()
+    //     .limit(1)
+    //     .sort({ fechaAlta: -1 })
+    //     .toArray();
 
-       if (lastUser.length === 0) {
-         console.log('Es el primer registro de la tabla');
-         nuevoUsuario.id = 1;
-       } else {
-         nuevoUsuario.id = lastUser[0].id + 1;
-       }
+    //    if (lastUser.length === 0) {
+    //      console.log('Es el primer registro de la tabla');
+    //      nuevoUsuario.id = 1;
+    //    } else {
+    //      nuevoUsuario.id = lastUser[0].id + 1;
+    //    }
+    nuevoUsuario.id = await asignacionID(db, COLLECTIONS.USERS, {fechaAlta: -1});
+    // - equivalente a todo lo comentado anteriormente
 
        // Fecha actual en formato ISO
       const now = new Date().toISOString();
