@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import { IResolvers } from 'graphql-tools';
-import { COLLECTIONS, LINEAS, LOG_TIME_NAME } from '../config/constant';
-import logTime from '../functions';
+import { COLLECTIONS, LINEAS, LOG_TIME_NAME } from '../../config/constant';
+import logTime from '../../functions';
 import bcrypt from 'bcrypt';
 
 
@@ -13,7 +13,7 @@ import bcrypt from 'bcrypt';
 // context: informacion que se comparte en los resolvers
 // info:    informacion de la operación ejecutada
 //*********************************************************
-const resolversMutation: IResolvers = {
+const resolversMutationUsuario: IResolvers = {
   Mutation: {
     async register(_, { RegistroBD: RegistroBD }, { db }) {      
       console.time(LOG_TIME_NAME);
@@ -116,4 +116,4 @@ const resolversMutation: IResolvers = {
   },
 };
 
-export default resolversMutation;
+export default resolversMutationUsuario;

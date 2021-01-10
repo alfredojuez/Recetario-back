@@ -1,9 +1,9 @@
 import chalk from 'chalk';
 import { IResolvers } from 'graphql-tools';
 import bcrypt from 'bcrypt';
-import { COLLECTIONS, LINEAS, LOG_TIME_NAME, MENSAJES } from '../config/constant';
-import logTime from '../functions';
-import JWT from '../lib/jwt';
+import { COLLECTIONS, LINEAS, LOG_TIME_NAME, MENSAJES } from '../../config/constant';
+import logTime from '../../functions';
+import JWT from '../../lib/jwt';
 
 //*********************************************************
 // ListadoUsuarios(root, args, context, info)
@@ -13,7 +13,7 @@ import JWT from '../lib/jwt';
 // context: informacion que se comparte en los resolvers
 // info:    informacion de la operación ejecutada
 //*********************************************************
-const resolversQuerys: IResolvers = {
+const resolversQueryUsuarios: IResolvers = {
   Query: {
     async ListadoUsuarios(_, __, { db }) {
       // para el calculo del tiempo de ejecución
@@ -163,8 +163,8 @@ const resolversQuerys: IResolvers = {
           message:  msg,
           Usuario: Object.values(info)[0]
       };
-    }
+    },
   },
 };
 
-export default resolversQuerys;
+export default resolversQueryUsuarios;
