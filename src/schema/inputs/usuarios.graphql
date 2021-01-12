@@ -3,11 +3,11 @@ input UserInput
 {
     email: String!
     nombre: String!
-    apellidos:  String!
+    apellidos:  String
     usuario: String!
     pass: String!
     foto: String
     nacionalidad: String
-    perfil: Perfil=USER
-    activo: Boolean=true
+    perfil: Perfil!=USER
+    activo: Boolean!=true
 }

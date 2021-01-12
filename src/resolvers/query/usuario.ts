@@ -74,7 +74,7 @@ const resolversQueryUsuarios: IResolvers = {
 
       try 
       {
-        console.log('· Verificamos si existe el e-mail');
+        console.log('· Solicitud de login');
         let accesoCorrecto = false;
 
         const verificacionEmail = await findOneElement(db, COLLECTIONS.USERS, {email: email} );
@@ -82,7 +82,7 @@ const resolversQueryUsuarios: IResolvers = {
         //Si el usuario existe, verificamos la pass
         if (verificacionEmail !== null) 
         {
-          console.log('· Verificamos credenciales');
+          console.log('· Usuario localizado, verificamos credenciales...');
           accesoCorrecto = bcrypt.compareSync(pass, verificacionEmail.pass);
           if(accesoCorrecto)
           {
@@ -93,7 +93,7 @@ const resolversQueryUsuarios: IResolvers = {
         //si el email no loga, lo probamos con usuario
         if(!accesoCorrecto)
         {
-          console.log('· e-mail erroneo, comprobamos acceso con usuario.');
+          console.log(`· ${chalk.red('e-mail erroneo')}, comprobamos acceso con usuario.`);
           const verificacionUsuario = await findOneElement(db, COLLECTIONS.USERS, {usuario: email} );
 
           if (verificacionUsuario !== null)
@@ -109,10 +109,10 @@ const resolversQueryUsuarios: IResolvers = {
         
         if (accesoCorrecto)
         {
-            console.log(`· Usuario ${chalk.yellow(resultado.usuario)} localizado, tiene perfil de ${chalk.yellow(resultado.perfil)}`);
+            console.log(`· Usuario ${chalk.green(resultado.usuario)} localizado, tiene perfil de ${chalk.yellow(resultado.perfil)}`);
             //eliminamos campos sensibles...
-            delete resultado.pass;
-            delete resultado.ultimoLogin;
+            // delete resultado.pass;
+            // delete resultado.ultimoLogin;
             //ahora si, almacenamos los datos que hemos recibido
             respuesta = {
               status: true,
@@ -122,6 +122,7 @@ const resolversQueryUsuarios: IResolvers = {
         }
         else
         {            
+          console.log(`· ${chalk.red('usuario erroneo')}, no tiene acceso a la aplicación o no está registrado.`);
           respuesta = {
             status: false,
             message: MENSAJES.LOGIN_VERIFICATION_NO_MAIL,
