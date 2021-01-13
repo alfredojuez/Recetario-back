@@ -19,7 +19,7 @@ type Usuario{
     foto: String
     "Nacionalidad para situar las recetas"
     nacionalidad: String
-    "Tipo de perfil: ADMIN / USER"
+    "Tipo de perfil: ADMIN / USER / COOKER"
     perfil: Perfil!
     "Fecha en la que se dió de alta el usuario"
     fechaAlta: String!
@@ -27,4 +27,4 @@ type Usuario{
     ultimoLogin: String!
     "Estado del usuario"
     activo: Boolean!
-}
+}   

@@ -1,3 +1,9 @@
+// enum Perfil
+// {
+//     ADMIN,
+//     COOKER,
+//     USER
+// }
 
 export interface IUsuario{
     id?: String;

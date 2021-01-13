@@ -1,5 +1,5 @@
 
-input UserInput
+input UsuarioInput
 {
     email: String!
     nombre: String!
@@ -8,6 +8,6 @@ input UserInput
     pass: String!
     foto: String
     nacionalidad: String
-    perfil: Perfil!=USER
+    perfil: Perfil="USER"
     activo: Boolean!=true
 }
