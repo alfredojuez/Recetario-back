@@ -110,9 +110,12 @@ const resolversQueryUsuarios: IResolvers = {
         if (accesoCorrecto)
         {
             console.log(`· Usuario ${chalk.green(resultado.usuario)} localizado, tiene perfil de ${chalk.yellow(resultado.perfil)}`);
-            //eliminamos campos sensibles...
-            // delete resultado.pass;
-            // delete resultado.ultimoLogin;
+            // NO eliminamos campos sensibles... que sea el front el que no los pida
+            // ademas como la pass está encriptada....
+            // -----------------------------------------------------------------------
+            //delete resultado.pass;
+            //delete resultado.ultimoLogin;
+            // -----------------------------------------------------------------------
             //ahora si, almacenamos los datos que hemos recibido
             respuesta = {
               status: true,
