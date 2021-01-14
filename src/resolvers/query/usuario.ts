@@ -88,19 +88,22 @@ const resolversQueryUsuarios: IResolvers = {
           if(bcrypt.compareSync(pass, buscamosXEmail.pass))
           {
             let txt = `· Usuario ${chalk.green(buscamosXEmail.usuario)} ${chalk.green('validado')}, tiene perfil de ${chalk.yellow(buscamosXEmail.perfil)}`;
+            let txtPlano = `· Usuario ${buscamosXEmail.usuario} ${'validado'}, tiene perfil de ${buscamosXEmail.perfil}`;
+            
             console.log(txt);
             respuesta = {
               status: true,
-              message: txt,
+              message: txtPlano,
               token: new JWT().sign({ usuario: buscamosXEmail.email })
             };
           }
           else{
             let txt = `· Usuario ${email}, ${chalk.red('no tiene acceso')} usuario/contraseñas incorrectos.`;
+            let txtPlano = `· Usuario ${email}, ${'no tiene acceso'} usuario/contraseñas incorrectos.`;
                 console.log(txt);
                 respuesta = {
                   status: false,
-                  message: txt,
+                  message: txtPlano,
                   token: null,
                 };
           }
@@ -117,20 +120,22 @@ const resolversQueryUsuarios: IResolvers = {
               if(bcrypt.compareSync(pass, buscamosXUsuario.pass))
               {
                 let txt = `· Usuario ${chalk.green(buscamosXUsuario.usuario)} localizado, tiene perfil de ${chalk.yellow(buscamosXUsuario.perfil)}`;
+                let txtPlano = `· Usuario ${buscamosXUsuario.usuario} localizado, tiene perfil de ${buscamosXUsuario.perfil}`;
                 console.log(txt);
                 respuesta = {
                   status: true,
-                  message: txt,
+                  message: txtPlano,
                   token: new JWT().sign({ usuario: buscamosXUsuario.usuario })
                 };
               }
               else
               {                
                 let txt = `· Usuario ${email}, ${chalk.red('no tiene acceso')} usuario/contraseñas incorrectos.`;
+                let txtPlano = `· Usuario ${email}, ${'no tiene acceso'} usuario/contraseñas incorrectos.`;
                 console.log(txt);
                 respuesta = {
                   status: false,
-                  message: txt,
+                  message: txtPlano,
                   token: null,
                 };
               }
@@ -138,10 +143,11 @@ const resolversQueryUsuarios: IResolvers = {
             else
             {            
               let txt = `· Usuario ${email}, ${chalk.red('no tiene acceso')} no está registrado.`;
+              let txtPlano = `· Usuario ${email}, ${'no tiene acceso'} no está registrado.`;
               console.log(txt);
               respuesta = {
                 status: false,
-                message: txt,
+                message: txtPlano,
                 token: null,
               };
             }
@@ -170,12 +176,13 @@ const resolversQueryUsuarios: IResolvers = {
         };
       }
 
-      const msg = `Validación correcta del token para el usuario ${Object.values(info)[0].usuario}`;
-      console.log(chalk.greenBright(msg));
+      const txt = `${chalk('Validación correcta')} del token para el usuario ${Object.values(info)[0].usuario}`;
+      const txtPlano = `Validación correcta del token para el usuario ${Object.values(info)[0].usuario}`;
+      console.log(chalk.greenBright(txt));
       return {
           
           status: true,
-          message:  msg,
+          message: txtPlano,
           Usuario: Object.values(info)[0]
       };
     },
@@ -183,3 +190,4 @@ const resolversQueryUsuarios: IResolvers = {
 };
 
 export default resolversQueryUsuarios;
+
