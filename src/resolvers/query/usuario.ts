@@ -105,8 +105,18 @@ const resolversQueryUsuarios: IResolvers = {
               resultado = verificacionUsuario;
             }
           }
+          else
+          {            
+            console.log(`· ${chalk.red('usuario erroneo')}, no tiene acceso a la aplicación o no está registrado.`);
+            respuesta = {
+              status: false,
+              message: MENSAJES.USER_NO_REGISTERED,
+              token: null,
+            };
+          }
         }
         
+        // Es decir, el user es un mail o nombre de usuario correcto
         if (accesoCorrecto)
         {
             console.log(`· Usuario ${chalk.green(resultado.usuario)} localizado, tiene perfil de ${chalk.yellow(resultado.perfil)}`);
@@ -128,7 +138,7 @@ const resolversQueryUsuarios: IResolvers = {
           console.log(`· ${chalk.red('usuario erroneo')}, no tiene acceso a la aplicación o no está registrado.`);
           respuesta = {
             status: false,
-            message: MENSAJES.LOGIN_VERIFICATION_NO_MAIL,
+            message: MENSAJES.LOGIN_KO,
             token: null,
           };
         }
