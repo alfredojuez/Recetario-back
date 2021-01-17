@@ -1,7 +1,5 @@
 import environment from './environments';
 
-
-
 if(process.env.NODE_ENV !== 'production')
 {
     const env=environment;
@@ -40,13 +38,12 @@ export enum MENSAJES
     H1 = M1*60,
     H6 = 6*H1,
     H12 = 12*H1,
-    D1 = H1*24,     
+    D1 = H1*24,
+    S1 = D1*7,
  }
-
 
  export enum LINEAS
  {
-    
     IMPORTANTE_X2 = '#############################################################################################',
     IMPORTANTE    = '#######################################',
     BLOQUE_X2     = '=============================================================================================',

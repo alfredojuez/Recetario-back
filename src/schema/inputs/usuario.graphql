@@ -6,6 +6,7 @@ input UsuarioInput
     apellidos:  String
     usuario: String!
     pass: String!
+    fecha_nacimiento: String!
     foto: String
     nacionalidad: String
     perfil: Perfil="USER"

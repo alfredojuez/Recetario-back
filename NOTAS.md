@@ -21,8 +21,8 @@ mutation addUser($DatosUsuario: UserInput!) {
       foto
       nacionalidad
       perfil
-      fechaAlta
-      ultimoLogin
+      fecha_alta
+      ultimo_login
       activo  
     }
   }
@@ -61,8 +61,8 @@ La ejecución de este codigo, nos devolverá algo similar a esto:
         "foto": "",
         "nacionalidad": "",
         "perfil": "USER",
-        "fechaAlta": "2021-01-13T10:25:04.098Z",
-        "ultimoLogin": "2021-01-13T10:25:04.098Z",
+        "fecha_alta": "2021-01-13T10:25:04.098Z",
+        "ultimo_login": "2021-01-13T10:25:04.098Z",
         "activo": true
       }
     }
@@ -234,8 +234,8 @@ fragment UserObject on Usuario
     foto
     nacionalidad
     perfil
-    fechaAlta
-    ultimoLogin
+    fecha_alta
+    ultimo_login
     activo
 }
 ```

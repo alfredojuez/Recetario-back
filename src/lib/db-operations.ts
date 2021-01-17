@@ -11,7 +11,7 @@ import { Db } from 'mongodb';
 export const asignacionID = async(
     database: Db,
     collection: string,
-    sort: object = {fechaAlta: -1}
+    sort: object = {fecha_alta: -1}
 ) => {
             //sumamos 1 al ID actual
             const lastElement = await database

@@ -7,10 +7,10 @@ class JWT{
     private secretKey = SECRET_KEY as string;
 
     //Hacemos que caduquen los token cada 6 horas
-    sign(data: IJwt, expiresIn: number = EXPIRATION_TIME.H6)
+    sign(data: IJwt, expiresIn: number = EXPIRATION_TIME.D1)
     {
         return jwt.sign(
-            { user: data.usuario },
+            { usuario: data.usuario },
             this.secretKey,
             { expiresIn } 
         );

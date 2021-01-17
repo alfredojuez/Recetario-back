@@ -7,4 +7,6 @@ type ResultLogin implements Result
     message: String!
     "informacion del token del usuario"
     token:String
+    "datos del usuario"
+    usuario: Usuario
 }

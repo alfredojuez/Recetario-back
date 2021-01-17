@@ -36,7 +36,7 @@ const resolversMutationUsuario: IResolvers = {
           return {
             status: false,
             message:`El email ${RegistroBD.email} ya está registrado, si no recuerdas la contraseña, solicita que te la recordemos`,
-            Usuario: null
+            usuario: null
           };
       }
       console.log('Email NO encontrado');
@@ -54,19 +54,19 @@ const resolversMutationUsuario: IResolvers = {
           return {
             status: false,
             message:`El usuario ${RegistroBD.usuario} ya está en uso.`,
-            Usuario: null
+            usuario: null
           };
       }
 
       console.log('Usuario NO encontrado');
       let nuevoUsuario = RegistroBD;
-      nuevoUsuario.id = await asignacionID(db, COLLECTIONS.USERS, {fechaAlta: -1});
+      nuevoUsuario.id = await asignacionID(db, COLLECTIONS.USERS, {fecha_alta: -1});
 
        // Fecha actual en formato ISO
       const now = new Date().toISOString();
 
       //Añadimos los campos que son automáticos para el usuario
-      nuevoUsuario.fechaAlta = now;
+      nuevoUsuario.fecha_alta = now;
       nuevoUsuario.ultimoLogin = now;
       nuevoUsuario.activo = true;                 
 
@@ -84,7 +84,7 @@ const resolversMutationUsuario: IResolvers = {
           return {
             status: true,
             message: `El usuario ${nuevoUsuario.usuario} se ha registrado correctamente.`,
-            Usuario: nuevoUsuario
+            usuario: nuevoUsuario
           };
         })
         .catch((err: Error) => {
@@ -95,7 +95,7 @@ const resolversMutationUsuario: IResolvers = {
           return {
             status: false,
             message: `El usuario ${nuevoUsuario.usuario} NO ha podido ser dado de alta. Error inesperado.`,
-            Usuario: null
+            usuario: null
           };
         });
     },

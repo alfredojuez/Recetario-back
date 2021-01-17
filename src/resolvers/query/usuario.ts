@@ -25,7 +25,7 @@ const resolversQueryUsuarios: IResolvers = {
       let respuesta = {
         status: false,
         message: 'No se han podido leer usuarios de la base de datos',
-        Usuarios: arrayVacio,
+        usuarios: arrayVacio,
       };
 
       try {
@@ -41,7 +41,7 @@ const resolversQueryUsuarios: IResolvers = {
         respuesta = {
           status: true,
           message: mensaje,
-          Usuarios: resultado,
+          usuarios: resultado,
         };
 
       } catch (err) {
@@ -63,10 +63,8 @@ const resolversQueryUsuarios: IResolvers = {
 
       //por defecto la respuesta es que no se ha podido hacer, salvo que obtengamos datos
       var respuesta = null;
-      var resultado = null;
       let buscamosXEmail = null;
       let buscamosXUsuario = null;
-      let usuarioValido = false;
       
       //Por defecto, presuponemos el error, así sabemos que llegamos al return con datos.
       respuesta = {
@@ -94,7 +92,8 @@ const resolversQueryUsuarios: IResolvers = {
             respuesta = {
               status: true,
               message: txtPlano,
-              token: new JWT().sign({ usuario: buscamosXEmail.email })
+              token: new JWT().sign({ usuario: buscamosXEmail }),
+              usuario: buscamosXEmail              
             };
           }
           else{
@@ -113,7 +112,6 @@ const resolversQueryUsuarios: IResolvers = {
           {
             console.log(`· E-mail ${email} ${chalk.red('no encontrado')}, comprobamos acceso con usuario.`);
             buscamosXUsuario = await findOneElement(db, COLLECTIONS.USERS, {usuario: email} );
-
             if (buscamosXUsuario !== null)
             {
               console.log(`· Usuario ${email} localizado, verificamos credenciales`);
@@ -125,7 +123,8 @@ const resolversQueryUsuarios: IResolvers = {
                 respuesta = {
                   status: true,
                   message: txtPlano,
-                  token: new JWT().sign({ usuario: buscamosXUsuario.usuario })
+                  token: new JWT().sign({ usuario: buscamosXUsuario }),
+                  usuario: buscamosXUsuario
                 };
               }
               else
@@ -183,7 +182,7 @@ const resolversQueryUsuarios: IResolvers = {
           
           status: true,
           message: txtPlano,
-          Usuario: Object.values(info)[0]
+          usuario: Object.values(info)[0]
       };
     },
   },
