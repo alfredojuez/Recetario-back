@@ -36,7 +36,7 @@ const resolversMutationUsuario: IResolvers = {
           return {
             status: false,
             message:`El email ${RegistroBD.email} ya está registrado, si no recuerdas la contraseña, solicita que te la recordemos`,
-            Usuario: null
+            usuario: null
           };
       }
       console.log('Email NO encontrado');
@@ -54,35 +54,19 @@ const resolversMutationUsuario: IResolvers = {
           return {
             status: false,
             message:`El usuario ${RegistroBD.usuario} ya está en uso.`,
-            Usuario: null
+            usuario: null
           };
       }
 
       console.log('Usuario NO encontrado');
       let nuevoUsuario = RegistroBD;
-
-    //   //sumamos 1 al ID actual
-    //   const lastUser = await db
-    //     .collection(COLLECTIONS.USERS)
-    //     .find()
-    //     .limit(1)
-    //     .sort({ fechaAlta: -1 })
-    //     .toArray();
-
-    //    if (lastUser.length === 0) {
-    //      console.log('Es el primer registro de la tabla');
-    //      nuevoUsuario.id = 1;
-    //    } else {
-    //      nuevoUsuario.id = lastUser[0].id + 1;
-    //    }
-    nuevoUsuario.id = await asignacionID(db, COLLECTIONS.USERS, {fechaAlta: -1});
-    // - equivalente a todo lo comentado anteriormente
+      nuevoUsuario.id = await asignacionID(db, COLLECTIONS.USERS, {fecha_alta: -1});
 
        // Fecha actual en formato ISO
       const now = new Date().toISOString();
 
       //Añadimos los campos que son automáticos para el usuario
-      nuevoUsuario.fechaAlta = now;
+      nuevoUsuario.fecha_alta = now;
       nuevoUsuario.ultimoLogin = now;
       nuevoUsuario.activo = true;                 
 
@@ -100,7 +84,7 @@ const resolversMutationUsuario: IResolvers = {
           return {
             status: true,
             message: `El usuario ${nuevoUsuario.usuario} se ha registrado correctamente.`,
-            Usuario: nuevoUsuario
+            usuario: nuevoUsuario
           };
         })
         .catch((err: Error) => {
@@ -111,7 +95,7 @@ const resolversMutationUsuario: IResolvers = {
           return {
             status: false,
             message: `El usuario ${nuevoUsuario.usuario} NO ha podido ser dado de alta. Error inesperado.`,
-            Usuario: null
+            usuario: null
           };
         });
     },

@@ -1,3 +1,10 @@
+// enum Perfil
+// {
+//     ADMIN,
+//     COOKER,
+//     USER
+// }
+
 export interface IUsuario{
     id?: String;
     email: String;
@@ -5,10 +12,11 @@ export interface IUsuario{
     apellidos:  String;
     usuario: String;
     pass: String;
+    fecha_nacimiento: String;
     foto: String;
     nacionalidad: String;
     perfil: String;
-    fechaAlta: String;
-    ultimoLogin: String;
+    fecha_alta: String;
+    ultimo_login: String;
     activo: Boolean;
 }

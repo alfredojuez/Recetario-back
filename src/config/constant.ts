@@ -1,7 +1,5 @@
 import environment from './environments';
 
-
-
 if(process.env.NODE_ENV !== 'production')
 {
     const env=environment;
@@ -23,7 +21,7 @@ export enum MENSAJES
     LOGIN_ERROR ='No se han podido comprobar las credenciales del usuario.',
     LOGIN_VERIFICATION_OK ='Verificacion de usuario realizada correctamente.',
     LOGIN_VERIFICATION_KO = 'token no válido, inicia sesión de nuevo.',    
-    LOGIN_VERIFICATION_NO_MAIL ='El usuario que está usando no está registrado.',
+    USER_NO_REGISTERED ='El usuario que está usando no está registrado.',
 }
 
 /**
@@ -40,13 +38,12 @@ export enum MENSAJES
     H1 = M1*60,
     H6 = 6*H1,
     H12 = 12*H1,
-    D1 = H1*24,     
+    D1 = H1*24,
+    S1 = D1*7,
  }
-
 
  export enum LINEAS
  {
-    
     IMPORTANTE_X2 = '#############################################################################################',
     IMPORTANTE    = '#######################################',
     BLOQUE_X2     = '=============================================================================================',

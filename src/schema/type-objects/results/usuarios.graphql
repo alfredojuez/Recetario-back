@@ -6,7 +6,7 @@ type ResultUsuarios implements Result
     "mensaje de la operacion para dar feedback"
     message: String!
     "Lista de usuarios registrados en la app"
-    Usuarios: [Usuario!]!
+    usuarios: [Usuario!]!
 }
 
 

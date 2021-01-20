@@ -5,5 +5,5 @@ type ResultUsuario implements Result
     "mensaje de la operacion para dar feedback"
     message: String!
     "Información del usuario"
-    Usuario: Usuario
+    usuario: Usuario
 }

@@ -25,7 +25,7 @@ const resolversQueryUsuarios: IResolvers = {
       let respuesta = {
         status: false,
         message: 'No se han podido leer usuarios de la base de datos',
-        Usuarios: arrayVacio,
+        usuarios: arrayVacio,
       };
 
       try {
@@ -41,7 +41,7 @@ const resolversQueryUsuarios: IResolvers = {
         respuesta = {
           status: true,
           message: mensaje,
-          Usuarios: resultado,
+          usuarios: resultado,
         };
 
       } catch (err) {
@@ -63,7 +63,8 @@ const resolversQueryUsuarios: IResolvers = {
 
       //por defecto la respuesta es que no se ha podido hacer, salvo que obtengamos datos
       var respuesta = null;
-      var resultado = null;
+      let buscamosXEmail = null;
+      let buscamosXUsuario = null;
       
       //Por defecto, presuponemos el error, así sabemos que llegamos al return con datos.
       respuesta = {
@@ -74,66 +75,87 @@ const resolversQueryUsuarios: IResolvers = {
 
       try 
       {
-        console.log('· Verificamos si existe el e-mail');
-        let accesoCorrecto = false;
+        console.log('· Solicitud de login con valor de email/usuario: ' + chalk.yellow(email));
 
-        const verificacionEmail = await findOneElement(db, COLLECTIONS.USERS, {email: email} );
-
+        buscamosXEmail = await findOneElement(db, COLLECTIONS.USERS, {email: email} );
         //Si el usuario existe, verificamos la pass
-        if (verificacionEmail !== null) 
+        if (buscamosXEmail !== null) 
         {
-          console.log('· Verificamos credenciales');
-          accesoCorrecto = bcrypt.compareSync(pass, verificacionEmail.pass);
-          if(accesoCorrecto)
+          console.log(`· E-mail ${email} localizado, verificamos credenciales...`);
+          // verificamos la contraseña          
+          if(bcrypt.compareSync(pass, buscamosXEmail.pass))
           {
-            resultado = verificacionEmail;
-          }
-        }        
-
-        //si el email no loga, lo probamos con usuario
-        if(!accesoCorrecto)
-        {
-          console.log('· e-mail erroneo, comprobamos acceso con usuario.');
-          const verificacionUsuario = await findOneElement(db, COLLECTIONS.USERS, {usuario: email} );
-
-          if (verificacionUsuario !== null)
-          {
-            console.log('· Verificamos credenciales');
-            accesoCorrecto = bcrypt.compareSync(pass, verificacionUsuario.pass);
-            if(accesoCorrecto)
-            {
-              resultado = verificacionUsuario;
-            }
-          }
-        }
-        
-        if (accesoCorrecto)
-        {
-            console.log(`· Usuario ${chalk.yellow(resultado.usuario)} localizado, tiene perfil de ${chalk.yellow(resultado.perfil)}`);
-            //eliminamos campos sensibles...
-            delete resultado.pass;
-            delete resultado.ultimoLogin;
-            //ahora si, almacenamos los datos que hemos recibido
+            let txt = `· Usuario ${chalk.green(buscamosXEmail.usuario)} ${chalk.green('validado')}, tiene perfil de ${chalk.yellow(buscamosXEmail.perfil)}`;
+            let txtPlano = `· Usuario ${buscamosXEmail.usuario} ${'validado'}, tiene perfil de ${buscamosXEmail.perfil}`;
+            
+            console.log(txt);
             respuesta = {
               status: true,
-              message: MENSAJES.LOGIN_OK,
-              token: new JWT().sign({ usuario: resultado })
+              message: txtPlano,
+              token: new JWT().sign({ usuario: buscamosXEmail }),
+              usuario: buscamosXEmail              
             };
-        }
-        else
-        {            
-          respuesta = {
-            status: false,
-            message: MENSAJES.LOGIN_VERIFICATION_NO_MAIL,
-            token: null,
-          };
-        }
-        
+          }
+          else{
+            let txt = `· Usuario ${email}, ${chalk.red('no tiene acceso')} usuario/contraseñas incorrectos.`;
+            let txtPlano = `· Usuario ${email}, ${'no tiene acceso'} usuario/contraseñas incorrectos.`;
+                console.log(txt);
+                respuesta = {
+                  status: false,
+                  message: txtPlano,
+                  token: null,
+                };
+          }
+
+        }        
+        else        //si el email no loga, lo probamos con usuario
+          {
+            console.log(`· E-mail ${email} ${chalk.red('no encontrado')}, comprobamos acceso con usuario.`);
+            buscamosXUsuario = await findOneElement(db, COLLECTIONS.USERS, {usuario: email} );
+            if (buscamosXUsuario !== null)
+            {
+              console.log(`· Usuario ${email} localizado, verificamos credenciales`);
+              if(bcrypt.compareSync(pass, buscamosXUsuario.pass))
+              {
+                let txt = `· Usuario ${chalk.green(buscamosXUsuario.usuario)} localizado, tiene perfil de ${chalk.yellow(buscamosXUsuario.perfil)}`;
+                let txtPlano = `· Usuario ${buscamosXUsuario.usuario} localizado, tiene perfil de ${buscamosXUsuario.perfil}`;
+                console.log(txt);
+                respuesta = {
+                  status: true,
+                  message: txtPlano,
+                  token: new JWT().sign({ usuario: buscamosXUsuario }),
+                  usuario: buscamosXUsuario
+                };
+              }
+              else
+              {                
+                let txt = `· Usuario ${email}, ${chalk.red('no tiene acceso')} usuario/contraseñas incorrectos.`;
+                let txtPlano = `· Usuario ${email}, ${'no tiene acceso'} usuario/contraseñas incorrectos.`;
+                console.log(txt);
+                respuesta = {
+                  status: false,
+                  message: txtPlano,
+                  token: null,
+                };
+              }
+            }
+            else
+            {            
+              let txt = `· Usuario ${email}, ${chalk.red('no tiene acceso')} no está registrado.`;
+              let txtPlano = `· Usuario ${email}, ${'no tiene acceso'} no está registrado.`;
+              console.log(txt);
+              respuesta = {
+                status: false,
+                message: txtPlano,
+                token: null,
+              };
+            }
+          }
       } catch (err) {
         console.log(err);
       }
+
       // Nos muestra el tiempo transcurrido finalmente
-      console.log('· ' + respuesta.message);
       console.log('·');
       console.log(LINEAS.TITULO_X2);
       console.timeEnd(LOG_TIME_NAME);
@@ -145,7 +167,7 @@ const resolversQueryUsuarios: IResolvers = {
       let info = new JWT().verify(token);      
       if (info === MENSAJES.LOGIN_VERIFICATION_KO)
       {
-        console.log(`${chalk.yellow(MENSAJES.LOGIN_VERIFICATION_KO)}`)
+        console.log(`${chalk.yellow(MENSAJES.LOGIN_VERIFICATION_KO)}`);
         return {
           status: false,
           message: info,
@@ -153,16 +175,18 @@ const resolversQueryUsuarios: IResolvers = {
         };
       }
 
-      const msg = `Validación correcta del token para el usuario ${Object.values(info)[0].usuario}`;
-      console.log(chalk.greenBright(msg));
+      const txt = `${chalk('Validación correcta')} del token para el usuario ${Object.values(info)[0].usuario}`;
+      const txtPlano = `Validación correcta del token para el usuario ${Object.values(info)[0].usuario}`;
+      console.log(chalk.greenBright(txt));
       return {
           
           status: true,
-          message:  msg,
-          Usuario: Object.values(info)[0]
+          message: txtPlano,
+          usuario: Object.values(info)[0]
       };
     },
   },
 };
 
 export default resolversQueryUsuarios;
+

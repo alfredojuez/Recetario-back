@@ -9,22 +9,24 @@ type Usuario{
     "Identificador único para registro en APP"
     email: String!
     "Datos del usuario"
-    nombre: String!
-    apellidos:  String!
+    nombre: String
+    apellidos:  String
     "Usuario que se usará par los comentarios"
     usuario: String!
     "password"
     pass: String! 
+    "Fecha de nacimiento"
+    fecha_nacimiento: String!
     "foto de perfil del usuario"
     foto: String
     "Nacionalidad para situar las recetas"
     nacionalidad: String
-    "Tipo de perfil: ADMIN / USER"
+    "Tipo de perfil: ADMIN / USER / COOKER"
     perfil: Perfil!
     "Fecha en la que se dió de alta el usuario"
-    fechaAlta: String!
+    fecha_alta: String!
     "Fecha en la que se dió de alta el usuario"
-    ultimoLogin: String!
+    ultimo_login: String
     "Estado del usuario"
     activo: Boolean!
-}
+}   
