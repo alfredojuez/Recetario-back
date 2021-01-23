@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import { IResolvers } from 'graphql-tools';
 import bcrypt from 'bcrypt';
-import { COLLECTIONS, LINEAS, LOG_TIME_NAME, MENSAJES } from '../../config/constant';
+import { COLLECTIONS, LINEAS, MENSAJES } from '../../config/constant';
 import logTime from '../../functions';
 import JWT from '../../lib/jwt';
 import { findElements, findOneElement } from '../../lib/db-operations';
@@ -18,7 +18,13 @@ const resolversQueryUsuarios: IResolvers = {
   Query: {
     async ListadoUsuarios(_, __, { db }) {
       // para el calculo del tiempo de ejecución
-      console.time('Ejecución GraphQL');
+      const LOG_NAME = 'Ejecución GraphQL -> Listado de usuarios';
+      console.time(LOG_NAME);
+
+      console.log(LINEAS.TITULO_X2);
+      logTime();
+
+      console.log(`Solicitado listado de usuarios`);
       const arrayVacio : string[] = [];
 
       //por defecto la respuesta es que no se ha podido hacer, salvo que obtengamos datos
@@ -49,18 +55,18 @@ const resolversQueryUsuarios: IResolvers = {
       }
 
       // Nos muestra el tiempo transcurrido finalmente
-      console.log(`Leidos ${respuesta.usuarios.length} usaurios`);
-      console.timeEnd('Ejecución GraphQL');
+      console.log(`Recuperados ${respuesta.usuarios.length} registros`);
+      console.timeEnd(LOG_NAME);
       return respuesta;
     },
 
     async login(_, { email, pass }, { db }) {
       // para el calculo del tiempo de ejecución
-      console.time(LOG_TIME_NAME);
-      logTime();      
+      const LOG_NAME = 'Ejecución GraphQL -> Validación de usuario';
+      console.time(LOG_NAME);
       
       console.log(LINEAS.TITULO_X2);
-      console.log('· ');
+      logTime();
 
       //por defecto la respuesta es que no se ha podido hacer, salvo que obtengamos datos
       var respuesta = null;
@@ -157,9 +163,7 @@ const resolversQueryUsuarios: IResolvers = {
       }
 
       // Nos muestra el tiempo transcurrido finalmente
-      console.log('·');
-      console.log(LINEAS.TITULO_X2);
-      console.timeEnd(LOG_TIME_NAME);
+      console.timeEnd(LOG_NAME);
       return respuesta;
     },
 

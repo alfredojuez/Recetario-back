@@ -11,10 +11,11 @@ export enum COLLECTIONS{
     USERS='usuarios',
     CATEGORIAS='categorias',
     INGREDIENTES='ingredientes',
+    NACIONALIDADES='nacionalidades',
 }
 
 //Mensaje para mostrar en las funciones que queremos evaluar su tiempo de ejecición
-export const LOG_TIME_NAME = 'Tiempo de ejecución';
+//export const LOG_TIME_NAME = 'Tiempo de ejecución';
 
 export enum MENSAJES
 {
