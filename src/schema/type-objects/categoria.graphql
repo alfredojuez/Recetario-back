@@ -1,0 +1,13 @@
+"Tipos de objetos de categorias de las recetas"
+type Categoria implements Item
+{
+    idCategoria: ID!
+    nombre: String!
+    descripcion: String
+    foto: String
+
+    fecha_alta: String!
+    usuario_alta: String!
+    fecha_modificacion: String
+    usuario_modificacion: String
+}

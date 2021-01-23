@@ -1,0 +1,13 @@
+import { IResolvers } from 'graphql-tools';
+import CategoriasService from '../../services/categoria.service';
+
+const resolversQueryCategorias: IResolvers = {
+  Query: 
+  {
+    async ListadoCategorias(_, __, { db }) {
+      return await new CategoriasService(_, __, { db }).items();
+    },
+  }
+};
+
+export default resolversQueryCategorias;

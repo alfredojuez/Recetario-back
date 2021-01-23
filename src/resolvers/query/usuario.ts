@@ -49,6 +49,7 @@ const resolversQueryUsuarios: IResolvers = {
       }
 
       // Nos muestra el tiempo transcurrido finalmente
+      console.log(`Leidos ${respuesta.usuarios.length} usaurios`);
       console.timeEnd('Ejecución GraphQL');
       return respuesta;
     },

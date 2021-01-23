@@ -4,11 +4,15 @@
 type Query
 {
     "Lista de usuarios registrados en la base de datos"
-    ListadoUsuarios: ResultUsuarios
+    ListadoUsuarios: ResultUsuario
     "Para iniciar sesión"
     login(email:String!, pass: String!): ResultLogin
     "Autenticarnos mediante token"
     me: ResultUsuario
+
     "Mostrar lista de ingredientes"
-    ingredientes: Boolean
+    ListadoIngredientes: ResultIngrediente
+    
+    "Mostrar listado de categorias"
+    ListadoCategorias: ResultCategorias
 }

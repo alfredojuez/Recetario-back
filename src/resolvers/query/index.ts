@@ -1,3 +1,4 @@
+import resolversQueryCategorias from './categoria';
 import resolversQueryIngredientes from './ingrediente';
 import resolversQueryUsuarios from './usuario';
 
@@ -8,6 +9,7 @@ const GMR = require('@wiicamp/graphql-merge-resolvers');
 const queryResolvers = GMR.merge([
     resolversQueryUsuarios,
     resolversQueryIngredientes, 
+    resolversQueryCategorias,
 ]);
 
 export default queryResolvers;
