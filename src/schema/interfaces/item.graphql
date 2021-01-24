@@ -1,10 +1,6 @@
 "Item mínimo para elementos como categorias y productos"
 interface Item 
 {    
-    nombre: String!
-    descripcion: String
-    foto: String
-
     fecha_alta: String!
     usuario_alta: String!
     fecha_modificacion: String

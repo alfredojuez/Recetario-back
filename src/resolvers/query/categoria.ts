@@ -1,5 +1,5 @@
 import { IResolvers } from 'graphql-tools';
-import CategoriasService from '../../services/categoria.service';
+import CategoriasService from '../../services/categorias.service';
 
 const resolversQueryCategorias: IResolvers = {
   Query: 

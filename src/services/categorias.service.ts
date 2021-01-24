@@ -18,6 +18,7 @@ class CategoriasService extends ResolversOperationsService
     async items()
     {
         const result = await this.list(COLLECTIONS.CATEGORIAS, 'categorias');
+        console.log(result.items);
         return {status: result.status, message: result.message, categorias: result.items};
     }
     

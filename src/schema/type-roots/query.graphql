@@ -13,8 +13,12 @@ type Query
     me: ResultUsuario
 
     "Mostrar lista de ingredientes"
-    ListadoIngredientes: ResultIngrediente
+    ListadoIngredientes: ResultIngredientes
     
     "Mostrar listado de categorias"
     ListadoCategorias: ResultCategorias
+
+    "Mostrar listado de nacionalidades"
+    ListadoNacionalidades: ResultNacionalidades
+
 }
