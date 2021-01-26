@@ -1,0 +1,8 @@
+"Item mínimo para elementos como categorias y productos"
+interface Item 
+{    
+    fecha_alta: String!
+    usuario_alta: String!
+    fecha_modificacion: String
+    usuario_modificacion: String
+}

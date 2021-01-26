@@ -1,10 +1,12 @@
 import chalk from 'chalk';
 import { IResolvers } from 'graphql-tools';
 import bcrypt from 'bcrypt';
-import { COLLECTIONS, LINEAS, LOG_TIME_NAME, MENSAJES } from '../../config/constant';
+import { COLLECTIONS, LINEAS, MENSAJES } from '../../config/constant';
 import logTime from '../../functions';
 import JWT from '../../lib/jwt';
 import { findElements, findOneElement } from '../../lib/db-operations';
+import ResolversOperationsService from '../../services/resolvers-operations.service';
+import UsuariosService from '../../services/usuarios.service';
 
 //*********************************************************
 // ListadoUsuarios(root, args, context, info)
@@ -16,50 +18,63 @@ import { findElements, findOneElement } from '../../lib/db-operations';
 //*********************************************************
 const resolversQueryUsuarios: IResolvers = {
   Query: {
-    async ListadoUsuarios(_, __, { db }) {
-      // para el calculo del tiempo de ejecución
-      console.time('Ejecución GraphQL');
-      const arrayVacio : string[] = [];
+    // async ListadoUsuarios(_, __, { db }) {
+    //   // para el calculo del tiempo de ejecución
+    //   const LOG_NAME = 'Ejecución GraphQL -> Listado de usuarios';
+    //   console.time(LOG_NAME);
 
-      //por defecto la respuesta es que no se ha podido hacer, salvo que obtengamos datos
-      let respuesta = {
-        status: false,
-        message: 'No se han podido leer usuarios de la base de datos',
-        usuarios: arrayVacio,
-      };
+    //   console.log(LINEAS.TITULO_X2);
+    //   logTime();
 
-      try {
-        const resultado = await findElements(db, COLLECTIONS.USERS);
+    //   console.log(`-Solicitado listado de usuarios`);
+    //   const arrayVacio : string[] = [];
 
-        let mensaje = 'No hay ningún registro en la base de datos';
-        if (resultado.length > 0) {
-          mensaje =
-            'Lista de usuarios leida correctamente, total de registros: ' +
-            resultado.length;
-        }
+    //   //por defecto la respuesta es que no se ha podido hacer, salvo que obtengamos datos
+    //   let respuesta = {
+    //     status: false,
+    //     message: 'No se han podido leer usuarios de la base de datos',
+    //     usuarios: arrayVacio,
+    //   };
 
-        respuesta = {
-          status: true,
-          message: mensaje,
-          usuarios: resultado,
-        };
+    //   try {
+    //     const resultado = await findElements(db, COLLECTIONS.USUARIOS);
 
-      } catch (err) {
-        console.log(err);
-      }
+    //     let mensaje = 'No hay ningún registro en la base de datos';
+    //     if (resultado.length > 0) {
+    //       mensaje =
+    //         'Lista de usuarios leida correctamente, total de registros: ' +
+    //         resultado.length;
+    //     }
 
-      // Nos muestra el tiempo transcurrido finalmente
-      console.timeEnd('Ejecución GraphQL');
-      return respuesta;
+    //     respuesta = {
+    //       status: true,
+    //       message: mensaje,
+    //       usuarios: resultado,
+    //     };
+
+    //   } catch (err) {
+    //     console.log(err);
+    //   }
+
+    //   // Nos muestra el tiempo transcurrido finalmente
+    //   console.log(`Recuperados ${respuesta.usuarios.length} registros`);
+    //   console.timeEnd(LOG_NAME);
+    //   return respuesta;
+    // },
+
+    //Con esta función hacemos lo mismo que con la funcion anterior que se queda comentada.
+    async ListadoUsuarios(_, __, { db })  
+    {
+      return await new UsuariosService(_, __, { db }).items();
     },
 
     async login(_, { email, pass }, { db }) {
       // para el calculo del tiempo de ejecución
-      console.time(LOG_TIME_NAME);
-      logTime();      
+      const LOG_NAME = 'Ejecución GraphQL -> Validación de usuario';
+      console.time(LOG_NAME);
       
       console.log(LINEAS.TITULO_X2);
-      console.log('· ');
+      logTime();
 
       //por defecto la respuesta es que no se ha podido hacer, salvo que obtengamos datos
       var respuesta = null;
@@ -77,7 +92,7 @@ const resolversQueryUsuarios: IResolvers = {
       {
         console.log('· Solicitud de login con valor de email/usuario: ' + chalk.yellow(email));
 
-        buscamosXEmail = await findOneElement(db, COLLECTIONS.USERS, {email: email} );
+        buscamosXEmail = await findOneElement(db, COLLECTIONS.USUARIOS, {email: email} );
         //Si el usuario existe, verificamos la pass
         if (buscamosXEmail !== null) 
         {
@@ -111,7 +126,7 @@ const resolversQueryUsuarios: IResolvers = {
         else        //si el email no loga, lo probamos con usuario
           {
             console.log(`· E-mail ${email} ${chalk.red('no encontrado')}, comprobamos acceso con usuario.`);
-            buscamosXUsuario = await findOneElement(db, COLLECTIONS.USERS, {usuario: email} );
+            buscamosXUsuario = await findOneElement(db, COLLECTIONS.USUARIOS, {usuario: email} );
             if (buscamosXUsuario !== null)
             {
               console.log(`· Usuario ${email} localizado, verificamos credenciales`);
@@ -156,34 +171,42 @@ const resolversQueryUsuarios: IResolvers = {
       }
 
       // Nos muestra el tiempo transcurrido finalmente
-      console.log('·');
-      console.log(LINEAS.TITULO_X2);
-      console.timeEnd(LOG_TIME_NAME);
+      console.timeEnd(LOG_NAME);
       return respuesta;
     },
 
     me(_,__,{ token })
     { 
+      const LOG_NAME = 'Ejecución GraphQL -> Registro de usuario';
+      console.time(LOG_NAME);
+      console.log(LINEAS.TITULO_X2);
+      logTime();
+
+      let respuesta = {
+        status: false,
+        message: `Validación de token incorrecta`,
+        usuario: null
+      };
+
       let info = new JWT().verify(token);      
-      if (info === MENSAJES.LOGIN_VERIFICATION_KO)
+      if (info !== MENSAJES.LOGIN_VERIFICATION_KO)
       {
-        console.log(`${chalk.yellow(MENSAJES.LOGIN_VERIFICATION_KO)}`);
-        return {
-          status: false,
-          message: info,
-          usuario: null
+        const txt = `${chalk.green('Validación correcta')} del token para el usuario ${Object.values(info)[0].usuario}`;
+        const txtPlano = `Validación correcta del token para el usuario ${Object.values(info)[0].usuario}`;
+        console.log(chalk.greenBright(txt));
+        respuesta = {
+            status: true,
+            message: txtPlano,
+            usuario: Object.values(info)[0]
         };
       }
+      else{
+        console.log(`${chalk.red(MENSAJES.LOGIN_VERIFICATION_KO)}`);
+      }
 
-      const txt = `${chalk('Validación correcta')} del token para el usuario ${Object.values(info)[0].usuario}`;
-      const txtPlano = `Validación correcta del token para el usuario ${Object.values(info)[0].usuario}`;
-      console.log(chalk.greenBright(txt));
-      return {
-          
-          status: true,
-          message: txtPlano,
-          usuario: Object.values(info)[0]
-      };
+      console.timeEnd(LOG_NAME);
+      return respuesta;
+
     },
   },
 };

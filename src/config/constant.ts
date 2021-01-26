@@ -8,11 +8,14 @@ if(process.env.NODE_ENV !== 'production')
 export const SECRET_KEY = process.env.SECRET || '3n un lug4r d3 l4 M4nch4';
 
 export enum COLLECTIONS{
-    USERS='usuarios'
+    USUARIOS='usuarios',
+    CATEGORIAS='categorias',
+    INGREDIENTES='ingredientes',
+    NACIONALIDADES='nacionalidades',
 }
 
 //Mensaje para mostrar en las funciones que queremos evaluar su tiempo de ejecición
-export const LOG_TIME_NAME = 'Tiempo de ejecución';
+//export const LOG_TIME_NAME = 'Tiempo de ejecución';
 
 export enum MENSAJES
 {

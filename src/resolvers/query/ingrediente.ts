@@ -1,12 +1,18 @@
 import { IResolvers } from 'graphql-tools';
+import IngredientesService from '../../services/ingredientes.service';
 
 const resolversQueryIngredientes: IResolvers = {
   Query: {
-    ingredientes()
+    async ListadoIngredientes(_, __, { db }) 
     {
-      return true;
+      return await new IngredientesService(_, __, { db }).items();
+    },
+    async DetalleIngrediente(_, { idIngrediente }, { db }) 
+    {
+      return await new IngredientesService(_, { idIngrediente } , { db }).details();
     },
   },
 };
 
 export default resolversQueryIngredientes;
+

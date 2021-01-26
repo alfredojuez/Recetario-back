@@ -11,7 +11,6 @@ function logTime() {
     day: 'numeric',
   };
 
-  console.log(LINEAS.SEPARADOR_X2);
   console.log(chalk.gray(`${ahora.toLocaleDateString('es-ES',options)} ${ahora.toLocaleTimeString()}`));
   
 }
