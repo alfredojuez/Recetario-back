@@ -2,7 +2,7 @@ import { COLLECTIONS } from '../config/constant';
 import { IContextDB } from '../interfaces/context-db.interface';
 import ResolversOperationsService from './resolvers-operations.service';
 
-class IngredientesService extends ResolversOperationsService
+class UsuariosService extends ResolversOperationsService
 {    
     constructor(root: object, 
                 variables: object,
@@ -16,20 +16,20 @@ class IngredientesService extends ResolversOperationsService
 
     // R: listar
     async items()
-    {        
-        const result = await this.list(COLLECTIONS.INGREDIENTES, 'ingredientes');
-        return {status: result.status, message: result.message, ingredientes: result.items};
+    {
+        const result = await this.list(COLLECTIONS.USUARIOS, 'usuarios');
+        return {status: result.status, message: result.message, usuarios: result.items};
     }
-
+        
     // R: detalles
     async details()
     {
-        const result = await this.get(COLLECTIONS.INGREDIENTES);
-        return {status: result.status, message: result.message, ingrediente: result.item};
+        const result = await this.get(COLLECTIONS.USUARIOS);
+        return {status: result.status, message: result.message, usuario: result.item};
     }
     // U: modificar
 
     // D: eliminar
 }
 
-export default IngredientesService;
+export default UsuariosService;

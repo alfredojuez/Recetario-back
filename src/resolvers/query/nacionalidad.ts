@@ -7,6 +7,10 @@ const resolversQueryNacionalidades: IResolvers = {
     async ListadoNacionalidades(_, __, { db }) {
       return await new NacionalidadesService(_, __, { db }).items();
     },
+    async DetalleNacionalidad(_, { idNacionalidad }, { db }) 
+    {
+      return await new NacionalidadesService(_, { idNacionalidad } , { db }).details();
+    },
   }
 };
 

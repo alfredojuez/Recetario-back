@@ -5,6 +5,8 @@ import { COLLECTIONS, LINEAS, MENSAJES } from '../../config/constant';
 import logTime from '../../functions';
 import JWT from '../../lib/jwt';
 import { findElements, findOneElement } from '../../lib/db-operations';
+import ResolversOperationsService from '../../services/resolvers-operations.service';
+import UsuariosService from '../../services/usuarios.service';
 
 //*********************************************************
 // ListadoUsuarios(root, args, context, info)
@@ -16,48 +18,54 @@ import { findElements, findOneElement } from '../../lib/db-operations';
 //*********************************************************
 const resolversQueryUsuarios: IResolvers = {
   Query: {
-    async ListadoUsuarios(_, __, { db }) {
-      // para el calculo del tiempo de ejecución
-      const LOG_NAME = 'Ejecución GraphQL -> Listado de usuarios';
-      console.time(LOG_NAME);
+    // async ListadoUsuarios(_, __, { db }) {
+    //   // para el calculo del tiempo de ejecución
+    //   const LOG_NAME = 'Ejecución GraphQL -> Listado de usuarios';
+    //   console.time(LOG_NAME);
 
-      console.log(LINEAS.TITULO_X2);
-      logTime();
+    //   console.log(LINEAS.TITULO_X2);
+    //   logTime();
 
-      console.log(`Solicitado listado de usuarios`);
-      const arrayVacio : string[] = [];
+    //   console.log(`-Solicitado listado de usuarios`);
+    //   const arrayVacio : string[] = [];
 
-      //por defecto la respuesta es que no se ha podido hacer, salvo que obtengamos datos
-      let respuesta = {
-        status: false,
-        message: 'No se han podido leer usuarios de la base de datos',
-        usuarios: arrayVacio,
-      };
+    //   //por defecto la respuesta es que no se ha podido hacer, salvo que obtengamos datos
+    //   let respuesta = {
+    //     status: false,
+    //     message: 'No se han podido leer usuarios de la base de datos',
+    //     usuarios: arrayVacio,
+    //   };
 
-      try {
-        const resultado = await findElements(db, COLLECTIONS.USERS);
+    //   try {
+    //     const resultado = await findElements(db, COLLECTIONS.USUARIOS);
 
-        let mensaje = 'No hay ningún registro en la base de datos';
-        if (resultado.length > 0) {
-          mensaje =
-            'Lista de usuarios leida correctamente, total de registros: ' +
-            resultado.length;
-        }
+    //     let mensaje = 'No hay ningún registro en la base de datos';
+    //     if (resultado.length > 0) {
+    //       mensaje =
+    //         'Lista de usuarios leida correctamente, total de registros: ' +
+    //         resultado.length;
+    //     }
 
-        respuesta = {
-          status: true,
-          message: mensaje,
-          usuarios: resultado,
-        };
+    //     respuesta = {
+    //       status: true,
+    //       message: mensaje,
+    //       usuarios: resultado,
+    //     };
 
-      } catch (err) {
-        console.log(err);
-      }
+    //   } catch (err) {
+    //     console.log(err);
+    //   }
 
-      // Nos muestra el tiempo transcurrido finalmente
-      console.log(`Recuperados ${respuesta.usuarios.length} registros`);
-      console.timeEnd(LOG_NAME);
-      return respuesta;
+    //   // Nos muestra el tiempo transcurrido finalmente
+    //   console.log(`Recuperados ${respuesta.usuarios.length} registros`);
+    //   console.timeEnd(LOG_NAME);
+    //   return respuesta;
+    // },
+
+    //Con esta función hacemos lo mismo que con la funcion anterior que se queda comentada.
+    async ListadoUsuarios(_, __, { db })  
+    {
+      return await new UsuariosService(_, __, { db }).items();
     },
 
     async login(_, { email, pass }, { db }) {
@@ -84,7 +92,7 @@ const resolversQueryUsuarios: IResolvers = {
       {
         console.log('· Solicitud de login con valor de email/usuario: ' + chalk.yellow(email));
 
-        buscamosXEmail = await findOneElement(db, COLLECTIONS.USERS, {email: email} );
+        buscamosXEmail = await findOneElement(db, COLLECTIONS.USUARIOS, {email: email} );
         //Si el usuario existe, verificamos la pass
         if (buscamosXEmail !== null) 
         {
@@ -118,7 +126,7 @@ const resolversQueryUsuarios: IResolvers = {
         else        //si el email no loga, lo probamos con usuario
           {
             console.log(`· E-mail ${email} ${chalk.red('no encontrado')}, comprobamos acceso con usuario.`);
-            buscamosXUsuario = await findOneElement(db, COLLECTIONS.USERS, {usuario: email} );
+            buscamosXUsuario = await findOneElement(db, COLLECTIONS.USUARIOS, {usuario: email} );
             if (buscamosXUsuario !== null)
             {
               console.log(`· Usuario ${email} localizado, verificamos credenciales`);
@@ -169,26 +177,36 @@ const resolversQueryUsuarios: IResolvers = {
 
     me(_,__,{ token })
     { 
+      const LOG_NAME = 'Ejecución GraphQL -> Registro de usuario';
+      console.time(LOG_NAME);
+      console.log(LINEAS.TITULO_X2);
+      logTime();
+
+      let respuesta = {
+        status: false,
+        message: `Validación de token incorrecta`,
+        usuario: null
+      };
+
       let info = new JWT().verify(token);      
-      if (info === MENSAJES.LOGIN_VERIFICATION_KO)
+      if (info !== MENSAJES.LOGIN_VERIFICATION_KO)
       {
-        console.log(`${chalk.yellow(MENSAJES.LOGIN_VERIFICATION_KO)}`);
-        return {
-          status: false,
-          message: info,
-          usuario: null
+        const txt = `${chalk.green('Validación correcta')} del token para el usuario ${Object.values(info)[0].usuario}`;
+        const txtPlano = `Validación correcta del token para el usuario ${Object.values(info)[0].usuario}`;
+        console.log(chalk.greenBright(txt));
+        respuesta = {
+            status: true,
+            message: txtPlano,
+            usuario: Object.values(info)[0]
         };
       }
+      else{
+        console.log(`${chalk.red(MENSAJES.LOGIN_VERIFICATION_KO)}`);
+      }
 
-      const txt = `${chalk('Validación correcta')} del token para el usuario ${Object.values(info)[0].usuario}`;
-      const txtPlano = `Validación correcta del token para el usuario ${Object.values(info)[0].usuario}`;
-      console.log(chalk.greenBright(txt));
-      return {
-          
-          status: true,
-          message: txtPlano,
-          usuario: Object.values(info)[0]
-      };
+      console.timeEnd(LOG_NAME);
+      return respuesta;
+
     },
   },
 };

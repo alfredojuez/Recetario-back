@@ -1,9 +1,9 @@
-type ResultIngrediente implements Result
+type ResultIngredientes implements Result
 {
     "Estado de la operacion"
     status: Boolean!
     "mensaje de la operacion para dar feedback"
     message: String!
     "Información del ingredientes, indicamos ingrediente y ingredientes para que el mismo objeto nos devuelva una o más ingredientes"
-    ingrediente: Ingrediente
+    ingredientes: [Ingrediente]
 }

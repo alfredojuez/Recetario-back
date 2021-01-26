@@ -1,3 +1,4 @@
+import chalk from 'chalk';
 import { Int32 } from 'mongodb';
 import { LINEAS } from '../config/constant';
 import logTime from '../functions';
@@ -69,44 +70,48 @@ class ResolversOperationsService
     // R: detalles
 
     protected async get(collection: string){
-        //respuestas OK
+        const LOG_NAME = `Ejecución GraphQL -> Detalle de ${ collection }`;
+        console.time(LOG_NAME);
 
-        //respuesta sin informacion
+        console.log(LINEAS.TITULO_X2);
+        logTime();
 
-        //respuesta no encontrada ERROR
-        //status = false
+        console.log(`Solicitada búsqueda de registro con filtro ${chalk.yellow(JSON.stringify(this.variables))} en la tabla ${chalk.yellow(collection)}`);
+        
+        let respuesta = {
+            status: false,
+            message: `Error desconocido en la lectura de ${ collection }.`,
+            item: null
+            };
 
         try{
-            console.log(LINEAS.TITULO);
-            
-            return await findOneElement(this.context.db, collection, {idCategoria: this.variables.idCategoria}).then(
-                result => {
-                    if (result)
-                    {
-                        return {
-                        status: true,
-                        message: `Información encontrada para ${ collection }`,
-                        item: result
-                        }
-                    }
-                    else{
-                        return {
-                            status: true,
-                            message: `No hay información para ${ collection }`,
-                            item: null
-                            }
-                        }
+            const result = await findOneElement(this.context.db, collection, this.variables);
+            let mensaje = `Registro NO encontrado`;
+
+            if (result)
+            {
+                mensaje = `Registro encontrado`;
+                console.log(chalk.green(mensaje));
+                
+            }
+            else{
+                    console.log(chalk.red(mensaje));
                 }
-            );
+
+            respuesta = {
+                status: true,
+                message: mensaje,
+                item: result,
+            };
         }
         catch (error)
         {
-            return {
-                status: false,
-                message: `Error inesperado al cargar datos de ${ collection }`,
-                item:null
-            };
+            console.log(chalk.red('ERROR DESCONODIDO'));
+            console.log(error);
         }
+
+        console.timeEnd(LOG_NAME);
+        return respuesta;        
     }
     // U: modificar
 

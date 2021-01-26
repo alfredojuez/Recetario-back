@@ -22,7 +22,11 @@ class NacionalidadesService extends ResolversOperationsService
     }
     
     // R: detalles
-
+    async details()
+    {
+        const result = await this.get(COLLECTIONS.NACIONALIDADES);
+        return {status: result.status, message: result.message, nacionalidad: result.item};
+    }
     // U: modificar
 
     // D: eliminar

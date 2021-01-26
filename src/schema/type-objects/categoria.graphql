@@ -1,7 +1,7 @@
 "Tipos de objetos de categorias de las recetas"
 type Categoria implements Item
 {
-    idCategoria: ID!
+    idCategoria: Int!
     nombre: String!
     descripcion: String
     foto: String

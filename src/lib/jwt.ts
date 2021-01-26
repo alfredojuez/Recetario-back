@@ -18,7 +18,6 @@ class JWT{
 
     verify(token:string)
     {
-        console.log('Verificando token...');
         try{
             return  jwt.verify(token,this.secretKey);
         }catch{            

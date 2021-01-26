@@ -27,7 +27,7 @@ const resolversMutationUsuario: IResolvers = {
       //hay que verificar que no existe ni el mail, ni el usuario
       console.log(chalk.blueBright('SOLICITADA ALTA DE USUARIO'));
       console.log(`Datos - email: ${RegistroBD.email}`);
-      const userCheckEmail = await findOneElement(db, COLLECTIONS.USERS, {email:RegistroBD.email});      
+      const userCheckEmail = await findOneElement(db, COLLECTIONS.USUARIOS, {email:RegistroBD.email});      
       console.log('Verificando la existencia del email: ' + RegistroBD.email);
       if (userCheckEmail!== null)
       {
@@ -44,7 +44,7 @@ const resolversMutationUsuario: IResolvers = {
       console.log('Email NO encontrado');
 
       //verificamos si existe el nombre de usuario 
-      const userCheckUsuario = await findOneElement(db, COLLECTIONS.USERS, {usuario:RegistroBD.usuario});
+      const userCheckUsuario = await findOneElement(db, COLLECTIONS.USUARIOS, {usuario:RegistroBD.usuario});
       console.log('Verificando la existencia del usuario: ' + RegistroBD.usuario);
       console.log(userCheckUsuario);
       if (userCheckUsuario!== null)
@@ -62,7 +62,7 @@ const resolversMutationUsuario: IResolvers = {
 
       console.log('Usuario NO encontrado');
       let nuevoUsuario = RegistroBD;
-      nuevoUsuario.id = await asignacionID(db, COLLECTIONS.USERS, {fecha_alta: -1});
+      nuevoUsuario.id = await asignacionID(db, COLLECTIONS.USUARIOS, {fecha_alta: -1});
 
        // Fecha actual en formato ISO
       const now = new Date().toISOString();
@@ -76,7 +76,7 @@ const resolversMutationUsuario: IResolvers = {
       nuevoUsuario.pass = bcrypt.hashSync(nuevoUsuario.pass, longitud);
 
       //guardar el registro
-      return await insertOneElement(db, COLLECTIONS.USERS, nuevoUsuario)
+      return await insertOneElement(db, COLLECTIONS.USUARIOS, nuevoUsuario)
         .then(async () => {          
           console.log('Usuario dado de alta: ' );
           console.log(nuevoUsuario);

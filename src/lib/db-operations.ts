@@ -34,9 +34,11 @@ export const findOneElement = async(
 ) => {
     // const params = Object.keys.length;
     // const k = Object.keys(filter);
-    // const v = +Object.values(filter);
-    console.log(`Solicitada búsqueda de registro con filtro ${chalk.yellow(JSON.stringify(filter))} en la tabla ${chalk.yellow(collection)}`);
-    return  await database.collection(collection).findOne(filter);
+    // const v = +Object.values(filter);    
+    // console.log(`Solicitada búsqueda de registro con filtro ${chalk.yellow(JSON.stringify(filter))} en la tabla ${chalk.yellow(collection)}`);
+    // const respuesta = 
+    // (respuesta)?console.log(chalk.green('Registro encontrado')):console.log(chalk.red('Registro NO encontrado'));
+    return await database.collection(collection).findOne(filter);
 };
 
 export const findElements = async (

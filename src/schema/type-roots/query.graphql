@@ -14,6 +14,8 @@ type Query
 
     "Mostrar lista de ingredientes"
     ListadoIngredientes: ResultIngredientes
+    "Detalle de una categoria"
+    DetalleIngrediente(idIngrediente: Int!): ResultIngrediente
     
     "Mostrar listado de categorias"
     ListadoCategorias: ResultCategorias
@@ -22,5 +24,6 @@ type Query
 
     "Mostrar listado de nacionalidades"
     ListadoNacionalidades: ResultNacionalidades
-
+    "Detalle de una nacionalidad"
+    DetalleNacionalidad(idNacionalidad: ID!): ResultNacionalidad
 }

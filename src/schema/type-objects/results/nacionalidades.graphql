@@ -1,9 +1,9 @@
-type ResultNacionalidad implements Result
+type ResultNacionalidades implements Result
 {
     "Estado de la operacion"
     status: Boolean!
     "mensaje de la operacion para dar feedback"
     message: String!
     "Información nacionalidades"
-    nacionalidad: Nacionalidad
+    nacionalidades: [Nacionalidad]
 }
