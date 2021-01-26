@@ -1,12 +1,14 @@
+import { Int32 } from 'mongodb';
 import { LINEAS } from '../config/constant';
 import logTime from '../functions';
 import { IContextDB } from '../interfaces/context-db.interface';
-import { findElements } from '../lib/db-operations';
+import { IIDCategoria } from '../interfaces/variable.interface';
+import { findElements, findOneElement } from '../lib/db-operations';
 
 class ResolversOperationsService
 {
     private root: object;
-    private variables: object;
+    private variables: IIDCategoria;
     private context: IContextDB;
     //root, vables y contexto
     constructor(root: object, 
@@ -66,6 +68,46 @@ class ResolversOperationsService
     }
     // R: detalles
 
+    protected async get(collection: string){
+        //respuestas OK
+
+        //respuesta sin informacion
+
+        //respuesta no encontrada ERROR
+        //status = false
+
+        try{
+            console.log(LINEAS.TITULO);
+            
+            return await findOneElement(this.context.db, collection, {idCategoria: this.variables.idCategoria}).then(
+                result => {
+                    if (result)
+                    {
+                        return {
+                        status: true,
+                        message: `Información encontrada para ${ collection }`,
+                        item: result
+                        }
+                    }
+                    else{
+                        return {
+                            status: true,
+                            message: `No hay información para ${ collection }`,
+                            item: null
+                            }
+                        }
+                }
+            );
+        }
+        catch (error)
+        {
+            return {
+                status: false,
+                message: `Error inesperado al cargar datos de ${ collection }`,
+                item:null
+            };
+        }
+    }
     // U: modificar
 
     // D: eliminar

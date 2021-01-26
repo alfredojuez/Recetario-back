@@ -17,6 +17,8 @@ type Query
     
     "Mostrar listado de categorias"
     ListadoCategorias: ResultCategorias
+    "Detalle de una categoria"
+    DetalleCategoria(idCategoria: Int!): ResultCategoria
 
     "Mostrar listado de nacionalidades"
     ListadoNacionalidades: ResultNacionalidades

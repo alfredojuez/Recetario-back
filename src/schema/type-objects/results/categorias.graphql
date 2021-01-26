@@ -1,9 +1,9 @@
-type ResultCategoria implements Result
+type ResultCategorias implements Result
 {
     "Estado de la operacion"
     status: Boolean!
     "mensaje de la operacion para dar feedback"
     message: String!
-    "Información una categoria"
-    categoria: Categoria
+    "Información de categorias"
+    categorias: [Categoria]
 }
