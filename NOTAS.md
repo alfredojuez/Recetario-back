@@ -239,3 +239,79 @@ fragment UserObject on Usuario
     activo
 }
 ```
+
+## Otros listados
+
+Se han creado listados generales para obtener todos los registros de una tabla, y se les han nombrado a todos con el comiento "Listado"
+
+Estos se consultan con una query como esta:
+```
+{
+  ListadoCategorias
+  {
+    status
+    message
+    categorias
+    {
+      idCategoria
+      nombre
+      descripcion
+      foto
+      fecha_alta
+      usuario_alta
+      fecha_modificacion
+      usuario_modificacion      
+    }
+  }
+}
+```
+
+Por otro lado, se permite buscar el detalle de un elemento en concreto, haciendo uso en lugar de los "Listados" en este caso de los "Detalles", por tanto en graphQL quedaría como sigue:
+```
+{
+  DetalleIngrediente(idIngrediente: 167)
+  {
+    status
+    message
+    ingrediente
+    {
+      idIngrediente
+      nombre
+      descripcion
+      foto
+      fecha_alta
+      usuario_alta
+    }
+  }
+}
+```
+
+## Creación de registros
+Para poder dar de alta registros, hay que crear una query, y pasarles los parametros del registro a guardar en base de datos en una variable:
+
+QUERY:
+```
+mutation newCategoria($Datos:	CategoriaInput!)
+{
+  addCategoria(categoria:$Datos)
+  {
+    status
+    message
+    categoria
+    {
+      idCategoria
+      nombre
+    }
+  }
+}
+```
+
+VARIABLE:
+```
+{
+  "Datos": {
+    "idCategoria": 300,
+    "nombre": "Categoria 300"
+  }
+}
+```

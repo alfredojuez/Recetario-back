@@ -1,0 +1,8 @@
+
+input CategoriaInput
+{
+    idCategoria:    Int!
+    nombre:         String!
+    descripcion:    String
+    foto:           String
+}

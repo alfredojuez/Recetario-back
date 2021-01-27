@@ -1,11 +1,14 @@
 import { COLLECTIONS } from '../config/constant';
 import { IContextDB } from '../interfaces/context-db.interface';
+import { IVariables } from '../interfaces/variable.interface';
 import ResolversOperationsService from './resolvers-operations.service';
+import {checkData} from '../functions';
+import chalk from 'chalk';
 
 class NacionalidadesService extends ResolversOperationsService
 {    
     constructor(root: object, 
-                variables: object,
+                variables: IVariables,
                 context: IContextDB)
     {
         //llamamos al constructor del padre
@@ -13,6 +16,50 @@ class NacionalidadesService extends ResolversOperationsService
     }
 
     // C: añadir
+    async insert()
+    {
+        const ficha = this.getVariables();
+
+        //valor por defecto.
+        let respuesta = 
+        {
+            status: false, 
+            message: 'La información para la nacionalidad no es correcta.',
+            nacionalidad: {}
+        };
+        
+        if(ficha.idNacionalidad!==undefined && checkData(ficha.idNacionalidad)
+        && ficha.nombre!==undefined && checkData(ficha.nombre))
+        {
+            ficha.fecha_alta = new Date().toISOString();
+
+            // PTE de codificar la obtención del usuario logado y su ID
+            const UsuarioLogado = '1';
+            // FIN PTE
+
+            ficha.usuario_alta = UsuarioLogado;
+            const result = await this.add(COLLECTIONS.NACIONALIDADES, ficha, 'nacionalidad');
+            if (result)
+            {
+                respuesta = 
+                      {   status: true, 
+                          message: 'Nacionalidad guardada correctamente',
+                          nacionalidad: result.document
+                      };
+            }
+        }
+
+        if(respuesta.status)
+        {
+            console.log(chalk.green(respuesta.message));
+        }
+        else
+        {
+            console.log(chalk.red(respuesta.message));
+        }
+
+        return respuesta;
+    }
 
     // R: listar
     async items()

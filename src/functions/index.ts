@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { LINEAS } from '../config/constant';
+//import { LINEAS } from '../config/constant';
 
 //Función que pinta en el log la fecha y hora actuales
 function logTime() {
@@ -17,3 +17,7 @@ function logTime() {
 
 export default logTime;
 
+export function checkData(value: string)
+{
+    return ((value===''||value ===undefined))?false:true;
+}

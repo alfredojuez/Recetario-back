@@ -1,0 +1,10 @@
+
+input IngredienteInput
+{
+    idIngrediente:  Int!
+    nombre:         String!
+    familia:        String
+    descripcion:    String
+    foto:           String
+    calorias:       Int   
+}
