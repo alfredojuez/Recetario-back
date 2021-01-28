@@ -11,8 +11,9 @@ import { LINEAS } from '../config/constant';
  */
 export const asignacionID = async(
     database: Db,
-    collection: string,
-    sort: object = {fecha_alta: -1}
+    collection: string,    
+    sort: object = {fecha_alta: -1},
+    idField: string = 'id',
 ) => {
             //sumamos 1 al ID actual
             const lastElement = await database
@@ -21,9 +22,9 @@ export const asignacionID = async(
             .limit(1)
             .sort(sort)
             .toArray();
-
             //si es el primer elemento devolvemos 1 y si no el numero +1
-            return (lastElement.length === 0)? 1: lastElement[0].id + 1;
+            const respuesta = (lastElement.length === 0)? 1: lastElement[0][idField] + 1;
+            return respuesta;
             
 };
 

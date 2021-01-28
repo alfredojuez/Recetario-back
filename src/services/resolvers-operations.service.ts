@@ -30,7 +30,6 @@ class ResolversOperationsService
     {
         return this.context.db;
     }
-
     
     // C: añadir
     protected async add(collection:string, documento:object, item:string) 
@@ -38,8 +37,9 @@ class ResolversOperationsService
         let respuesta = {
             status: false,
             message: `No se ha insertado el ${item}`,
-            item: {},
+            item: {} || null,
         };
+        respuesta.item = null;
 
         try{
             const res = await insertOneElement(this.context.db, collection, documento);
@@ -54,6 +54,7 @@ class ResolversOperationsService
         {
             respuesta.message = `Error inesperado al insertar el ${item}: ${error}`;
         }
+
         return respuesta;
     }
 
@@ -84,13 +85,13 @@ class ResolversOperationsService
             if (resultado.length > 0) {
                 mensaje = `Lista de ${ listElement } leida correctamente, total de registros: ` +
                 resultado.length;
-        }
+            }
 
-        respuesta = {
-            status: true,
-            message: mensaje,
-            items: resultado,
-        };
+            respuesta = {
+                status: true,
+                message: mensaje,
+                items: resultado,
+            };
 
         } catch (err) {
         console.log(err);

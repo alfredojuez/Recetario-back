@@ -4,6 +4,7 @@ import { IVariables } from '../interfaces/variable.interface';
 import ResolversOperationsService from './resolvers-operations.service';
 import {checkDataIsNotNull, checkInDatabase} from '../functions';
 import chalk from 'chalk';
+import slugify from 'slugify';
 
 class NacionalidadesService extends ResolversOperationsService
 {    
@@ -24,9 +25,13 @@ class NacionalidadesService extends ResolversOperationsService
         let respuesta = 
         {
             status: false, 
-            message: 'La información para la nacionalidad no es correcta.',
-            nacionalidad: {}
+            message: 'La información para la nacionalidad no es correcta. ',
+            nacionalidad:  {} || null,
         };
+
+        respuesta.nacionalidad = null;
+
+        let txtResumen = '';
         
         //Si los campos son correctos.
         if(ficha.idNacionalidad!==undefined && checkDataIsNotNull(ficha.idNacionalidad)
@@ -37,11 +42,14 @@ class NacionalidadesService extends ResolversOperationsService
             const nombreIsInDatabase = await checkInDatabase(this.getDb(), COLLECTIONS.NACIONALIDADES, 'nombre', ficha.nombre);
             if (nombreIsInDatabase!==null || idIsInDatabase!==null)
             {
-                respuesta.message = `La nacionalidad ${ficha.nombre} o su codigo ${ficha.idNacionalidad} ya existe en la base de datos`;
+                const txtID =(idIsInDatabase) ? `La nacionalidad ${ficha.nombre} ya existe en la base de datos`: '';
+                const txtNombre = (nombreIsInDatabase) ? `El código ${ficha.idNacionalidad} ya existe en la base de datos`: '';
+                txtResumen += txtID + ' ' + txtNombre;
             }
             else
             {
                 ficha.fecha_alta = new Date().toISOString();
+                ficha.icono= slugify(ficha.nombre,{lower:true}) + '.png';
 
                 // PTE de codificar la obtención del usuario logado y su ID
                 const UsuarioLogado = '1';
@@ -49,19 +57,18 @@ class NacionalidadesService extends ResolversOperationsService
     
                 ficha.usuario_alta = UsuarioLogado;
                 const result = await this.add(COLLECTIONS.NACIONALIDADES, ficha, 'nacionalidad');
-                if (result)
+                
+                if (result.status)
                 {
-                    respuesta = 
-                          {   status: true, 
-                              message: 'Nacionalidad guardada correctamente',
-                              nacionalidad: result.item
-                          };
+                    respuesta.status=result.status;
+                    respuesta.message=result.message;
+                    respuesta.nacionalidad = result.item;
                 }
             }
         }
 
         // pintamos los datos del resultado en el log
-        (respuesta.status)?console.log(chalk.green(respuesta.message)):console.log(chalk.red(respuesta.message));
+        (respuesta.status)?console.log(chalk.green(respuesta.message)):console.log(chalk.red(respuesta.message) + '\n' + chalk.hex('#FF3333')(txtResumen));
 
         return respuesta;
     }

@@ -3,6 +3,7 @@ import { COLLECTIONS } from '../config/constant';
 import { checkDataIsNotNull, checkInDatabase } from '../functions';
 import { IContextDB } from '../interfaces/context-db.interface';
 import { IVariables } from '../interfaces/variable.interface';
+import { asignacionID } from '../lib/db-operations';
 import ResolversOperationsService from './resolvers-operations.service';
 
 class IngredientesService extends ResolversOperationsService
@@ -26,19 +27,24 @@ class IngredientesService extends ResolversOperationsService
         {
             status: false, 
             message: 'La información para el ingrediente no es correcta.',
-            ingrediente: {}
+            ingrediente: {} || null,
         };
+
+        respuesta.ingrediente = null;
         
-        if(ficha.idIngrediente!==undefined && !isNaN(ficha.idIngrediente)
-        && ficha.nombre!==undefined && checkDataIsNotNull(ficha.nombre))
+        if( ficha.nombre!==undefined && checkDataIsNotNull(ficha.nombre) )
         {
             const nombreIsInDatabase = await checkInDatabase(this.getDb(), COLLECTIONS.INGREDIENTES, 'nombre', ficha.nombre);
             if (nombreIsInDatabase)
             {
                 respuesta.message = `El ingrediente ${ficha.nombre} ya existe en la base de datos`;
+                respuesta.ingrediente=null;
             }
             else
             {
+                // Buscamos el ultimo ID de la BD
+                const newID = await asignacionID(this.getDb(), COLLECTIONS.INGREDIENTES, { idIngrediente: -1 }, 'idIngrediente') ;
+                ficha.idIngrediente = +newID;     //con el mas lo convierto en entero
                 ficha.fecha_alta = new Date().toISOString();
 
                 // PTE de codificar la obtención del usuario logado y su ID
@@ -50,11 +56,9 @@ class IngredientesService extends ResolversOperationsService
                 const result = await this.add(COLLECTIONS.INGREDIENTES, ficha, 'ingrediente');
                 if (result)
                 {
-                    respuesta = 
-                        {   status: true, 
-                            message: 'Ingrediente guardado correctamente',
-                            ingrediente: result.item
-                        };
+                    respuesta.status=result.status;
+                    respuesta.message=result.message;
+                    respuesta.ingrediente = result.item;
                 }
             }            
         }

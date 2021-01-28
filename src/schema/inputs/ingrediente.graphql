@@ -1,7 +1,7 @@
 
 input IngredienteInput
 {
-    idIngrediente:  Int!
+    idIngrediente:  Int
     nombre:         String!
     familia:        String
     descripcion:    String
