@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import { COLLECTIONS } from '../config/constant';
-import { checkData } from '../functions';
+import { checkDataIsNotNull, checkInDatabase } from '../functions';
 import { IContextDB } from '../interfaces/context-db.interface';
 import { IVariables } from '../interfaces/variable.interface';
 import ResolversOperationsService from './resolvers-operations.service';
@@ -30,34 +30,37 @@ class IngredientesService extends ResolversOperationsService
         };
         
         if(ficha.idIngrediente!==undefined && !isNaN(ficha.idIngrediente)
-        && ficha.nombre!==undefined && checkData(ficha.nombre))
+        && ficha.nombre!==undefined && checkDataIsNotNull(ficha.nombre))
         {
-            ficha.fecha_alta = new Date().toISOString();
-
-            // PTE de codificar la obtención del usuario logado y su ID
-            const UsuarioLogado = '1';
-            // FIN PTE
-
-            ficha.usuario_alta = UsuarioLogado;
-            const result = await this.add(COLLECTIONS.INGREDIENTES, ficha, 'ingrediente');
-            if (result)
+            const nombreIsInDatabase = await checkInDatabase(this.getDb(), COLLECTIONS.INGREDIENTES, 'nombre', ficha.nombre);
+            if (nombreIsInDatabase)
             {
-                respuesta = 
-                      {   status: true, 
-                          message: 'Ingrediente guardado correctamente',
-                          ingrediente: result.document
-                      };
+                respuesta.message = `El ingrediente ${ficha.nombre} ya existe en la base de datos`;
             }
+            else
+            {
+                ficha.fecha_alta = new Date().toISOString();
+
+                // PTE de codificar la obtención del usuario logado y su ID
+                const UsuarioLogado = '1';
+                // FIN PTE
+
+                ficha.usuario_alta = UsuarioLogado;
+
+                const result = await this.add(COLLECTIONS.INGREDIENTES, ficha, 'ingrediente');
+                if (result)
+                {
+                    respuesta = 
+                        {   status: true, 
+                            message: 'Ingrediente guardado correctamente',
+                            ingrediente: result.item
+                        };
+                }
+            }            
         }
 
-        if(respuesta.status)
-        {
-            console.log(chalk.green(respuesta.message));
-        }
-        else
-        {
-            console.log(chalk.red(respuesta.message));
-        }
+        // pintamos los datos del resultado en el log
+        (respuesta.status)?console.log(chalk.green(respuesta.message)):console.log(chalk.red(respuesta.message));
 
         return respuesta;
     }

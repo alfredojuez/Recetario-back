@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import { COLLECTIONS } from '../config/constant';
-import { checkData } from '../functions';
+import { checkDataIsNotNull, checkInDatabase } from '../functions';
 import { ICategoria } from '../interfaces/categoria.interface';
 import { IContextDB } from '../interfaces/context-db.interface';
 import { IVariables } from '../interfaces/variable.interface';
@@ -30,34 +30,38 @@ class CategoriasService extends ResolversOperationsService
         };
         
         if(ficha.idCategoria!==undefined && !isNaN(ficha.idCategoria)
-        && ficha.nombre!==undefined && checkData(ficha.nombre))
+        && ficha.nombre!==undefined && checkDataIsNotNull(ficha.nombre))
         {
-            ficha.fecha_alta = new Date().toISOString();
-
-            // PTE de codificar la obtención del usuario logado y su ID
-            const UsuarioLogado = '1';
-            // FIN PTE
-
-            ficha.usuario_alta = UsuarioLogado;
-            const result = await this.add(COLLECTIONS.CATEGORIAS, ficha, 'categoria');
-            if (result)
+            const nombreIsInDatabase = await checkInDatabase(this.getDb(), COLLECTIONS.CATEGORIAS, 'nombre', ficha.nombre);
+            if (nombreIsInDatabase)
             {
-                respuesta = 
-                      {   status: true, 
-                          message: 'Categoria guardada correctamente',
-                          categoria: result.document
-                      };
+                respuesta.message = `La categoria ${ficha.nombre} ya existe en la base de datos`;
             }
+            else
+            {
+                ficha.fecha_alta = new Date().toISOString();
+
+                // PTE de codificar la obtención del usuario logado y su ID
+                const UsuarioLogado = '1';
+                // FIN PTE
+
+                ficha.usuario_alta = UsuarioLogado;
+
+                const result = await this.add(COLLECTIONS.CATEGORIAS, ficha, 'ingrediente');
+                if (result)
+                {
+                    respuesta = 
+                        {   status: true, 
+                            message: 'Categoria guardada correctamente',
+                            categoria: result.item
+                        };
+                }
+            }
+
         }
 
-        if(respuesta.status)
-        {
-            console.log(chalk.green(respuesta.message));
-        }
-        else
-        {
-            console.log(chalk.red(respuesta.message));
-        }
+        // pintamos los datos del resultado en el log
+        (respuesta.status)?console.log(chalk.green(respuesta.message)):console.log(chalk.red(respuesta.message));
 
         return respuesta;
     }

@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { Int32 } from 'mongodb';
+import { Db, Int32 } from 'mongodb';
 import { LINEAS } from '../config/constant';
 import logTime from '../functions';
 import { IContextDB } from '../interfaces/context-db.interface';
@@ -26,39 +26,33 @@ class ResolversOperationsService
         return this.variables;   
     }
 
+    protected getDb(): Db
+    {
+        return this.context.db;
+    }
+
     
     // C: añadir
-    protected async add(collection:string, document:object, item:string) 
+    protected async add(collection:string, documento:object, item:string) 
     {
         let respuesta = {
             status: false,
             message: `No se ha insertado el ${item}`,
-            document: {},
+            item: {},
         };
 
         try{
-            const res = await insertOneElement(this.context.db, collection, document);
+            const res = await insertOneElement(this.context.db, collection, documento);
             if (res.result.ok === 1){
                 respuesta = {
                     status: true,
                     message: `Registro ${item} añadido correctamente a la base de datos`,
-                    document,
-                };
-            }
-            else{
-                respuesta = {
-                    status: false,
-                    message: `No se ha insertado el ${item}`,
-                    document: {},
+                    item: documento,
                 };
             }
         }catch (error)
         {
-            respuesta = {
-                status: false,
-                message: `Error inesperado al insertar el ${item}`,
-                document: {},
-            };
+            respuesta.message = `Error inesperado al insertar el ${item}: ${error}`;
         }
         return respuesta;
     }

@@ -44,6 +44,7 @@
     "graphql-tools": "^7.0.2",
     "mongodb": "^3.6.3",
     "ncp": "^2.0.0",
+    "slugify": "^1.4.6",
     "typescript": "^4.1.3"
   },
   "devDependencies": {
