@@ -11,10 +11,13 @@ export interface IVariables{
     //otros campos
     foto?: string;
     icono?: string;
+    descripcion?: string;
 
     //comun a todo perro pichichi
     fecha_alta?: string;
     usuario_alta?: string;
     fecha_modificacion?: string;
     usuario_modificacion?: string;
+
+    nuevoRegistro?: IVariables;
 }

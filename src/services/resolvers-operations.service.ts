@@ -4,7 +4,7 @@ import { LINEAS } from '../config/constant';
 import logTime from '../functions';
 import { IContextDB } from '../interfaces/context-db.interface';
 import { IVariables } from '../interfaces/variable.interface';
-import { findElements, findOneElement, insertOneElement } from '../lib/db-operations';
+import { findElements, findOneElement, insertOneElement, updateOneElement  } from '../lib/db-operations';
 
 class ResolversOperationsService
 {
@@ -149,7 +149,37 @@ class ResolversOperationsService
         return respuesta;        
     }
     // U: modificar
+    protected async update(collection:string, filter:object, objUpdate: object, item:string)
+    {
+        let respuesta = {
+            status: false,
+            message: `No se ha modificado el ${item}`,
+            item: {} || null,
+        };
+        respuesta.item = null;
 
+        try{
+            const res = await  updateOneElement(
+                this.getDb(),
+                collection,
+                filter,
+                objUpdate
+              );
+
+            if (res.result.ok === 1){
+                respuesta = {
+                    status: true,
+                    message: `Registro ${item} actualizado correctamente a la base de datos`,
+                    item: Object.assign({}, filter, objUpdate),
+                };
+            }
+        }catch (error)
+        {
+            respuesta.message = `Error inesperado al actualizar ${item}: ${error}`;
+        }
+
+        return respuesta;
+    }
     // D: eliminar
 }
 

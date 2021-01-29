@@ -60,3 +60,12 @@ export const insertManyElement = async(
     return await database.collection(collection).insertMany(document);
 };
 
+export const updateOneElement = async(
+    database: Db,
+    collection: string,
+    filter: object,
+    document: object,
+    
+)=> {
+    return await database.collection(collection).updateOne(filter, { $set:document });
+};
