@@ -24,7 +24,21 @@ const  resolversMutationNacionalidad: IResolvers = {
       const respuesta = await new NacionalidadesService(_, variables.nacionalidad, contexto).insert();
       console.timeEnd(LOG_NAME);
       return respuesta;
-    }
+    },
+    async updateNacionalidad(_, variables, contexto) {
+      const LOG_NAME = `Ejecución GraphQL -> Actualización de nacionalidad `;
+      
+      console.time(LOG_NAME);
+      console.log(LINEAS.TITULO_X2);
+      logTime();
+
+      console.log(`Solicitada modificación de nacionalidad con el ${chalk.yellow('ID: "' + variables.idNacionalidad + '"')} con los datos:`);
+      console.log(variables.nuevoRegistro);
+      
+      const respuesta = await new NacionalidadesService(_, variables, contexto).modify();
+      console.timeEnd(LOG_NAME);
+      return respuesta;
+    },
   },
 };
 

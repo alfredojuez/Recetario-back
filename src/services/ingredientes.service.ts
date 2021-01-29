@@ -82,7 +82,78 @@ class IngredientesService extends ResolversOperationsService
         const result = await this.get(COLLECTIONS.INGREDIENTES);
         return {status: result.status, message: result.message, ingrediente: result.item};
     }
+    
     // U: modificar
+    async modify()
+    {
+        //valor por defecto.
+        let respuesta = 
+        {
+            status: false, 
+            message: 'La información el ingrediente no es correcta.',
+            ingrediente:  {} || null,
+        };
+        respuesta.ingrediente = null;
+
+        const variables = this.getVariables();
+        const id = variables.idIngrediente;
+        const datosNuevoRegistro = variables.nuevoRegistro?variables.nuevoRegistro:{} ;
+        
+        const idIsInDatabase = await checkInDatabase(this.getDb(), COLLECTIONS.INGREDIENTES, 'idIngrediente', String(id),  'number');
+
+        if (!idIsInDatabase)
+        {
+            respuesta.message = `El ingrediente no existe en la base de datos, no se puede modificar`;
+        }
+        else
+        {
+            console.log('Registro encontrado en BD');
+            let ficha = idIsInDatabase;
+
+            let campoValido = false;
+            
+            //campos modificables
+            // nombre, familia, descripcion, foto, calorias
+            const camposModificables = ['nombre', 'familia', 'descripcion', 'foto', 'calorias'];
+
+            // actualizamos los campos que nos vengan con contenido.
+            camposModificables.forEach( function(campo) 
+            {
+                const valor = Object(datosNuevoRegistro)[campo];
+
+                if( valor!==undefined && checkDataIsNotNull(valor) )
+                {
+                    campoValido = true;
+                    console.log(`Cambiamos el valor ${ficha[campo]} por ${valor}`);
+                    ficha[campo] = valor;
+                }
+            });
+
+            if(campoValido)
+            {
+                // PTE de codificar la obtención del usuario logado y su ID
+                const UsuarioLogado = '1';
+                // FIN PTE
+
+                ficha.usuario_modificacion = UsuarioLogado;
+                ficha.fecha_modificacion = new Date().toISOString();
+
+                const result = await this.update(COLLECTIONS.INGREDIENTES, {idIngrediente: id}, ficha, 'ingrediente');
+
+                if (result)
+                {
+                    respuesta.status=result.status;
+                    respuesta.message=result.message;
+                    respuesta.ingrediente = result.item;
+                }
+            }
+        }
+        
+        // pintamos los datos del resultado en el log
+        (respuesta.status)?console.log(chalk.green(respuesta.message)):console.log(chalk.red(respuesta.message));
+
+        return respuesta;
+    }
 
     // D: eliminar
 }

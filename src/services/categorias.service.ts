@@ -83,7 +83,76 @@ class CategoriasService extends ResolversOperationsService
         return {status: result.status, message: result.message, categoria: result.item};
     }
     // U: modificar
+    async modify()
+    {
+        //valor por defecto.
+        let respuesta = 
+        {
+            status: false, 
+            message: 'La información para la categoria no es correcta.',
+            categoria:  {} || null,
+        };
+        respuesta.categoria = null;
 
+        const variables = this.getVariables();
+        const id = variables.idCategoria;
+        const datosNuevoRegistro = variables.nuevoRegistro?variables.nuevoRegistro:{} ;
+        
+        const idIsInDatabase = await checkInDatabase(this.getDb(), COLLECTIONS.CATEGORIAS, 'idCategoria', String(id),  'number');
+
+        if (!idIsInDatabase)
+        {
+            respuesta.message = `La categoria no existe en la base de datos, no se puede modificar`;
+        }
+        else
+        {
+            console.log('Registro encontrado en BD');
+            let ficha = idIsInDatabase;
+
+            let campoValido = false;
+
+            //campos modificables
+            // nombre, familia, descripcion, foto, calorias
+            const camposModificables = ['nombre', 'descripcion', 'foto'];
+
+            // actualizamos los campos que nos vengan con contenido.
+            camposModificables.forEach( function(campo) 
+            {
+                const valor = Object(datosNuevoRegistro)[campo];
+
+                if( valor!==undefined && checkDataIsNotNull(valor) )
+                {
+                    campoValido = true;
+                    console.log(`Cambiamos el valor ${ficha[campo]} por ${valor}`);
+                    ficha[campo] = valor;
+                }
+            });
+
+            if(campoValido)
+            {
+                // PTE de codificar la obtención del usuario logado y su ID
+                const UsuarioLogado = '1';
+                // FIN PTE
+
+                ficha.usuario_modificacion = UsuarioLogado;
+                ficha.fecha_modificacion = new Date().toISOString();
+
+                const result = await this.update(COLLECTIONS.CATEGORIAS, {idCategoria: id}, ficha, 'categoria');
+
+                if (result)
+                {
+                    respuesta.status=result.status;
+                    respuesta.message=result.message;
+                    respuesta.categoria = result.item;
+                }
+            }
+        }
+        
+        // pintamos los datos del resultado en el log
+        (respuesta.status)?console.log(chalk.green(respuesta.message)):console.log(chalk.red(respuesta.message));
+
+        return respuesta;
+    }
     // D: eliminar
 }
 

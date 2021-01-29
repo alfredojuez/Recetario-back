@@ -87,25 +87,78 @@ class NacionalidadesService extends ResolversOperationsService
         return {status: result.status, message: result.message, nacionalidad: result.item};
     }
     // U: modificar
-
-    async demoError()
+    async modify()
     {
-        var respuesta = 
+        //valor por defecto.
+        let respuesta = 
         {
             status: false, 
-            message: 'La información para la nacionalidad no es correcta.',
-            valor: {}
+            message: 'La información la nacionalidad no es correcta.',
+            nacionalidad:  {} || null,
         };
+        respuesta.nacionalidad = null;
 
-        if(1===1)
+        const variables = this.getVariables();
+        const id = variables.idNacionalidad;
+        const datosNuevoRegistro = variables.nuevoRegistro?variables.nuevoRegistro:{} ;
+        
+        const idIsInDatabase = await checkInDatabase(this.getDb(), COLLECTIONS.NACIONALIDADES, 'idNacionalidad', String(id),  'string');
+
+        if (!idIsInDatabase)
         {
-            respuesta =
-            {
-                status: true, 
-                message: 'resultado positivo',
-                valor: {dato:'dato'}
-            };
+            respuesta.message = `La nacionalidad no existe en la base de datos, no se puede modificar`;
         }
+        else
+        {
+            console.log('Registro encontrado en BD');
+            let ficha = idIsInDatabase;
+
+            let campoValido = false;
+            
+            //campos modificables
+            // nombre, familia, descripcion, foto, calorias
+            const camposModificables = ['nombre', 'descripcion', 'foto'];
+
+            // actualizamos los campos que nos vengan con contenido.
+            camposModificables.forEach( function(campo) 
+            {
+                const valor = Object(datosNuevoRegistro)[campo];
+
+                if( valor!==undefined && checkDataIsNotNull(valor) )
+                {
+                    campoValido = true;
+                    console.log(`Cambiamos el valor ${ficha[campo]} por ${valor}`);
+                    ficha[campo] = valor;
+                    if(campo === 'nombre')
+                    {
+                        ficha.icono= slugify(ficha.nombre,{lower:true}) + '.png';
+                    }
+                }
+            });
+
+            if(campoValido)
+            {
+                // PTE de codificar la obtención del usuario logado y su ID
+                const UsuarioLogado = '1';
+                // FIN PTE
+
+                ficha.usuario_modificacion = UsuarioLogado;
+                ficha.fecha_modificacion = new Date().toISOString();
+
+                const result = await this.update(COLLECTIONS.NACIONALIDADES, {idNacionalidad: id}, ficha, 'nacionalidad');
+
+                if (result)
+                {
+                    respuesta.status=result.status;
+                    respuesta.message=result.message;
+                    respuesta.nacionalidad = result.item;
+                }
+            }
+        }
+        
+        // pintamos los datos del resultado en el log
+        (respuesta.status)?console.log(chalk.green(respuesta.message)):console.log(chalk.red(respuesta.message));
+
         return respuesta;
     }
 

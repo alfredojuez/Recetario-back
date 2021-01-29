@@ -4,6 +4,9 @@ type Mutation{
     # Nombre de la variable, Campos que vamos a necesitar...!) Tipo de dato
     register(RegistroBD: UsuarioInput!): ResultUsuario,
     addCategoria(categoria: CategoriaInput!): ResultCategoria,
+    updateCategoria(idCategoria: Int!, nuevoRegistro: CategoriaInput!): ResultCategoria,
     addIngrediente(ingrediente: IngredienteInput!): ResultIngrediente,
+    updateIngrediente(idIngrediente: Int!, nuevoRegistro: IngredienteInput!): ResultIngrediente,
     addNacionalidad(nacionalidad: NacionalidadInput!): ResultNacionalidad,
+    updateNacionalidad(idNacionalidad: String!, nuevoRegistro: NacionalidadInput!): ResultNacionalidad,
 }

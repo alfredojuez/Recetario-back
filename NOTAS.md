@@ -315,3 +315,37 @@ VARIABLE:
   }
 }
 ```
+
+## Actualización de registros:
+
+En este caso tenemos que tener en cuenta si la clave primaria es de tipo entero o string (Nacionalidades)
+
+```CODIGO
+mutation actNacionalidad($Datos: NacionalidadInput!, $idSearch: String!)
+{
+  updateNacionalidad(nuevoRegistro:$Datos, idNacionalidad:$idSearch)
+  {
+    status
+    message
+    nacionalidad
+    {
+      idNacionalidad
+      nombre
+      icono
+      fecha_alta
+      usuario_alta
+      fecha_modificacion
+      usuario_modificacion
+    }
+  }
+}
+```
+Y en este caso hay que pasar dentro de las variables, por un lado el ID del objeto a modificar y por otro los campos que queramos modificar:
+```CODIGO
+{
+  "idSearch": "VDS",
+  "Datos": {
+    "nombre": "Villarejo de Salvanés"
+  }
+}
+```
