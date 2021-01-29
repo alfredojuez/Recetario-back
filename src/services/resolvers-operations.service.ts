@@ -4,7 +4,7 @@ import { LINEAS } from '../config/constant';
 import logTime from '../functions';
 import { IContextDB } from '../interfaces/context-db.interface';
 import { IVariables } from '../interfaces/variable.interface';
-import { findElements, findOneElement, insertOneElement, updateOneElement  } from '../lib/db-operations';
+import { deleteOneElement, findElements, findOneElement, insertOneElement, updateOneElement  } from '../lib/db-operations';
 
 class ResolversOperationsService
 {
@@ -181,6 +181,37 @@ class ResolversOperationsService
         return respuesta;
     }
     // D: eliminar
+    protected async del(collection:string, filter:object, item:string)
+    {
+        let respuesta = {
+            status: false,
+            message: `No se ha eliminado ${item}`,
+            item: {} || null,
+        };
+        respuesta.item = null;
+
+        try{
+            const res = await  deleteOneElement(
+                this.getDb(),
+                collection,
+                filter,
+              );
+
+            if (res.result.ok === 1){
+                respuesta = {
+                    status: true,
+                    message: `Registro ${item} eliminado correctamente`,
+                    item: Object.assign({}, filter),
+                };
+            }
+        }catch (error)
+        {
+            respuesta.message = `Error inesperado al eliminar ${item}: ${error}`;
+        }
+
+        return respuesta;
+
+    }
 }
 
 export default ResolversOperationsService;

@@ -42,6 +42,20 @@ const resolversMutationCategoria: IResolvers = {
       console.timeEnd(LOG_NAME);
       return respuesta;
     },
+    async deleteCategoria(_, variables, contexto) {
+      const LOG_NAME = `Ejecución GraphQL -> Eliminación de categoria `;
+      
+      console.time(LOG_NAME);
+      console.log(LINEAS.TITULO_X2);
+      logTime();
+
+      console.log(`Solicitada eliminación de categoria con el ${chalk.yellow('ID: "' + variables.idCategoria + '"')} con los datos:`);
+      console.log(variables.nuevoRegistro);
+      
+      const respuesta = await new CategoriasService(_, variables, contexto).delete();
+      console.timeEnd(LOG_NAME);
+      return respuesta;
+    },
   },
 };
 

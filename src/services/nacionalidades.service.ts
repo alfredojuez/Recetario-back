@@ -163,6 +163,43 @@ class NacionalidadesService extends ResolversOperationsService
     }
 
     // D: eliminar
+    async delete()
+    {
+        //valor por defecto.
+        let respuesta = 
+        {
+            status: false, 
+            message: 'La información para el borrado de la nacionalidad no es correcta.',
+            nacionalidad:  {} || null,
+        };
+        respuesta.nacionalidad = null;
+
+        const id = this.getVariables().idNacionalidad;
+        
+        const idIsInDatabase = await checkInDatabase(this.getDb(), COLLECTIONS.NACIONALIDADES, 'idNacionalidad', String(id),  'string');
+
+        if (!idIsInDatabase)
+        {
+            respuesta.message = `La nacionalidad no existe en la base de datos, no se puede eliminar`;
+        }
+        else
+        {
+            console.log('Registro encontrado en BD');
+            const result = await this.del(COLLECTIONS.NACIONALIDADES, {idNacionalidad: id}, 'nacionalidad');
+
+                if (result)
+                {
+                    respuesta.status=result.status;
+                    respuesta.message=result.message;
+                    respuesta.nacionalidad = idIsInDatabase;
+                }
+        }
+        
+        // pintamos los datos del resultado en el log
+        (respuesta.status)?console.log(chalk.green(respuesta.message)):console.log(chalk.red(respuesta.message));
+
+        return respuesta;
+    }
 }
 
 export default NacionalidadesService;

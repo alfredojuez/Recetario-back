@@ -349,3 +349,28 @@ Y en este caso hay que pasar dentro de las variables, por un lado el ID del obje
   }
 }
 ```
+
+## Eliminación de registros
+Similar a la modificación:
+```CODIGO
+mutation deleteCategoria($id: Int!)
+{
+  deleteCategoria(idCategoria: $id)
+  {
+    status
+    message
+    categoria
+    {
+      idCategoria
+      nombre
+      descripcion
+    }
+  }
+}
+```
+y en la variable, pasaremos tan solo el ID
+```CODIGO
+{
+  "id": 16
+}
+```

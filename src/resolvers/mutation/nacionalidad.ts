@@ -39,6 +39,20 @@ const  resolversMutationNacionalidad: IResolvers = {
       console.timeEnd(LOG_NAME);
       return respuesta;
     },
+    async deleteNacionalidad(_, variables, contexto) {
+      const LOG_NAME = `Ejecución GraphQL -> Eliminación de nacionalidad `;
+      
+      console.time(LOG_NAME);
+      console.log(LINEAS.TITULO_X2);
+      logTime();
+
+      console.log(`Solicitada eliminación de nacionalidad con el ${chalk.yellow('ID: "' + variables.idNacionalidad + '"')} con los datos:`);
+      console.log(variables.nuevoRegistro);
+      
+      const respuesta = await new NacionalidadesService(_, variables, contexto).delete();
+      console.timeEnd(LOG_NAME);
+      return respuesta;
+    },
   },
 };
 

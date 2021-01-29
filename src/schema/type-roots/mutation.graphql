@@ -5,8 +5,13 @@ type Mutation{
     register(RegistroBD: UsuarioInput!): ResultUsuario,
     addCategoria(categoria: CategoriaInput!): ResultCategoria,
     updateCategoria(idCategoria: Int!, nuevoRegistro: CategoriaInput!): ResultCategoria,
+    deleteCategoria(idCategoria: Int!): ResultCategoria,
+
     addIngrediente(ingrediente: IngredienteInput!): ResultIngrediente,
     updateIngrediente(idIngrediente: Int!, nuevoRegistro: IngredienteInput!): ResultIngrediente,
+    deleteIngrediente(idIngrediente: Int!): ResultIngrediente,
+
     addNacionalidad(nacionalidad: NacionalidadInput!): ResultNacionalidad,
     updateNacionalidad(idNacionalidad: String!, nuevoRegistro: NacionalidadInput!): ResultNacionalidad,
+    deleteNacionalidad(idNacionalidad: String!): ResultNacionalidad,
 }

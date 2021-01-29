@@ -156,6 +156,43 @@ class IngredientesService extends ResolversOperationsService
     }
 
     // D: eliminar
+    async delete()
+    {
+        //valor por defecto.
+        let respuesta = 
+        {
+            status: false, 
+            message: 'La información para el borrado del ingrediente no es correcta.',
+            ingrediente:  {} || null,
+        };
+        respuesta.ingrediente = null;
+
+        const id = this.getVariables().idIngrediente;
+        
+        const idIsInDatabase = await checkInDatabase(this.getDb(), COLLECTIONS.INGREDIENTES, 'idIngrediente', String(id),  'number');
+
+        if (!idIsInDatabase)
+        {
+            respuesta.message = `El ingrediente no existe en la base de datos, no se puede eliminar`;
+        }
+        else
+        {
+            console.log('Registro encontrado en BD');
+            const result = await this.del(COLLECTIONS.INGREDIENTES, {idIngrediente: id}, 'ingrediente');
+
+                if (result)
+                {
+                    respuesta.status=result.status;
+                    respuesta.message=result.message;
+                    respuesta.ingrediente = idIsInDatabase;
+                }
+        }
+        
+        // pintamos los datos del resultado en el log
+        (respuesta.status)?console.log(chalk.green(respuesta.message)):console.log(chalk.red(respuesta.message));
+
+        return respuesta;
+    }
 }
 
 export default IngredientesService;
