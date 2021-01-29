@@ -1,4 +1,3 @@
-
 type ResultUsuarios implements Result
 {
     "Estado de la operacion"

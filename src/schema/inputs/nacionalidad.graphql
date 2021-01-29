@@ -1,0 +1,7 @@
+
+input NacionalidadInput
+{
+    idNacionalidad: String!
+    nombre: String!
+    icono:  String    
+}

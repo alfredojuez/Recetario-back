@@ -25,14 +25,14 @@ const resolversMutationUsuario: IResolvers = {
 
       //vamos a verificar si el usuario existe antes de crearlo
       //hay que verificar que no existe ni el mail, ni el usuario
-      console.log(chalk.blueBright('SOLICITADA ALTA DE USUARIO'));
+      console.log(chalk.blueBright('Solicitada alta de usuario'));
       console.log(`Datos - email: ${RegistroBD.email}`);
       const userCheckEmail = await findOneElement(db, COLLECTIONS.USUARIOS, {email:RegistroBD.email});      
       console.log('Verificando la existencia del email: ' + RegistroBD.email);
       if (userCheckEmail!== null)
       {
           console.log('Email encontrado');
-          console.log(chalk.red('ALTA DE USUARIO CANCELADA'));
+          console.log(chalk.red('Alta de usuario cancelada'));
           console.log(LINEAS.TITULO_X2);
           console.timeEnd(LOG_NAME);
           return {
@@ -50,7 +50,7 @@ const resolversMutationUsuario: IResolvers = {
       if (userCheckUsuario!== null)
       {
           console.log('Usuario encontrado');
-          console.log(chalk.red('ALTA DE USUARIO CANCELADA'));
+          console.log(chalk.red('Alta de usuario cancelada'));
           console.log(LINEAS.TITULO_X2);
           console.timeEnd(LOG_NAME);
           return {

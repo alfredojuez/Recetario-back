@@ -4,7 +4,6 @@ type Nacionalidad implements Item
     idNacionalidad: String!
     nombre: String!
     icono: String
-    foto: String
 
     fecha_alta: String!
     usuario_alta: String!
