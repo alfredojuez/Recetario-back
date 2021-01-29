@@ -69,3 +69,11 @@ export const updateOneElement = async(
 )=> {
     return await database.collection(collection).updateOne(filter, { $set:document });
 };
+
+export const deleteOneElement = async(
+    database: Db,
+    collection: string,
+    filter: object,
+)=> {
+    return await database.collection(collection).deleteOne(filter);
+};

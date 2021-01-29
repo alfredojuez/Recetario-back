@@ -45,6 +45,20 @@ const resolversMutationIngrediente: IResolvers = {
       console.timeEnd(LOG_NAME);
       return respuesta;
     },
+    async deleteIngrediente(_, variables, contexto) {
+      const LOG_NAME = `Ejecución GraphQL -> Eliminación de ingrediente `;
+      
+      console.time(LOG_NAME);
+      console.log(LINEAS.TITULO_X2);
+      logTime();
+
+      console.log(`Solicitada eliminación de ingrediente con el ${chalk.yellow('ID: "' + variables.idIngrediente + '"')} con los datos:`);
+      console.log(variables.nuevoRegistro);
+      
+      const respuesta = await new IngredientesService(_, variables, contexto).delete();
+      console.timeEnd(LOG_NAME);
+      return respuesta;
+    },
   },
 };
 

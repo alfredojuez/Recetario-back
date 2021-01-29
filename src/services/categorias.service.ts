@@ -82,6 +82,7 @@ class CategoriasService extends ResolversOperationsService
         const result = await this.get(COLLECTIONS.CATEGORIAS);
         return {status: result.status, message: result.message, categoria: result.item};
     }
+
     // U: modificar
     async modify()
     {
@@ -154,6 +155,43 @@ class CategoriasService extends ResolversOperationsService
         return respuesta;
     }
     // D: eliminar
+    async delete()
+    {
+        //valor por defecto.
+        let respuesta = 
+        {
+            status: false, 
+            message: 'La información para el borrado de la categoria no es correcta.',
+            categoria:  {} || null,
+        };
+        respuesta.categoria = null;
+
+        const id = this.getVariables().idCategoria;
+        
+        const idIsInDatabase = await checkInDatabase(this.getDb(), COLLECTIONS.CATEGORIAS, 'idCategoria', String(id),  'number');
+
+        if (!idIsInDatabase)
+        {
+            respuesta.message = `La categoria no existe en la base de datos, no se puede eliminar`;
+        }
+        else
+        {
+            console.log('Registro encontrado en BD');
+            const result = await this.del(COLLECTIONS.CATEGORIAS, {idCategoria: id}, 'categoria');
+
+                if (result)
+                {
+                    respuesta.status=result.status;
+                    respuesta.message=result.message;
+                    respuesta.categoria = idIsInDatabase;
+                }
+        }
+        
+        // pintamos los datos del resultado en el log
+        (respuesta.status)?console.log(chalk.green(respuesta.message)):console.log(chalk.red(respuesta.message));
+
+        return respuesta;
+    }
 }
 
 export default CategoriasService;
