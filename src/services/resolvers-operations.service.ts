@@ -55,7 +55,7 @@ class ResolversOperationsService
     }
 
     // R: listar  (Esta protegida para que solo se acceda desde los hijos)
-    protected async list(collection: string, listElement: string) 
+    protected async list(collection: string, listElement: string, filtro: object =  { activo:true }) 
     {
         const LOG_NAME = `Ejecución GraphQL -> Listado de ${ listElement }`;
         console.time(LOG_NAME);
@@ -75,7 +75,7 @@ class ResolversOperationsService
 
         try 
         {
-            const resultado = await findElements(this.getDb(), collection);
+            const resultado = await findElements(this.getDb(), collection, filtro);
 
             let mensaje = `No hay ningún registro de ${ listElement } en la base de datos`;
             if (resultado.length > 0) {
