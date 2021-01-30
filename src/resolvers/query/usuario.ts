@@ -68,6 +68,16 @@ const resolversQueryUsuarios: IResolvers = {
       return await new UsuariosService(_, __, { db }).items();
     },
 
+    async ListadoUsuariosInactivos(_, __, { db })  
+    {
+      return await new UsuariosService(_, __, { db }).inactiveItems();
+    },
+
+    async ListadoUsuariosCompleto(_, __, { db })  
+    {
+      return await new UsuariosService(_, __, { db }).allItems();
+    },
+
     async login(_, { email, pass }, { db }) {
       return await new UsuariosService(_,  { usuario: {email, pass} }, { db }).login();
     },
@@ -76,6 +86,7 @@ const resolversQueryUsuarios: IResolvers = {
     {
       return new UsuariosService(_,__,{token}).auth();
     },
+    
   },
 };
 

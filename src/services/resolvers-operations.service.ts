@@ -55,7 +55,7 @@ class ResolversOperationsService
     }
 
     // R: listar  (Esta protegida para que solo se acceda desde los hijos)
-    protected async list(collection: string, listElement: string, filtro: object =  { activo:true }) 
+    protected async list(collection: string, listElement: string, filtro: object = {}) 
     {
         const LOG_NAME = `Ejecución GraphQL -> Listado de ${ listElement }`;
         console.time(LOG_NAME);

@@ -2,7 +2,7 @@
 "Acciones de escritura"
 type Mutation{
     # Nombre de la variable, Campos que vamos a necesitar...!) Tipo de dato
-    register(RegistroBD: UsuarioInput!): ResultUsuario,
+    register(usuario: UsuarioInput!): ResultUsuario,
     addCategoria(categoria: CategoriaInput!): ResultCategoria,
     updateCategoria(idCategoria: Int!, nuevoRegistro: CategoriaInput!): ResultCategoria,
     deleteCategoria(idCategoria: Int!): ResultCategoria,

@@ -1,11 +1,12 @@
 import chalk from 'chalk';
 import { COLLECTIONS, LINEAS, MENSAJES } from '../config/constant';
-import logTime from '../functions';
+import logTime, { checkInDatabase } from '../functions';
 import { IContextDB } from '../interfaces/context-db.interface';
-import { findOneElement } from '../lib/db-operations';
+import { asignacionID, findOneElement, insertOneElement } from '../lib/db-operations';
 import JWT from '../lib/jwt';
 import bcrypt from 'bcrypt';
 import ResolversOperationsService from './resolvers-operations.service';
+import { PERFILES } from '../functions';
 
 class UsuariosService extends ResolversOperationsService
 {    
@@ -48,7 +49,7 @@ class UsuariosService extends ResolversOperationsService
         {
         console.log('· Solicitud de login con valor de email/usuario: ' + chalk.yellow(email));
 
-        buscamosXEmail = await findOneElement(this.getDb(), COLLECTIONS.USUARIOS, {email: email} );
+        buscamosXEmail = await findOneElement(this.getDb(), this.collection, {email: email} );
         //Si el usuario existe, verificamos la pass
         if (buscamosXEmail !== null) 
         {
@@ -82,7 +83,7 @@ class UsuariosService extends ResolversOperationsService
         else        //si el email no loga, lo probamos con usuario
             {
             console.log(`· E-mail ${email} ${chalk.red('no encontrado')}, comprobamos acceso con usuario.`);
-            buscamosXUsuario = await findOneElement(this.getDb(), COLLECTIONS.USUARIOS, {usuario: email} );
+            buscamosXUsuario = await findOneElement(this.getDb(), this.collection, {usuario: email} );
             if (buscamosXUsuario !== null)
             {
                 console.log(`· Usuario ${email} localizado, verificamos credenciales`);
@@ -131,8 +132,7 @@ class UsuariosService extends ResolversOperationsService
         return respuesta;
     }
 
-    //Autenticatnos
-
+    //Autenticarnos
     async auth()
     {
          
@@ -167,10 +167,117 @@ class UsuariosService extends ResolversOperationsService
       return respuesta;
 
     }
-    // C: añadir
 
+    // C: añadir
+    async register()
+    {        
+        const LOG_NAME = 'Ejecución GraphQL -> Registro de usuario';
+        console.time(LOG_NAME);
+        console.log(LINEAS.TITULO_X2);
+        logTime();
+
+        //respuesta por defecto.
+        let respuesta = {
+            status:false,
+            message: 'Datos de registro no válidos',
+            usuario:  {} || null
+        };
+
+        const RegistroBD = this.getVariables().usuario!;    //para indicar que estamos leyenco los daots
+        const db = this.getDb();
+
+        if (RegistroBD !== undefined || null)
+        {
+            //vamos a verificar si el usuario existe antes de crearlo
+            //hay que verificar que no existe ni el mail, ni el usuario
+            console.log(chalk.blueBright('Solicitada alta de usuario'));
+            const userCheckEmail = await checkInDatabase(this.getDb(), this.collection, 'email', RegistroBD.email.toString());
+            console.log('Verificando la existencia del email: ' + RegistroBD.email);
+            if (userCheckEmail!== null)
+            {
+                console.log('Email encontrado');
+                console.log(chalk.red('Alta de usuario cancelada'));
+                respuesta = {
+                    status: false,
+                    message:`El email ${RegistroBD.email} ya está registrado.`,
+                    usuario: null
+                };
+            }
+            else
+            {
+                console.log('Email NO encontrado');
+        
+                //verificamos si existe el nombre de usuario 
+                const userCheckUsuario = await checkInDatabase(this.getDb(), this.collection, 'usuario', RegistroBD.usuario.toString());
+                console.log('Verificando la existencia del usuario: ' + RegistroBD.usuario);
+                if (userCheckUsuario!== null)
+                {
+                    console.log('Usuario encontrado');
+                    console.log(chalk.red('Alta de usuario cancelada'));
+                    respuesta = {
+                        status: false,
+                        message:`El usuario ${RegistroBD.usuario} ya está en uso.`,
+                        usuario: null
+                    };
+                }
+                else
+                {
+                    console.log('Usuario NO encontrado');
+                    let nuevoUsuario = RegistroBD;
+                    nuevoUsuario.id = await asignacionID(db, this.collection, {fecha_alta: -1});
+            
+                    // Fecha actual en formato ISO
+                    const now = new Date().toISOString();
+            
+                    //Añadimos los campos que son automáticos para el usuario
+                    nuevoUsuario.perfil = PERFILES.ADMIN;
+                    nuevoUsuario.fecha_alta = now;
+                    nuevoUsuario.ultimo_login = now;
+                    nuevoUsuario.activo = true;                 
+            
+                    const longitud = 10;
+                    nuevoUsuario.pass = bcrypt.hashSync(nuevoUsuario.pass, longitud);
+            
+                    if (await this.add(this.collection, nuevoUsuario, 'usuario'))
+                    {
+                        respuesta = {
+                            status: true,
+                            message: `El usuario ${nuevoUsuario.usuario} se ha registrado correctamente.`,   
+                            usuario: nuevoUsuario
+                            };
+                    }
+                    else
+                    {
+                        respuesta = {
+                            status: false,
+                            message: `El usuario ${nuevoUsuario.usuario} NO ha podido ser dado de alta. Error inesperado.`,
+                            usuario:null
+                        };
+                    }
+                }
+            }
+        }
+
+        (respuesta.status)?console.log(chalk.green(respuesta.message)):console.log(chalk.red(respuesta.message));
+        console.timeEnd(LOG_NAME);
+
+        return respuesta;
+    }
+    
     // R: listar
     async items()
+    {
+        const result = await this.list(this.collection, 'usuarios', { activo:true });
+        return {status: result.status, message: result.message, usuarios: result.items};
+    }
+
+    async inactiveItems()
+    {
+        const result = await this.list(this.collection, 'usuarios', { activo:false });
+        return {status: result.status, message: result.message, usuarios: result.items};
+    }
+
+    async allItems()
     {
         const result = await this.list(this.collection, 'usuarios');
         return {status: result.status, message: result.message, usuarios: result.items};

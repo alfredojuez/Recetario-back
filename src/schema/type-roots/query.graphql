@@ -5,6 +5,8 @@ type Query
 {
     "Lista de usuarios registrados en la base de datos"
     ListadoUsuarios: ResultUsuarios
+    ListadoUsuariosInactivos: ResultUsuarios
+    ListadoUsuariosCompleto: ResultUsuarios
 
     "Para iniciar sesión"
     login(email:String!, pass: String!): ResultLogin
