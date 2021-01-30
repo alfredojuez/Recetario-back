@@ -21,15 +21,11 @@ class ResolversOperationsService
         this.context = context;
     }
 
-    protected getVariables(): IVariables
-    {
-        return this.variables;   
-    }
+    protected getVariables(): IVariables{ return this.variables; }
 
-    protected getDb(): Db
-    {
-        return this.context.db;
-    }
+    protected getContext(): IContextDB  { return this.context; }
+
+    protected getDb(): Db               { return this.context.db!; }
     
     // C: añadir
     protected async add(collection:string, documento:object, item:string) 
@@ -42,7 +38,7 @@ class ResolversOperationsService
         respuesta.item = null;
 
         try{
-            const res = await insertOneElement(this.context.db, collection, documento);
+            const res = await insertOneElement(this.getDb(), collection, documento);
             if (res.result.ok === 1){
                 respuesta = {
                     status: true,
@@ -79,7 +75,7 @@ class ResolversOperationsService
 
         try 
         {
-            const resultado = await findElements(this.context.db, collection);
+            const resultado = await findElements(this.getDb(), collection);
 
             let mensaje = `No hay ningún registro de ${ listElement } en la base de datos`;
             if (resultado.length > 0) {
@@ -120,7 +116,7 @@ class ResolversOperationsService
             };
 
         try{
-            const result = await findOneElement(this.context.db, collection, this.variables);
+            const result = await findOneElement(this.getDb(), collection, this.variables);
             let mensaje = `Registro NO encontrado`;
 
             if (result)
@@ -191,7 +187,7 @@ class ResolversOperationsService
         respuesta.item = null;
 
         try{
-            const res = await  deleteOneElement(
+            const res = await deleteOneElement(
                 this.getDb(),
                 collection,
                 filter,

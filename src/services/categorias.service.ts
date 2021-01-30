@@ -9,6 +9,9 @@ import ResolversOperationsService from './resolvers-operations.service';
 
 class CategoriasService extends ResolversOperationsService
 {    
+
+    collection = COLLECTIONS.CATEGORIAS;
+
     constructor(root: object, 
                 variables: IVariables,
                 context: IContextDB)
@@ -34,7 +37,7 @@ class CategoriasService extends ResolversOperationsService
         
         if( ficha.nombre!==undefined && checkDataIsNotNull(ficha.nombre) )
         {
-            const nombreIsInDatabase = await checkInDatabase(this.getDb(), COLLECTIONS.CATEGORIAS, 'nombre', ficha.nombre);
+            const nombreIsInDatabase = await checkInDatabase(this.getDb(), this.collection, 'nombre', ficha.nombre);
             if (nombreIsInDatabase)
             {
                 respuesta.message = `La categoria ${ficha.nombre} ya existe en la base de datos`;
@@ -42,7 +45,7 @@ class CategoriasService extends ResolversOperationsService
             else
             {
                 // Buscamos el ultimo ID de la BD
-                const newID = await asignacionID(this.getDb(), COLLECTIONS.CATEGORIAS, { idCategoria: -1 }, 'idCategoria') ;
+                const newID = await asignacionID(this.getDb(), this.collection, { idCategoria: -1 }, 'idCategoria') ;
                 ficha.idCategoria = +newID;     //con el mas lo convierto en entero
                 ficha.fecha_alta = new Date().toISOString();
 
@@ -52,7 +55,7 @@ class CategoriasService extends ResolversOperationsService
 
                 ficha.usuario_alta = UsuarioLogado;
 
-                const result = await this.add(COLLECTIONS.CATEGORIAS, ficha, 'ingrediente');
+                const result = await this.add(this.collection, ficha, 'ingrediente');
                 
                 if (result)
                 {
@@ -72,14 +75,14 @@ class CategoriasService extends ResolversOperationsService
     // R: listar
     async items()
     {
-        const result = await this.list(COLLECTIONS.CATEGORIAS, 'categorias');
+        const result = await this.list(this.collection, 'categorias');
         return {status: result.status, message: result.message, categorias: result.items};
     }
         
     // R: detalles
     async details()
     {
-        const result = await this.get(COLLECTIONS.CATEGORIAS);
+        const result = await this.get(this.collection);
         return {status: result.status, message: result.message, categoria: result.item};
     }
 
@@ -99,7 +102,7 @@ class CategoriasService extends ResolversOperationsService
         const id = variables.idCategoria;
         const datosNuevoRegistro = variables.nuevoRegistro?variables.nuevoRegistro:{} ;
         
-        const idIsInDatabase = await checkInDatabase(this.getDb(), COLLECTIONS.CATEGORIAS, 'idCategoria', String(id),  'number');
+        const idIsInDatabase = await checkInDatabase(this.getDb(), this.collection, 'idCategoria', String(id),  'number');
 
         if (!idIsInDatabase)
         {
@@ -138,7 +141,7 @@ class CategoriasService extends ResolversOperationsService
                 ficha.usuario_modificacion = UsuarioLogado;
                 ficha.fecha_modificacion = new Date().toISOString();
 
-                const result = await this.update(COLLECTIONS.CATEGORIAS, {idCategoria: id}, ficha, 'categoria');
+                const result = await this.update(this.collection, {idCategoria: id}, ficha, 'categoria');
 
                 if (result)
                 {
@@ -154,6 +157,7 @@ class CategoriasService extends ResolversOperationsService
 
         return respuesta;
     }
+
     // D: eliminar
     async delete()
     {
@@ -168,7 +172,7 @@ class CategoriasService extends ResolversOperationsService
 
         const id = this.getVariables().idCategoria;
         
-        const idIsInDatabase = await checkInDatabase(this.getDb(), COLLECTIONS.CATEGORIAS, 'idCategoria', String(id),  'number');
+        const idIsInDatabase = await checkInDatabase(this.getDb(), this.collection, 'idCategoria', String(id),  'number');
 
         if (!idIsInDatabase)
         {
@@ -177,7 +181,7 @@ class CategoriasService extends ResolversOperationsService
         else
         {
             console.log('Registro encontrado en BD');
-            const result = await this.del(COLLECTIONS.CATEGORIAS, {idCategoria: id}, 'categoria');
+            const result = await this.del(this.collection, {idCategoria: id}, 'categoria');
 
                 if (result)
                 {

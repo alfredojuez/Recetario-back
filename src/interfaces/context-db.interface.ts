@@ -1,5 +1,6 @@
 import { Db } from 'mongodb';
 
 export interface IContextDB {
-    db: Db;
+    db?: Db;
+    token?: string;
 }
