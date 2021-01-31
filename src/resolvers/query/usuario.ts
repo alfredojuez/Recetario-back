@@ -84,7 +84,7 @@ const resolversQueryUsuarios: IResolvers = {
 
     me(_,__,{ token })
     {
-      return new UsuariosService(_,__,{token}).auth();
+      return new UsuariosService(_,__,{token}).info();
     },
     
   },

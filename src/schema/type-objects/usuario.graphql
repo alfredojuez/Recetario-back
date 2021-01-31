@@ -24,7 +24,7 @@ type Usuario{
     "Tipo de perfil: ADMIN / USER / COOKER"
     perfil: Perfil!
     "Fecha en la que se dió de alta el usuario"
-    fecha_alta: String!
+    fecha_alta: String
     "Fecha en la que se dió de alta el usuario"
     ultimo_login: String
     "Estado del usuario"

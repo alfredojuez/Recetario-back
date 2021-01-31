@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import { COLLECTIONS, LINEAS, MENSAJES } from '../config/constant';
-import logTime, { checkInDatabase } from '../functions';
+import logTime, { checkDataIsNotNull, checkInDatabase, JWT_LENGTH, TIPO_CAMPO } from '../functions';
 import { IContextDB } from '../interfaces/context-db.interface';
 import { asignacionID, findOneElement, insertOneElement } from '../lib/db-operations';
 import JWT from '../lib/jwt';
@@ -133,7 +133,7 @@ class UsuariosService extends ResolversOperationsService
     }
 
     //Autenticarnos
-    async auth()
+    async info()
     {
          
       const LOG_NAME = 'Ejecución GraphQL -> Registro de usuario';
@@ -144,20 +144,24 @@ class UsuariosService extends ResolversOperationsService
       let respuesta = {
         status: false,
         message: `Validación de token incorrecta`,
-        usuario: null
+        usuario: {} || null
       };
+      respuesta.usuario = null;
 
-      let info = new JWT().verify(this.getContext().token!);
-      if (info !== MENSAJES.LOGIN_VERIFICATION_KO)
-      {
-        const txt = `${chalk.green('Validación correcta')} del token para el usuario ${Object.values(info)[0].usuario}`;
-        const txtPlano = `Validación correcta del token para el usuario ${Object.values(info)[0].usuario}`;
-        console.log(chalk.greenBright(txt));
-        respuesta = {
-            status: true,
-            message: txtPlano,
-            usuario: Object.values(info)[0]
-        };
+        //leemos los datos del token del usuario
+        let tokenData = new JWT().verify(this.getContext().token!);
+        
+        if (tokenData.status)
+        {
+            //convertimos el objeto devuelto en uno válido.
+            const txt = `${chalk.green('Validación correcta')} del token para el usuario ${tokenData.usuario}`;
+            const txtPlano = `Validación correcta del token para el usuario ${tokenData.usuario}`;
+            console.log(chalk.greenBright(txt));
+            respuesta = {
+                status: true,
+                message: txtPlano,
+                usuario: tokenData.usuario
+            };
       }
       else{
         console.log(`${chalk.red(MENSAJES.LOGIN_VERIFICATION_KO)}`);
@@ -169,7 +173,7 @@ class UsuariosService extends ResolversOperationsService
     }
 
     // C: añadir
-    async register()
+    async insert()
     {        
         const LOG_NAME = 'Ejecución GraphQL -> Registro de usuario';
         console.time(LOG_NAME);
@@ -182,6 +186,7 @@ class UsuariosService extends ResolversOperationsService
             message: 'Datos de registro no válidos',
             usuario:  {} || null
         };
+        respuesta.usuario = null;
 
         const RegistroBD = this.getVariables().usuario!;    //para indicar que estamos leyenco los daots
         const db = this.getDb();
@@ -224,35 +229,46 @@ class UsuariosService extends ResolversOperationsService
                 {
                     console.log('Usuario NO encontrado');
                     let nuevoUsuario = RegistroBD;
-                    nuevoUsuario.id = await asignacionID(db, this.collection, {fecha_alta: -1});
-            
-                    // Fecha actual en formato ISO
-                    const now = new Date().toISOString();
-            
-                    //Añadimos los campos que son automáticos para el usuario
-                    nuevoUsuario.perfil = PERFILES.ADMIN;
-                    nuevoUsuario.fecha_alta = now;
-                    nuevoUsuario.ultimo_login = now;
-                    nuevoUsuario.activo = true;                 
-            
-                    const longitud = 10;
-                    nuevoUsuario.pass = bcrypt.hashSync(nuevoUsuario.pass, longitud);
-            
-                    if (await this.add(this.collection, nuevoUsuario, 'usuario'))
+
+                    // Verificamos que los datos mínimos necesarios son validos. AQUI
+                    if(nuevoUsuario.email!== undefined && nuevoUsuario.email !== ''
+                    && nuevoUsuario.nombre!== undefined && nuevoUsuario.nombre !== ''
+                    && nuevoUsuario.usuario!== undefined && nuevoUsuario.usuario !== ''
+                    && nuevoUsuario.pass!== undefined && nuevoUsuario.pass !== ''
+                    && nuevoUsuario.fecha_nacimiento!== undefined && nuevoUsuario.fecha_nacimiento !== '')
                     {
-                        respuesta = {
-                            status: true,
-                            message: `El usuario ${nuevoUsuario.usuario} se ha registrado correctamente.`,   
-                            usuario: nuevoUsuario
+                        nuevoUsuario.id = await asignacionID(db, this.collection, {fecha_alta: -1});
+                
+                        // Fecha actual en formato ISO
+                        const now = new Date().toISOString();
+                
+                        //Añadimos los campos que son automáticos para el usuario
+                        nuevoUsuario.perfil = PERFILES.ADMIN;
+                        nuevoUsuario.fecha_alta = now;
+                        nuevoUsuario.ultimo_login = now;
+                        nuevoUsuario.activo = true;                 
+                
+                        nuevoUsuario.pass = bcrypt.hashSync(nuevoUsuario.pass, JWT_LENGTH);
+                        
+                        if (await this.add(this.collection, nuevoUsuario, 'usuario'))
+                        {
+                            respuesta = {
+                                status: true,
+                                message: `El usuario ${nuevoUsuario.usuario} se ha registrado correctamente.`,   
+                                usuario: nuevoUsuario
+                                };
+                        }
+                        else
+                        {
+                            respuesta = {
+                                status: false,
+                                message: `El usuario ${nuevoUsuario.usuario} NO ha podido ser dado de alta. Error inesperado.`,
+                                usuario:null
                             };
+                        }
                     }
-                    else
-                    {
-                        respuesta = {
-                            status: false,
-                            message: `El usuario ${nuevoUsuario.usuario} NO ha podido ser dado de alta. Error inesperado.`,
-                            usuario:null
-                        };
+                    else{
+                        respuesta.message = 'Revise los campos obligatorios para el registro de un nuevo usuario.';
                     }
                 }
             }
@@ -263,7 +279,7 @@ class UsuariosService extends ResolversOperationsService
 
         return respuesta;
     }
-    
+
     // R: listar
     async items()
     {
@@ -289,7 +305,64 @@ class UsuariosService extends ResolversOperationsService
         const result = await this.get(this.collection);
         return {status: result.status, message: result.message, usuario: result.item};
     }
+
     // U: modificar
+    async modify()
+    {
+        const LOG_NAME = 'Ejecución GraphQL -> Actualización de usuario';
+        console.time(LOG_NAME);
+        console.log(LINEAS.TITULO_X2);
+        logTime();      
+
+        //respuesta por defecto.
+        let respuesta = {
+            status:false,
+            message: 'Datos de usuario no válidos',
+            usuario:  {} || null
+        };
+        console.log(chalk.blueBright(`Solicitada actualización de datos del usuario`));
+
+        const nuevoRegistro = this.getVariables().usuario!;    //para indicar que estamos leyendo los datos
+        const db = this.getDb();
+        
+        if ((nuevoRegistro !== undefined || null) && nuevoRegistro.id !== undefined)
+        {
+            //vamos a verificar si el usuario existe antes de crearlo
+            //hay que verificar que no existe ni el mail, ni el usuario            
+            const userCheckID = await checkInDatabase(this.getDb(), this.collection, 'id', nuevoRegistro.id.toString(), TIPO_CAMPO.NUMBER);
+            if (userCheckID)
+            {
+                console.log(`Usuario con ${chalk.yellow('id ' + nuevoRegistro.id)} encontrado`);
+
+                //Seleccionamos el filtro para la actualización
+                const filter = { id: nuevoRegistro.id};
+
+                if(nuevoRegistro.pass !== undefined && nuevoRegistro.pass !== '')
+                {
+                    nuevoRegistro.pass = bcrypt.hashSync(nuevoRegistro.pass, JWT_LENGTH);
+                }
+
+                const resultado = await this.update(this.collection, filter, nuevoRegistro, 'usuario');
+                if(resultado)
+                {
+                    respuesta = {
+                        status: true,
+                        message: 'Usuario actualizado correctamente',
+                        usuario: resultado.item
+                    };
+                }
+                else
+                {
+                    respuesta.message='No se ha podido realizar la actualización de los datos de usuario.';
+                }
+            }
+        }
+
+        (respuesta.status)?console.log(chalk.green(respuesta.message)):console.log(chalk.red(respuesta.message));
+        console.timeEnd(LOG_NAME);
+
+        return respuesta;
+    }
 
     // D: eliminar
 }

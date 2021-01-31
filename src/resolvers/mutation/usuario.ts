@@ -12,10 +12,14 @@ import UsuariosService from '../../services/usuarios.service';
 //*********************************************************
 const resolversMutationUsuario: IResolvers = {
   Mutation: {
-    async register(_, { usuario }, { db }) {             
-        return new UsuariosService(_, { usuario }, { db } ).register();
+    async addUsuario(_, { usuario }, { db }) {             
+        return new UsuariosService(_, { usuario }, { db } ).insert();
     },
-  },
+    async updateUsuario(_, { usuario }, { db }) {             
+      return new UsuariosService(_, { usuario }, { db } ).modify();
+    },
+
+  },  // fin del mutation
 };
 
 export default resolversMutationUsuario;

@@ -5,6 +5,7 @@ import { ICategoria } from '../interfaces/categoria.interface';
 import { IContextDB } from '../interfaces/context-db.interface';
 import { IVariables } from '../interfaces/variable.interface';
 import { asignacionID } from '../lib/db-operations';
+import JWT from '../lib/jwt';
 import ResolversOperationsService from './resolvers-operations.service';
 
 class CategoriasService extends ResolversOperationsService
@@ -135,19 +136,33 @@ class CategoriasService extends ResolversOperationsService
             if(campoValido)
             {
                 // PTE de codificar la obtención del usuario logado y su ID
-                const UsuarioLogado = '1';
-                // FIN PTE
-
-                ficha.usuario_modificacion = UsuarioLogado;
-                ficha.fecha_modificacion = new Date().toISOString();
-
-                const result = await this.update(this.collection, {idCategoria: id}, ficha, 'categoria');
-
-                if (result)
+                console.log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXxxx');
+                let info = new JWT().verify(this.getContext().token!);
+                if (info.status)
                 {
-                    respuesta.status=result.status;
-                    respuesta.message=result.message;
-                    respuesta.categoria = result.item;
+                    console.log('· Usuario válido');
+                    const datos = info.usuario;
+                    console.log(typeof  datos);
+                    console.log(datos!);
+
+                    const UsuarioLogado = 2;
+     
+                    ficha.usuario_modificacion = UsuarioLogado;
+                    ficha.fecha_modificacion = new Date().toISOString();
+    
+                    const result = await this.update(this.collection, {idCategoria: id}, ficha, 'categoria');
+    
+                    if (result)
+                    {
+                        respuesta.status=result.status;
+                        respuesta.message=result.message;
+                        respuesta.categoria = result.item;
+                    }
+                }
+                else
+                {
+                    console.log(info);
+                    respuesta.message = 'TOKEN de seguridad no válido.';
                 }
             }
         }
