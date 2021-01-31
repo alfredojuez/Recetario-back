@@ -8,6 +8,9 @@ import ResolversOperationsService from './resolvers-operations.service';
 
 class IngredientesService extends ResolversOperationsService
 {    
+
+    collection = COLLECTIONS.INGREDIENTES;
+
     constructor(root: object, 
                 variables: IVariables,
                 context: IContextDB)
@@ -17,7 +20,6 @@ class IngredientesService extends ResolversOperationsService
     }
 
     // C: añadir
-
     async insert()
     {
         const ficha = this.getVariables();
@@ -34,7 +36,7 @@ class IngredientesService extends ResolversOperationsService
         
         if( ficha.nombre!==undefined && checkDataIsNotNull(ficha.nombre) )
         {
-            const nombreIsInDatabase = await checkInDatabase(this.getDb(), COLLECTIONS.INGREDIENTES, 'nombre', ficha.nombre);
+            const nombreIsInDatabase = await checkInDatabase(this.getDb(), this.collection, 'nombre', ficha.nombre);
             if (nombreIsInDatabase)
             {
                 respuesta.message = `El ingrediente ${ficha.nombre} ya existe en la base de datos`;
@@ -43,7 +45,7 @@ class IngredientesService extends ResolversOperationsService
             else
             {
                 // Buscamos el ultimo ID de la BD
-                const newID = await asignacionID(this.getDb(), COLLECTIONS.INGREDIENTES, { idIngrediente: -1 }, 'idIngrediente') ;
+                const newID = await asignacionID(this.getDb(), this.collection, { idIngrediente: -1 }, 'idIngrediente') ;
                 ficha.idIngrediente = +newID;     //con el mas lo convierto en entero
                 ficha.fecha_alta = new Date().toISOString();
 
@@ -53,7 +55,7 @@ class IngredientesService extends ResolversOperationsService
 
                 ficha.usuario_alta = UsuarioLogado;
 
-                const result = await this.add(COLLECTIONS.INGREDIENTES, ficha, 'ingrediente');
+                const result = await this.add(this.collection, ficha, 'ingrediente');
                 if (result)
                 {
                     respuesta.status=result.status;
@@ -72,14 +74,14 @@ class IngredientesService extends ResolversOperationsService
     // R: listar
     async items()
     {        
-        const result = await this.list(COLLECTIONS.INGREDIENTES, 'ingredientes');
+        const result = await this.list(this.collection, 'ingredientes');
         return {status: result.status, message: result.message, ingredientes: result.items};
     }
 
     // R: detalles
     async details()
     {
-        const result = await this.get(COLLECTIONS.INGREDIENTES);
+        const result = await this.get(this.collection);
         return {status: result.status, message: result.message, ingrediente: result.item};
     }
     
@@ -99,7 +101,7 @@ class IngredientesService extends ResolversOperationsService
         const id = variables.idIngrediente;
         const datosNuevoRegistro = variables.nuevoRegistro?variables.nuevoRegistro:{} ;
         
-        const idIsInDatabase = await checkInDatabase(this.getDb(), COLLECTIONS.INGREDIENTES, 'idIngrediente', String(id),  'number');
+        const idIsInDatabase = await checkInDatabase(this.getDb(), this.collection, 'idIngrediente', String(id),  'number');
 
         if (!idIsInDatabase)
         {
@@ -138,7 +140,7 @@ class IngredientesService extends ResolversOperationsService
                 ficha.usuario_modificacion = UsuarioLogado;
                 ficha.fecha_modificacion = new Date().toISOString();
 
-                const result = await this.update(COLLECTIONS.INGREDIENTES, {idIngrediente: id}, ficha, 'ingrediente');
+                const result = await this.update(this.collection, {idIngrediente: id}, ficha, 'ingrediente');
 
                 if (result)
                 {
@@ -169,7 +171,7 @@ class IngredientesService extends ResolversOperationsService
 
         const id = this.getVariables().idIngrediente;
         
-        const idIsInDatabase = await checkInDatabase(this.getDb(), COLLECTIONS.INGREDIENTES, 'idIngrediente', String(id),  'number');
+        const idIsInDatabase = await checkInDatabase(this.getDb(), this.collection, 'idIngrediente', String(id),  'number');
 
         if (!idIsInDatabase)
         {
@@ -178,7 +180,7 @@ class IngredientesService extends ResolversOperationsService
         else
         {
             console.log('Registro encontrado en BD');
-            const result = await this.del(COLLECTIONS.INGREDIENTES, {idIngrediente: id}, 'ingrediente');
+            const result = await this.del(this.collection, {idIngrediente: id}, 'ingrediente');
 
                 if (result)
                 {

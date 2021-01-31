@@ -1,7 +1,7 @@
 interface IRequest {
     headers: {
         authorization: string;
-    }
+    };
 }
 
 interface IConnection

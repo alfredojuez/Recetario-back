@@ -58,3 +58,17 @@ export async function checkInDatabase(db: Db, collection: string, clave: string,
   return  await findOneElement(db, collection, filtro);
 }
 
+export const TIPO_CAMPO =
+{
+  NUMBER: 'number',
+  STRING: 'string'
+};
+
+export const PERFILES =
+{
+    ADMIN:'ADMIN',
+    COOKER:'COOKER',
+    USER:'USER',
+};
+
+export const JWT_LENGTH = 10;

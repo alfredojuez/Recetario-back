@@ -8,6 +8,8 @@ import slugify from 'slugify';
 
 class NacionalidadesService extends ResolversOperationsService
 {    
+    collection = COLLECTIONS.NACIONALIDADES;
+
     constructor(root: object, 
                 variables: IVariables,
                 context: IContextDB)
@@ -38,8 +40,8 @@ class NacionalidadesService extends ResolversOperationsService
         && ficha.nombre!==undefined && checkDataIsNotNull(ficha.nombre))
         {
             //Comprobamos si existen en la BD
-            const idIsInDatabase = await checkInDatabase(this.getDb(), COLLECTIONS.NACIONALIDADES, 'idNacionalidad', ficha.idNacionalidad);
-            const nombreIsInDatabase = await checkInDatabase(this.getDb(), COLLECTIONS.NACIONALIDADES, 'nombre', ficha.nombre);
+            const idIsInDatabase = await checkInDatabase(this.getDb(), this.collection, 'idNacionalidad', ficha.idNacionalidad);
+            const nombreIsInDatabase = await checkInDatabase(this.getDb(), this.collection, 'nombre', ficha.nombre);
             if (nombreIsInDatabase!==null || idIsInDatabase!==null)
             {
                 const txtID =(idIsInDatabase) ? `La nacionalidad ${ficha.nombre} ya existe en la base de datos`: '';
@@ -56,7 +58,7 @@ class NacionalidadesService extends ResolversOperationsService
                 // FIN PTE
     
                 ficha.usuario_alta = UsuarioLogado;
-                const result = await this.add(COLLECTIONS.NACIONALIDADES, ficha, 'nacionalidad');
+                const result = await this.add(this.collection, ficha, 'nacionalidad');
                 
                 if (result.status)
                 {
@@ -76,14 +78,14 @@ class NacionalidadesService extends ResolversOperationsService
     // R: listar
     async items()
     {
-        const result = await this.list(COLLECTIONS.NACIONALIDADES, 'nacionalidades');
+        const result = await this.list(this.collection, 'nacionalidades');
         return {status: result.status, message: result.message, nacionalidades: result.items};
     }
     
     // R: detalles
     async details()
     {
-        const result = await this.get(COLLECTIONS.NACIONALIDADES);
+        const result = await this.get(this.collection);
         return {status: result.status, message: result.message, nacionalidad: result.item};
     }
     // U: modificar
@@ -102,7 +104,7 @@ class NacionalidadesService extends ResolversOperationsService
         const id = variables.idNacionalidad;
         const datosNuevoRegistro = variables.nuevoRegistro?variables.nuevoRegistro:{} ;
         
-        const idIsInDatabase = await checkInDatabase(this.getDb(), COLLECTIONS.NACIONALIDADES, 'idNacionalidad', String(id),  'string');
+        const idIsInDatabase = await checkInDatabase(this.getDb(), this.collection, 'idNacionalidad', String(id),  'string');
 
         if (!idIsInDatabase)
         {
@@ -145,7 +147,7 @@ class NacionalidadesService extends ResolversOperationsService
                 ficha.usuario_modificacion = UsuarioLogado;
                 ficha.fecha_modificacion = new Date().toISOString();
 
-                const result = await this.update(COLLECTIONS.NACIONALIDADES, {idNacionalidad: id}, ficha, 'nacionalidad');
+                const result = await this.update(this.collection, {idNacionalidad: id}, ficha, 'nacionalidad');
 
                 if (result)
                 {
@@ -176,7 +178,7 @@ class NacionalidadesService extends ResolversOperationsService
 
         const id = this.getVariables().idNacionalidad;
         
-        const idIsInDatabase = await checkInDatabase(this.getDb(), COLLECTIONS.NACIONALIDADES, 'idNacionalidad', String(id),  'string');
+        const idIsInDatabase = await checkInDatabase(this.getDb(), this.collection, 'idNacionalidad', String(id),  'string');
 
         if (!idIsInDatabase)
         {
@@ -185,7 +187,7 @@ class NacionalidadesService extends ResolversOperationsService
         else
         {
             console.log('Registro encontrado en BD');
-            const result = await this.del(COLLECTIONS.NACIONALIDADES, {idNacionalidad: id}, 'nacionalidad');
+            const result = await this.del(this.collection, {idNacionalidad: id}, 'nacionalidad');
 
                 if (result)
                 {

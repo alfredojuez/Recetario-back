@@ -1,5 +1,9 @@
+import { IUsuario } from './usuario.interface';
+
 //Listado de variables que queremos usar en el Servicio de resolver-operations
 export interface IVariables{    
+    // Usuario
+    id?: number;
     // Categoria
     idCategoria?: number;    
     // Ingrediente{
@@ -20,4 +24,6 @@ export interface IVariables{
     usuario_modificacion?: string;
 
     nuevoRegistro?: IVariables;
+
+    usuario?: IUsuario;
 }

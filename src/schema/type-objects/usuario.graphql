@@ -5,7 +5,7 @@ Si la pass == null, el usuario deberá cambiarla cuando acceda por primera vez
 """
 type Usuario{
     "Identificador único dado por Mongo"
-    id: ID!
+    id: Int!
     "Identificador único para registro en APP"
     email: String!
     "Datos del usuario"
@@ -24,7 +24,7 @@ type Usuario{
     "Tipo de perfil: ADMIN / USER / COOKER"
     perfil: Perfil!
     "Fecha en la que se dió de alta el usuario"
-    fecha_alta: String!
+    fecha_alta: String
     "Fecha en la que se dió de alta el usuario"
     ultimo_login: String
     "Estado del usuario"

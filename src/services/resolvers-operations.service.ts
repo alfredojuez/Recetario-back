@@ -21,15 +21,11 @@ class ResolversOperationsService
         this.context = context;
     }
 
-    protected getVariables(): IVariables
-    {
-        return this.variables;   
-    }
+    protected getVariables(): IVariables{ return this.variables; }
 
-    protected getDb(): Db
-    {
-        return this.context.db;
-    }
+    protected getContext(): IContextDB  { return this.context; }
+
+    protected getDb(): Db               { return this.context.db!; }
     
     // C: añadir
     protected async add(collection:string, documento:object, item:string) 
@@ -42,7 +38,7 @@ class ResolversOperationsService
         respuesta.item = null;
 
         try{
-            const res = await insertOneElement(this.context.db, collection, documento);
+            const res = await insertOneElement(this.getDb(), collection, documento);
             if (res.result.ok === 1){
                 respuesta = {
                     status: true,
@@ -59,7 +55,7 @@ class ResolversOperationsService
     }
 
     // R: listar  (Esta protegida para que solo se acceda desde los hijos)
-    protected async list(collection: string, listElement: string) 
+    protected async list(collection: string, listElement: string, filtro: object = {}) 
     {
         const LOG_NAME = `Ejecución GraphQL -> Listado de ${ listElement }`;
         console.time(LOG_NAME);
@@ -79,7 +75,7 @@ class ResolversOperationsService
 
         try 
         {
-            const resultado = await findElements(this.context.db, collection);
+            const resultado = await findElements(this.getDb(), collection, filtro);
 
             let mensaje = `No hay ningún registro de ${ listElement } en la base de datos`;
             if (resultado.length > 0) {
@@ -120,7 +116,7 @@ class ResolversOperationsService
             };
 
         try{
-            const result = await findOneElement(this.context.db, collection, this.variables);
+            const result = await findOneElement(this.getDb(), collection, this.variables);
             let mensaje = `Registro NO encontrado`;
 
             if (result)
@@ -165,13 +161,16 @@ class ResolversOperationsService
                 filter,
                 objUpdate
               );
-
-            if (res.result.ok === 1){
+            if (res.result.nModified === 1){
                 respuesta = {
                     status: true,
                     message: `Registro ${item} actualizado correctamente a la base de datos`,
                     item: Object.assign({}, filter, objUpdate),
                 };
+            }
+            else
+            {
+                console.log(`No había campos que actualizar en la BD, ya eran correctos`);
             }
         }catch (error)
         {
@@ -191,7 +190,7 @@ class ResolversOperationsService
         respuesta.item = null;
 
         try{
-            const res = await  deleteOneElement(
+            const res = await deleteOneElement(
                 this.getDb(),
                 collection,
                 filter,
@@ -211,6 +210,12 @@ class ResolversOperationsService
 
         return respuesta;
 
+    }
+
+    protected async LogicalDel(collection:string, filter:object, item:string)
+    {
+        //La desactivación es poner el campo active a falso.
+        return this.update(collection, filter, { activo:false }, item);
     }
 }
 

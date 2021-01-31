@@ -8,7 +8,7 @@ Vamos a proporcionar un parametro (DatosUsuario) de tipo UsuarioInput y que nos 
 En el playground de GraphiQL tenemos que poner esto:
 ```
 mutation addUser($DatosUsuario: UserInput!) {
-  register(RegistroBD: $DatosUsuario) {
+  addUsuario(RegistroBD: $DatosUsuario) {
     status
     message
     Usuario {
@@ -48,7 +48,7 @@ La ejecución de este codigo, nos devolverá algo similar a esto:
 ```
 {
   "data": {
-    "register": {
+    "addUsuario": {
       "status": true,
       "message": "El usuario demo se ha registrado correctamente.",
       "Usuario": {
