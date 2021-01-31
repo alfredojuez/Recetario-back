@@ -21,6 +21,10 @@ const resolversMutationUsuario: IResolvers = {
     async deleteUsuario(_, { id }, { db }) {             
       return new UsuariosService(_, { id }, { db } ).delete();
     },
+    async deleteUsuarioByAdmin(_, { id }, { db }) {         
+      //Si somos el administrador podremos hacer la eliminación física.    
+      return new UsuariosService(_, { id }, { db } ).delete(true);
+    },
 
   },  // fin del mutation
 };
