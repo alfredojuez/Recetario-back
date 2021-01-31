@@ -5,7 +5,7 @@ import { findOneElement } from '../lib/db-operations';
 /**
  * Función que pinta en el log la fecha y hora actuales
  */
-function logTime() {
+export function logTime() {
   const ahora = new Date();
   const options = {
     weekday: 'long',
@@ -14,11 +14,19 @@ function logTime() {
     day: 'numeric',
   };
 
-  console.log(chalk.gray(`${ahora.toLocaleDateString('es-ES',options)} ${ahora.toLocaleTimeString()}`));
-  
+  console.log(chalk.gray(`${ahora.toLocaleDateString('es-ES',options)} ${ahora.toLocaleTimeString()}`)); 
 }
 
-export default logTime;
+/**
+ * 
+ * @param status Pinta de color verde un texto si el estatus es true
+ * y de rojo si el status es false
+ * @param text 
+ */
+export function logResponse(status: boolean, text: string)
+{
+  (status)?console.log(chalk.green(text)):console.log(chalk.red(text));
+}
 
 /**
  * Comprueba si una variable tiene valor o no
@@ -72,3 +80,9 @@ export const PERFILES =
 };
 
 export const JWT_LENGTH = 10;
+
+function version()
+{
+
+}
+export default version;

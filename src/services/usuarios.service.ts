@@ -1,19 +1,20 @@
 import chalk from 'chalk';
 import { COLLECTIONS, LINEAS, MENSAJES } from '../config/constant';
-import logTime, { checkDataIsNotNull, checkInDatabase, JWT_LENGTH, TIPO_CAMPO } from '../functions';
+import logTime, { checkDataIsNotNull, checkInDatabase, JWT_LENGTH, logResponse, TIPO_CAMPO } from '../functions';
 import { IContextDB } from '../interfaces/context-db.interface';
 import { asignacionID, findOneElement, insertOneElement } from '../lib/db-operations';
 import JWT from '../lib/jwt';
 import bcrypt from 'bcrypt';
 import ResolversOperationsService from './resolvers-operations.service';
 import { PERFILES } from '../functions';
+import { IVariables } from '../interfaces/variable.interface';
 
 class UsuariosService extends ResolversOperationsService
 {    
     collection = COLLECTIONS.USUARIOS;
 
     constructor(root: object, 
-                variables: object,
+                variables: object,  //tiene que ser así y no IVariable, para el login
                 context: IContextDB)
     {
         //llamamos al constructor del padre
@@ -277,7 +278,7 @@ class UsuariosService extends ResolversOperationsService
             }
         }
 
-        (respuesta.status)?console.log(chalk.green(respuesta.message)):console.log(chalk.red(respuesta.message));
+        logResponse(respuesta.status, respuesta.message);
         console.timeEnd(LOG_NAME);
 
         return respuesta;
@@ -286,6 +287,8 @@ class UsuariosService extends ResolversOperationsService
     // R: listar
     async items()
     {
+        const page = this.getVariables().pagination?.page;
+        const itemsPage = this.getVariables().pagination?.itemsPage;
         const result = await this.list(this.collection, 'usuarios', { activo:true });
         return {status: result.status, message: result.message, usuarios: result.items};
     }
@@ -363,7 +366,7 @@ class UsuariosService extends ResolversOperationsService
             }
         }
 
-        (respuesta.status)?console.log(chalk.green(respuesta.message)):console.log(chalk.red(respuesta.message));
+        logResponse(respuesta.status, respuesta.message);
         console.timeEnd(LOG_NAME);
 
         return respuesta;
@@ -427,7 +430,7 @@ class UsuariosService extends ResolversOperationsService
             }
         }
 
-        (respuesta.status)?console.log(chalk.green(respuesta.message)):console.log(chalk.red(respuesta.message));
+        logResponse(respuesta.status, respuesta.message);
         console.timeEnd(LOG_NAME);
 
         return respuesta;

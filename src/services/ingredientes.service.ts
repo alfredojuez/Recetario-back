@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import { COLLECTIONS } from '../config/constant';
-import { checkDataIsNotNull, checkInDatabase } from '../functions';
+import { checkDataIsNotNull, checkInDatabase, logResponse } from '../functions';
 import { IContextDB } from '../interfaces/context-db.interface';
 import { IVariables } from '../interfaces/variable.interface';
 import { asignacionID } from '../lib/db-operations';
@@ -66,7 +66,7 @@ class IngredientesService extends ResolversOperationsService
         }
 
         // pintamos los datos del resultado en el log
-        (respuesta.status)?console.log(chalk.green(respuesta.message)):console.log(chalk.red(respuesta.message));
+        logResponse(respuesta.status, respuesta.message);
 
         return respuesta;
     }
@@ -74,6 +74,8 @@ class IngredientesService extends ResolversOperationsService
     // R: listar
     async items()
     {        
+        const page = this.getVariables().pagination?.page;
+        const itemsPage = this.getVariables().pagination?.itemsPage;
         const result = await this.list(this.collection, 'ingredientes');
         return {status: result.status, message: result.message, ingredientes: result.items};
     }
@@ -152,7 +154,7 @@ class IngredientesService extends ResolversOperationsService
         }
         
         // pintamos los datos del resultado en el log
-        (respuesta.status)?console.log(chalk.green(respuesta.message)):console.log(chalk.red(respuesta.message));
+        logResponse(respuesta.status, respuesta.message);
 
         return respuesta;
     }
@@ -191,7 +193,7 @@ class IngredientesService extends ResolversOperationsService
         }
         
         // pintamos los datos del resultado en el log
-        (respuesta.status)?console.log(chalk.green(respuesta.message)):console.log(chalk.red(respuesta.message));
+        logResponse(respuesta.status, respuesta.message);
 
         return respuesta;
     }

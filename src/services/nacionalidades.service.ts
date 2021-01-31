@@ -2,7 +2,7 @@ import { COLLECTIONS } from '../config/constant';
 import { IContextDB } from '../interfaces/context-db.interface';
 import { IVariables } from '../interfaces/variable.interface';
 import ResolversOperationsService from './resolvers-operations.service';
-import {checkDataIsNotNull, checkInDatabase} from '../functions';
+import {checkDataIsNotNull, checkInDatabase, logResponse} from '../functions';
 import chalk from 'chalk';
 import slugify from 'slugify';
 
@@ -78,6 +78,8 @@ class NacionalidadesService extends ResolversOperationsService
     // R: listar
     async items()
     {
+        const page = this.getVariables().pagination?.page;
+        const itemsPage = this.getVariables().pagination?.itemsPage;
         const result = await this.list(this.collection, 'nacionalidades');
         return {status: result.status, message: result.message, nacionalidades: result.items};
     }
@@ -159,7 +161,7 @@ class NacionalidadesService extends ResolversOperationsService
         }
         
         // pintamos los datos del resultado en el log
-        (respuesta.status)?console.log(chalk.green(respuesta.message)):console.log(chalk.red(respuesta.message));
+        logResponse(respuesta.status, respuesta.message);
 
         return respuesta;
     }
@@ -198,7 +200,7 @@ class NacionalidadesService extends ResolversOperationsService
         }
         
         // pintamos los datos del resultado en el log
-        (respuesta.status)?console.log(chalk.green(respuesta.message)):console.log(chalk.red(respuesta.message));
+        logResponse(respuesta.status, respuesta.message);
 
         return respuesta;
     }

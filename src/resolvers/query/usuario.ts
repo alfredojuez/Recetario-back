@@ -79,7 +79,7 @@ const resolversQueryUsuarios: IResolvers = {
     },
 
     async login(_, { email, pass }, { db }) {
-      return await new UsuariosService(_,  { usuario: {email, pass} }, { db }).login();
+      return await new UsuariosService(_, { usuario: {email, pass} }, { db }).login();
     },
 
     me(_,__,{ token })

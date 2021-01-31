@@ -1,7 +1,8 @@
+import { IPaginationOptions } from './pagination-options.interface';
 import { IUsuario } from './usuario.interface';
 
 //Listado de variables que queremos usar en el Servicio de resolver-operations
-export interface IVariables{    
+export interface IVariables{
     // Usuario
     id?: number;
     // Categoria
@@ -24,6 +25,11 @@ export interface IVariables{
     usuario_modificacion?: string;
 
     nuevoRegistro?: IVariables;
-
     usuario?: IUsuario;
+
+    //Opciones para la paginación de los datos. (opcional)
+    pagination?: IPaginationOptions;
+    page?: number;
+    itemsPage?: number;
+
 }

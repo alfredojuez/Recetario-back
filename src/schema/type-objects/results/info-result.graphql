@@ -1,0 +1,11 @@
+type ResultInfo {
+    "Página seleccionada"
+    page:Int!
+    "Numero de documentos mostrados por página"
+    itemsPage:Int!
+
+    "Numero total de registos de la búsqueda"
+    totalItems:Int!
+    "Páginas que contiene el resultado"
+    totalPages:Int!
+}

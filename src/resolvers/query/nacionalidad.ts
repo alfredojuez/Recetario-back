@@ -4,8 +4,8 @@ import NacionalidadesService from '../../services/nacionalidades.service';
 const resolversQueryNacionalidades: IResolvers = {
   Query: 
   {
-    async ListadoNacionalidades(_, __, { db }) {
-      return await new NacionalidadesService(_, __, { db }).items();
+    async ListadoNacionalidades(_, {page, itemsPage }, { db }) {
+      return await new NacionalidadesService(_, {}, { db }).items();
     },
     async DetalleNacionalidad(_, { idNacionalidad }, { db }) 
     {

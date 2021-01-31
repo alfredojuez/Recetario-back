@@ -3,9 +3,9 @@ import IngredientesService from '../../services/ingredientes.service';
 
 const resolversQueryIngredientes: IResolvers = {
   Query: {
-    async ListadoIngredientes(_, __, { db }) 
+    async ListadoIngredientes(_, {page, itemsPage }, { db }) 
     {
-      return await new IngredientesService(_, __, { db }).items();
+      return await new IngredientesService(_, {}, { db }).items();
     },
     async DetalleIngrediente(_, { idIngrediente }, { db }) 
     {
