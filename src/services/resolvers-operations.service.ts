@@ -161,13 +161,16 @@ class ResolversOperationsService
                 filter,
                 objUpdate
               );
-
-            if (res.result.ok === 1){
+            if (res.result.nModified === 1){
                 respuesta = {
                     status: true,
                     message: `Registro ${item} actualizado correctamente a la base de datos`,
                     item: Object.assign({}, filter, objUpdate),
                 };
+            }
+            else
+            {
+                console.log(`No había campos que actualizar en la BD, ya eran correctos`);
             }
         }catch (error)
         {
@@ -207,6 +210,12 @@ class ResolversOperationsService
 
         return respuesta;
 
+    }
+
+    protected async LogicalDel(collection:string, filter:object, item:string)
+    {
+        //La desactivación es poner el campo active a falso.
+        return this.update(collection, filter, { activo:false }, item);
     }
 }
 

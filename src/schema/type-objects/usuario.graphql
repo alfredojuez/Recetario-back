@@ -5,7 +5,7 @@ Si la pass == null, el usuario deberá cambiarla cuando acceda por primera vez
 """
 type Usuario{
     "Identificador único dado por Mongo"
-    id: ID!
+    id: Int!
     "Identificador único para registro en APP"
     email: String!
     "Datos del usuario"

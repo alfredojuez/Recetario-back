@@ -18,6 +18,9 @@ const resolversMutationUsuario: IResolvers = {
     async updateUsuario(_, { usuario }, { db }) {             
       return new UsuariosService(_, { usuario }, { db } ).modify();
     },
+    async deleteUsuario(_, { id }, { db }) {             
+      return new UsuariosService(_, { id }, { db } ).delete();
+    },
 
   },  // fin del mutation
 };

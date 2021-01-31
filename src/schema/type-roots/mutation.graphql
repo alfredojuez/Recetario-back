@@ -8,6 +8,7 @@ type Mutation{
     # ------------------------
     addUsuario(usuario: UsuarioInput!): ResultUsuario
     updateUsuario(usuario: UsuarioInput!): ResultUsuario
+    deleteUsuario(id: Int): ResultUsuario
 
     # ------------------------
     # Categorias

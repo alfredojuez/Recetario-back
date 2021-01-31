@@ -323,6 +323,8 @@ class UsuariosService extends ResolversOperationsService
             message: 'Datos de usuario no válidos',
             usuario:  {} || null
         };
+        respuesta.usuario = null;
+
         console.log(chalk.blueBright(`Solicitada actualización de datos del usuario`));
 
         const nuevoRegistro = this.getVariables().usuario!;    //para indicar que estamos leyendo los datos
@@ -368,6 +370,68 @@ class UsuariosService extends ResolversOperationsService
     }
 
     // D: eliminar
+    async delete(realDelete: boolean = false)
+    {
+        const verbo = (realDelete)?'ELIMINACIÓN':'DESACTIVACION';
+        const LOG_NAME = `Ejecución GraphQL -> ${verbo} de usuario`;
+        console.time(LOG_NAME);
+        console.log(LINEAS.TITULO_X2);
+        logTime();      
+
+        //respuesta por defecto.
+        let respuesta = {
+            status:false,
+            message: 'Datos de usuario no válidos',
+            usuario:  {} || null
+        };
+        respuesta.usuario = null;
+
+        console.log(chalk.blueBright(`Solicitada ${verbo} de usuario`));
+
+        const idRegistro = this.getVariables().id!;    //para indicar que estamos leyendo los datos       
+
+        if (idRegistro ===undefined || isNaN(idRegistro))
+        {
+            respuesta.message = 'El identificador de registro no es válido.';
+        }
+        else
+        {
+            //desactivamos el usuario si le encontramos
+            const db = this.getDb();
+          
+
+            const userCheckID = await checkInDatabase(db, this.collection, 'id', idRegistro.toString(), TIPO_CAMPO.NUMBER);
+            if (userCheckID)
+            {
+                console.log(`Usuario con ${chalk.yellow('id ' + idRegistro)} encontrado`);
+
+                // procedemos a borrar el registro de manera logica
+                let result = null;
+                if(realDelete)
+                {
+                    result = await this.del(this.collection, {id: idRegistro}, 'usuario');
+                }
+                else
+                {
+                    result = await this.LogicalDel(this.collection, {id: idRegistro}, 'usuario');
+                }
+                 
+                if (result.status)
+                {
+                    respuesta = {
+                        status: true,
+                        message: `${verbo} de usuario realizada correctamente`,
+                        usuario: userCheckID
+                    };
+                }
+            }
+        }
+
+        (respuesta.status)?console.log(chalk.green(respuesta.message)):console.log(chalk.red(respuesta.message));
+        console.timeEnd(LOG_NAME);
+
+        return respuesta;
+    }
 }
 
 export default UsuariosService;
