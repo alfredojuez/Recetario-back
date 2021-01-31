@@ -237,7 +237,10 @@ class UsuariosService extends ResolversOperationsService
                     && nuevoUsuario.pass!== undefined && nuevoUsuario.pass !== ''
                     && nuevoUsuario.fecha_nacimiento!== undefined && nuevoUsuario.fecha_nacimiento !== '')
                     {
+                        console.log('Verificación de datos correcta');
+
                         nuevoUsuario.id = await asignacionID(db, this.collection, {fecha_alta: -1});
+                        console.log(`Se asigna el ID: ${nuevoUsuario.id} al nuevo usuario`);
                 
                         // Fecha actual en formato ISO
                         const now = new Date().toISOString();
