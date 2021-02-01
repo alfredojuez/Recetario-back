@@ -3,7 +3,7 @@ import { count } from 'console';
 import { Db } from 'mongodb';
 import { countElements } from './db-operations';
 
-export  async function pagination(db: Db, collection:string, page: number = 1, itemsPage:number=20)
+export  async function pagination(db: Db, collection:string, filtro: object = {}, page: number = 1, itemsPage:number=20)
 {
     const MAX=50;
     //comprobar el numero de items por página
@@ -18,7 +18,7 @@ export  async function pagination(db: Db, collection:string, page: number = 1, i
         console.log(chalk.yellow(`Se cambia la página solicitada por la primera por estar fuera de los rangos permitidos`));
     }
 
-    const totalItems =await countElements(db, collection);
+    const totalItems =await countElements(db, collection, filtro);
     const totalPages  =  Math.ceil(totalItems /itemsPage);
 
     const respuesta =  {
