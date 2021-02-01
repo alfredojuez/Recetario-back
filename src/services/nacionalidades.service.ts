@@ -80,8 +80,10 @@ class NacionalidadesService extends ResolversOperationsService
     {
         const page = this.getVariables().pagination?.page;
         const itemsPage = this.getVariables().pagination?.itemsPage;
-        const result = await this.list(this.collection, 'nacionalidades');
-        return {status: result.status, message: result.message, nacionalidades: result.items};
+        
+        const result = await this.list(this.collection, 'nacionalidades', {}, page, itemsPage);
+
+        return {info: result.info, status: result.status, message: result.message, nacionalidades: result.items};
     }
     
     // R: detalles

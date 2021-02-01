@@ -2,7 +2,7 @@ import chalk from 'chalk';
 import { IResolvers } from 'graphql-tools';
 
 import { COLLECTIONS, LINEAS, MENSAJES } from '../../config/constant';
-import logTime from '../../functions';
+import logTime, { logResponse } from '../../functions';
 import JWT from '../../lib/jwt';
 import { findElements, findOneElement } from '../../lib/db-operations';
 import ResolversOperationsService from '../../services/resolvers-operations.service';
@@ -63,19 +63,56 @@ const resolversQueryUsuarios: IResolvers = {
     // },
 
     //Con esta función hacemos lo mismo que con la funcion anterior que se queda comentada.
-    async ListadoUsuarios(_, __, { db })  
+    async ListadoUsuarios(_, variables, { db })  
     {
-      return await new UsuariosService(_, __, { db }).items();
+      const LOG_NAME = `Ejecución GraphQL -> Listado de ${COLLECTIONS.USUARIOS} ACTIVOS`;
+      console.time(LOG_NAME);
+      console.log(LINEAS.TITULO_X2);
+      logTime();
+      console.log(`Solicitada búsqueda en la tabla ${COLLECTIONS.USUARIOS}:  ${chalk.yellow(JSON.stringify(variables))} `);
+
+
+      const respuesta = await new UsuariosService(_, {pagination: variables}, { db }).items();
+      
+      // pintamos los datos del resultado en el log
+      logResponse(respuesta.status, respuesta.message);
+      console.timeEnd(LOG_NAME);
+
+      return respuesta;
     },
 
-    async ListadoUsuariosInactivos(_, __, { db })  
+    async ListadoUsuariosInactivos(_, variables, { db })  
     {
-      return await new UsuariosService(_, __, { db }).inactiveItems();
+      const LOG_NAME = `Ejecución GraphQL -> Listado de ${COLLECTIONS.USUARIOS} INACTIVOS`;
+      console.time(LOG_NAME);
+      console.log(LINEAS.TITULO_X2);
+      logTime();
+      console.log(`Solicitada búsqueda en la tabla ${COLLECTIONS.USUARIOS}:  ${chalk.yellow(JSON.stringify(variables))} `);
+
+      const respuesta = await new UsuariosService(_, {pagination: variables}, { db }).inactiveItems();
+      
+      // pintamos los datos del resultado en el log
+      logResponse(respuesta.status, respuesta.message);
+      console.timeEnd(LOG_NAME);
+
+      return respuesta;
     },
 
-    async ListadoUsuariosCompleto(_, __, { db })  
+    async ListadoUsuariosCompleto(_, variables, { db })  
     {
-      return await new UsuariosService(_, __, { db }).allItems();
+      const LOG_NAME = `Ejecución GraphQL -> Listado de ${COLLECTIONS.USUARIOS} COMPLETO`;
+      console.time(LOG_NAME);
+      console.log(LINEAS.TITULO_X2);
+      logTime();
+      console.log(`Solicitada búsqueda en la tabla ${COLLECTIONS.USUARIOS}:  ${chalk.yellow(JSON.stringify(variables))} `);
+
+      const respuesta = await new UsuariosService(_, {pagination: variables}, { db }).allItems();
+      
+      // pintamos los datos del resultado en el log
+      logResponse(respuesta.status, respuesta.message);
+      console.timeEnd(LOG_NAME);
+
+      return respuesta;
     },
 
     async login(_, { email, pass }, { db }) {

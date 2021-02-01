@@ -76,8 +76,10 @@ class IngredientesService extends ResolversOperationsService
     {        
         const page = this.getVariables().pagination?.page;
         const itemsPage = this.getVariables().pagination?.itemsPage;
-        const result = await this.list(this.collection, 'ingredientes');
-        return {status: result.status, message: result.message, ingredientes: result.items};
+
+        const result = await this.list(this.collection, 'ingredientes', {}, page, itemsPage);
+
+        return {info: result.info, status: result.status, message: result.message, ingredientes: result.items};
     }
 
     // R: detalles

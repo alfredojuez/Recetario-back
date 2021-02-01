@@ -1,5 +1,7 @@
 type ResultNacionalidades implements Result
 {
+    "información de la búsqueda"
+    info: ResultInfo
     "Estado de la operacion"
     status: Boolean!
     "mensaje de la operacion para dar feedback"

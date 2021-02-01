@@ -9,7 +9,7 @@ const resolversQueryCategorias: IResolvers = {
   {
     async ListadoCategorias(_, variables , { db }) 
     {            
-      const LOG_NAME = `Ejecución GraphQL -> Detalle de ${COLLECTIONS.CATEGORIAS}`;
+      const LOG_NAME = `Ejecución GraphQL -> Listado de ${COLLECTIONS.CATEGORIAS}`;
       console.time(LOG_NAME);
       console.log(LINEAS.TITULO_X2);
       logTime();
