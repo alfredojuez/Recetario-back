@@ -1,10 +1,11 @@
 import chalk from 'chalk';
 import { Db, Int32 } from 'mongodb';
 import { LINEAS } from '../config/constant';
-import logTime from '../functions';
+import { logTime, logResponse } from '../functions';
 import { IContextDB } from '../interfaces/context-db.interface';
 import { IVariables } from '../interfaces/variable.interface';
 import { deleteOneElement, findElements, findOneElement, insertOneElement, updateOneElement  } from '../lib/db-operations';
+import { pagination } from '../lib/pagination';
 
 class ResolversOperationsService
 {
@@ -13,7 +14,7 @@ class ResolversOperationsService
     private context: IContextDB;
     //root, vables y contexto
     constructor(root: object, 
-                variables: object,
+                variables: IVariables,
                 context: IContextDB)
     {
         this.root = root;
@@ -50,65 +51,49 @@ class ResolversOperationsService
         {
             respuesta.message = `Error inesperado al insertar el ${item}: ${error}`;
         }
-
         return respuesta;
     }
 
     // R: listar  (Esta protegida para que solo se acceda desde los hijos)
-    protected async list(collection: string, listElement: string, filtro: object = {}) 
+    protected async list(collection: string, listElement: string, filtro: object = {}, page: number = 1, itemsPage: number = 20) 
     {
-        const LOG_NAME = `Ejecución GraphQL -> Listado de ${ listElement }`;
-        console.time(LOG_NAME);
-
-        console.log(LINEAS.TITULO_X2);
-        logTime();
-        console.log(`Solicitado listado de ${ listElement }`);
-        
-        const arrayVacio : string[] = [];
+        const variables = this.getVariables();
+        const paginationData = await pagination(this.getDb(), collection, variables.pagination?.page, variables.pagination?.itemsPage);
 
         //por defecto la respuesta es que no se ha podido hacer, salvo que obtengamos datos
         let respuesta = {
-        status: false,
-        message: `No se han podido leer ${ listElement } de la base de datos`,
-        items: arrayVacio,
+            info:{} ||null,
+            status: false,
+            message: `No se han podido leer ${ listElement } de la base de datos`,
+            items: {} || null,
         };
+        respuesta.info = null;
+        respuesta.items = null;
+        let contador = 0;
 
         try 
         {
-            const resultado = await findElements(this.getDb(), collection, filtro);
-
+            const resultado = await findElements(this.getDb(), collection, filtro, paginationData);
             let mensaje = `No hay ningún registro de ${ listElement } en la base de datos`;
-            if (resultado.length > 0) {
-                mensaje = `Lista de ${ listElement } leida correctamente, total de registros: ` +
-                resultado.length;
-            }
+            contador = resultado.length;
 
             respuesta = {
+                info: paginationData ,
                 status: true,
-                message: mensaje,
+                message: `Lista de ${ listElement } leida correctamente, total de registros: ` + contador,
                 items: resultado,
             };
 
         } catch (err) {
-        console.log(err);
+            respuesta.message = 'Error desconocido: ' + err;
         }
 
-        // Nos muestra el tiempo transcurrido finalmente
-        console.log(`Recuperados ${respuesta.items.length} registros`);
-        console.timeEnd(LOG_NAME);
         return respuesta;
     }
     // R: detalles
 
-    protected async get(collection: string){
-        const LOG_NAME = `Ejecución GraphQL -> Detalle de ${ collection }`;
-        console.time(LOG_NAME);
-
-        console.log(LINEAS.TITULO_X2);
-        logTime();
-
-        console.log(`Solicitada búsqueda de registro con filtro ${chalk.yellow(JSON.stringify(this.variables))} en la tabla ${chalk.yellow(collection)}`);
-        
+    protected async get(collection: string)
+    {
         let respuesta = {
             status: false,
             message: `Error desconocido en la lectura de ${ collection }.`,
@@ -116,34 +101,27 @@ class ResolversOperationsService
             };
 
         try{
+            respuesta.message = `Registro NO encontrado`;
             const result = await findOneElement(this.getDb(), collection, this.variables);
-            let mensaje = `Registro NO encontrado`;
-
+            
             if (result)
             {
-                mensaje = `Registro encontrado`;
-                console.log(chalk.green(mensaje));
-                
+                respuesta = {
+                    status: true,
+                    message: `Registro encontrado`,
+                    item: result,
+                };
             }
-            else{
-                    console.log(chalk.red(mensaje));
-                }
-
-            respuesta = {
-                status: true,
-                message: mensaje,
-                item: result,
-            };
         }
         catch (error)
         {
-            console.log(chalk.red('ERROR DESCONODIDO'));
-            console.log(error);
+            respuesta.message = 'ERROR DESCONODIDO: ' + error;
         }
 
-        console.timeEnd(LOG_NAME);
+        
         return respuesta;        
     }
+
     // U: modificar
     protected async update(collection:string, filter:object, objUpdate: object, item:string)
     {
@@ -170,7 +148,7 @@ class ResolversOperationsService
             }
             else
             {
-                console.log(`No había campos que actualizar en la BD, ya eran correctos`);
+                respuesta.message = `No había campos que actualizar en la BD, ya eran correctos`;
             }
         }catch (error)
         {
@@ -179,6 +157,7 @@ class ResolversOperationsService
 
         return respuesta;
     }
+    
     // D: eliminar
     protected async del(collection:string, filter:object, item:string)
     {
@@ -209,13 +188,13 @@ class ResolversOperationsService
         }
 
         return respuesta;
-
     }
 
     protected async LogicalDel(collection:string, filter:object, item:string)
     {
-        //La desactivación es poner el campo active a falso.
-        return this.update(collection, filter, { activo:false }, item);
+        const respuesta = await this.update(collection, filter, { activo:false }, item);
+        //La desactivación es poner el campo active a falso.        
+        return respuesta;
     }
 }
 

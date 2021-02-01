@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import { COLLECTIONS } from '../config/constant';
-import { checkDataIsNotNull, checkInDatabase } from '../functions';
-import { ICategoria } from '../interfaces/categoria.interface';
+import { checkDataIsNotNull, checkInDatabase, logResponse } from '../functions';
+//import { ICategoria } from '../interfaces/categoria.interface';
 import { IContextDB } from '../interfaces/context-db.interface';
 import { IVariables } from '../interfaces/variable.interface';
 import { asignacionID } from '../lib/db-operations';
@@ -68,7 +68,7 @@ class CategoriasService extends ResolversOperationsService
         }
 
         // pintamos los datos del resultado en el log
-        (respuesta.status)?console.log(chalk.green(respuesta.message)):console.log(chalk.red(respuesta.message));
+        logResponse(respuesta.status, respuesta.message);
 
         return respuesta;
     }
@@ -76,15 +76,18 @@ class CategoriasService extends ResolversOperationsService
     // R: listar
     async items()
     {
-        const result = await this.list(this.collection, 'categorias');
-        return {status: result.status, message: result.message, categorias: result.items};
+        const page = this.getVariables().pagination?.page!;
+        const itemsPage = this.getVariables().pagination?.itemsPage;
+        const respuesta = await this.list(this.collection, 'categorias', {}, page, itemsPage);
+
+        return {info: respuesta.info, status: respuesta.status, message: respuesta.message, categorias: respuesta.items};
     }
         
     // R: detalles
     async details()
     {
-        const result = await this.get(this.collection);
-        return {status: result.status, message: result.message, categoria: result.item};
+        const respuesta = await this.get(this.collection);        
+        return {status: respuesta.status, message: respuesta.message, categoria: respuesta.item};
     }
 
     // U: modificar
@@ -168,7 +171,7 @@ class CategoriasService extends ResolversOperationsService
         }
         
         // pintamos los datos del resultado en el log
-        (respuesta.status)?console.log(chalk.green(respuesta.message)):console.log(chalk.red(respuesta.message));
+        logResponse(respuesta.status, respuesta.message);
 
         return respuesta;
     }
@@ -207,7 +210,7 @@ class CategoriasService extends ResolversOperationsService
         }
         
         // pintamos los datos del resultado en el log
-        (respuesta.status)?console.log(chalk.green(respuesta.message)):console.log(chalk.red(respuesta.message));
+        logResponse(respuesta.status, respuesta.message);
 
         return respuesta;
     }

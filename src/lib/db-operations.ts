@@ -1,6 +1,5 @@
-import chalk from 'chalk';
 import { Db } from 'mongodb';
-import { LINEAS } from '../config/constant';
+import { IPaginationOptions } from '../interfaces/pagination-options.interface';
 
 /**
  * Obtener el ID que vamos a usar a continuación
@@ -39,9 +38,30 @@ export const findOneElement = async(
 export const findElements = async (
     database: Db,
     collection: string,
-    filter: object = {}
+    filter: object = {},
+    paginationOptions: IPaginationOptions = {
+        page:1,
+        totalPages:1,
+        itemsPage: -1,
+        skip:0,
+        totalItems: -1
+    }
 ) => {
-    return await database.collection(collection).find(filter).toArray();
+    let respuesta = [];
+
+    if (paginationOptions.totalItems === -1)
+    {
+        respuesta = await database.collection(collection).find(filter).toArray();
+    }
+    else
+    {
+        respuesta = await database.collection(collection)
+                                  .find(filter)
+                                  .limit(paginationOptions.itemsPage)
+                                  .skip(paginationOptions.skip)
+                                  .toArray();
+    }
+    return respuesta;
 };
 
 export const insertOneElement = async(
@@ -76,4 +96,17 @@ export const deleteOneElement = async(
     filter: object,
 )=> {
     return await database.collection(collection).deleteOne(filter);
+};
+
+
+/**
+ * Contaremos cuantos registros tenemos para la paginacion de los listados
+ * @param database      Base de datos sobre la que trabajaremos 
+ * @param collection    Sobre que tabla haremos la lectura
+ */
+export const countElements = async (
+    database: Db,
+    collection: string,
+) => {
+    return await database.collection(collection).countDocuments();
 };

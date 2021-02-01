@@ -4,30 +4,30 @@
 type Query
 {
     # Lista de usuarios activos en la base de datos
-    ListadoUsuarios: ResultUsuarios
+    ListadoUsuarios(page: Int = 1, itemsPage: Int = 20): ResultUsuarios
     # Lista de usuarios inactivos  en la base de datos
-    ListadoUsuariosInactivos: ResultUsuarios
+    ListadoUsuariosInactivos(page: Int = 1, itemsPage: Int = 20): ResultUsuarios
     # Lista de usuarios registrados en la base de datos
-    ListadoUsuariosCompleto: ResultUsuarios
+    ListadoUsuariosCompleto(page: Int = 1, itemsPage: Int = 20): ResultUsuarios
 
-    # Para iniciar sesión
+    # Permite obtener un token tras iniciar sesión
     login(email:String!, pass: String!): ResultLogin
 
-    # Autenticarnos mediante token
+    # Información del usuario logado haciendo uso del token obtenido en el login
     me: ResultUsuario
 
-    # Mostrar lista de ingredientes
-    ListadoIngredientes: ResultIngredientes
-    "Detalle de una categoria"
+    # Listado de ingredientes
+    ListadoIngredientes(page: Int = 1, itemsPage: Int = 20): ResultIngredientes
+    # Muestra la información de un ingrediente en concreto
     DetalleIngrediente(idIngrediente: Int!): ResultIngrediente
     
-    # Mostrar listado de categorias
-    ListadoCategorias: ResultCategorias
-    # Detalle de una categoria
+    # Listado de categorias
+    ListadoCategorias(page: Int = 1, itemsPage: Int = 20): ResultCategorias
+    # Muestra la información de una categoria en concreto
     DetalleCategoria(idCategoria: Int!): ResultCategoria
 
-    # Mostrar listado de nacionalidades
-    ListadoNacionalidades: ResultNacionalidades
-    # Detalle de una nacionalidad
+    # Listado de nacionalidades
+    ListadoNacionalidades(page: Int = 1, itemsPage: Int = 20): ResultNacionalidades
+    # Muestra la información de una nacionalidad en concreto
     DetalleNacionalidad(idNacionalidad: ID!): ResultNacionalidad
 }
