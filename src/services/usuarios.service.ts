@@ -291,7 +291,6 @@ class UsuariosService extends ResolversOperationsService
         const itemsPage = this.getVariables().pagination?.itemsPage;
 
         const result = await this.list(this.collection, 'usuarios', { activo:true }, page, itemsPage);
-
         return {info: result.info, status: result.status, message: result.message, usuarios: result.items};
     }
 
