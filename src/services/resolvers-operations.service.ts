@@ -74,7 +74,10 @@ class ResolversOperationsService
         try 
         {
             const resultado = await findElements(this.getDb(), collection, filtro, paginationData);
-            paginationData.totalItems = resultado.length;
+            console.log('(---------------------------------');
+            console.log(paginationData);
+            console.log('(---------------------------------');
+            //paginationData.totalItems = resultado.length;
             let mensaje = `No hay ningún registro de ${ listElement } en la base de datos`;
             contador = resultado.length;
 
