@@ -247,7 +247,7 @@ class UsuariosService extends ResolversOperationsService
                         const now = new Date().toISOString();
                 
                         //Añadimos los campos que son automáticos para el usuario
-                        nuevoUsuario.perfil = PERFILES.ADMIN;
+                        nuevoUsuario.perfil = (RegistroBD.perfil)?RegistroBD.perfil:PERFILES.USER;
                         nuevoUsuario.fecha_alta = now;
                         nuevoUsuario.ultimo_login = now;
                         nuevoUsuario.activo = true;                 
