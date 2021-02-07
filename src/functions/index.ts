@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 import { Db } from 'mongodb';
 import { findOneElement } from '../lib/db-operations';
+import JWT from '../lib/jwt';
 
 /**
  * Función que pinta en el log la fecha y hora actuales
@@ -26,6 +27,40 @@ export function logTime() {
 export function logResponse(status: boolean, text: string)
 {
   (status)?console.log(chalk.green(text)):console.log(chalk.red(text));
+}
+
+/**
+ * Verifica si dentro del token tenemos un determinado perfil
+ * @param token 
+ * @param opcPerfil 
+ */
+export function tegoPermisos(token: string, opcPerfil: string)
+{
+    let  respuesta = {
+        status: false,
+        message: 'Verificación de permisos no superada',
+        usuario: {} || null
+    };
+    respuesta.usuario = null;
+
+    const datosToken = JSON.parse(JSON.stringify(new JWT().getInfo(token)));
+
+    if(datosToken.status )
+    {
+        if(datosToken.usuario.perfil === opcPerfil)
+        {
+                respuesta.status = true;
+                respuesta.message = `El usuario tiene permisos de ${datosToken.usuario.perfil}`;
+                respuesta.usuario = datosToken.usuario;
+        }
+        else
+        {
+          respuesta.message = `El usuario tiene permisos de ${datosToken.usuario.perfil}`;
+        }
+    }
+    else{  respuesta.message = 'TOKEN no válido';}
+
+    return respuesta;
 }
 
 /**

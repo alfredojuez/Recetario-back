@@ -1,6 +1,5 @@
-import chalk from 'chalk';
 import { COLLECTIONS } from '../config/constant';
-import { checkDataIsNotNull, checkInDatabase, logResponse } from '../functions';
+import { checkDataIsNotNull, checkInDatabase, logResponse, PERFILES, tegoPermisos } from '../functions';
 import { IContextDB } from '../interfaces/context-db.interface';
 import { IVariables } from '../interfaces/variable.interface';
 import { asignacionID } from '../lib/db-operations';
@@ -22,8 +21,6 @@ class IngredientesService extends ResolversOperationsService
     // C: añadir
     async insert()
     {
-        const ficha = this.getVariables();
-
         //valor por defecto.
         let respuesta = 
         {
@@ -31,40 +28,53 @@ class IngredientesService extends ResolversOperationsService
             message: 'La información para el ingrediente no es correcta.',
             ingrediente: {} || null,
         };
-
         respuesta.ingrediente = null;
-        
-        if( ficha.nombre!==undefined && checkDataIsNotNull(ficha.nombre) )
+
+        //Los usuarios no tienen permisos, solo los administradores y cocineros.
+        const datosAcceso = tegoPermisos(this.getContext().token!, PERFILES.USER);
+        if(!datosAcceso.status)
         {
-            const nombreIsInDatabase = await checkInDatabase(this.getDb(), this.collection, 'nombre', ficha.nombre);
-            if (nombreIsInDatabase)
+
+            const ficha = this.getVariables();
+
+        
+            if( ficha.nombre!==undefined && checkDataIsNotNull(ficha.nombre) )
             {
-                respuesta.message = `El ingrediente ${ficha.nombre} ya existe en la base de datos`;
-                respuesta.ingrediente=null;
-            }
-            else
-            {
-                // Buscamos el ultimo ID de la BD
-                const newID = await asignacionID(this.getDb(), this.collection, { idIngrediente: -1 }, 'idIngrediente') ;
-                ficha.idIngrediente = +newID;     //con el mas lo convierto en entero
-                ficha.fecha_alta = new Date().toISOString();
-
-                // PTE de codificar la obtención del usuario logado y su ID
-                const UsuarioLogado = '1';
-                // FIN PTE
-
-                ficha.usuario_alta = UsuarioLogado;
-
-                const result = await this.add(this.collection, ficha, 'ingrediente');
-                if (result)
+                const nombreIsInDatabase = await checkInDatabase(this.getDb(), this.collection, 'nombre', ficha.nombre);
+                if (nombreIsInDatabase)
                 {
-                    respuesta.status=result.status;
-                    respuesta.message=result.message;
-                    respuesta.ingrediente = result.item;
+                    respuesta.message = `El ingrediente ${ficha.nombre} ya existe en la base de datos`;
+                    respuesta.ingrediente=null;
                 }
-            }            
-        }
+                else
+                {
+                    // Buscamos el ultimo ID de la BD
+                    const newID = await asignacionID(this.getDb(), this.collection, { idIngrediente: -1 }, 'idIngrediente') ;
+                    ficha.idIngrediente = +newID;     //con el mas lo convierto en entero
+                    ficha.fecha_alta = new Date().toISOString();
 
+                    // PTE de codificar la obtención del usuario logado y su ID
+                    const UsuarioLogado = '1';
+                    // FIN PTE
+
+                    ficha.usuario_alta = UsuarioLogado;
+
+                    const result = await this.add(this.collection, ficha, 'ingrediente');
+                    if (result)
+                    {
+                        respuesta.status=result.status;
+                        respuesta.message=result.message;
+                        respuesta.ingrediente = result.item;
+                    }
+                }            
+            }
+
+        }
+        else
+        {
+            console.log('No se puede proceder al registro ');
+            respuesta.message = datosAcceso.message;
+        }
         // pintamos los datos del resultado en el log
         logResponse(respuesta.status, respuesta.message);
 
@@ -100,59 +110,70 @@ class IngredientesService extends ResolversOperationsService
             ingrediente:  {} || null,
         };
         respuesta.ingrediente = null;
-
-        const variables = this.getVariables();
-        const id = variables.idIngrediente;
-        const datosNuevoRegistro = variables.nuevoRegistro?variables.nuevoRegistro:{} ;
         
-        const idIsInDatabase = await checkInDatabase(this.getDb(), this.collection, 'idIngrediente', String(id),  'number');
-
-        if (!idIsInDatabase)
+        //Sólo admin
+        const datosAcceso = tegoPermisos(this.getContext().token!, PERFILES.ADMIN);
+        if(datosAcceso.status)
         {
-            respuesta.message = `El ingrediente no existe en la base de datos, no se puede modificar`;
+
+            const variables = this.getVariables();
+            const id = variables.idIngrediente;
+            const datosNuevoRegistro = variables.nuevoRegistro?variables.nuevoRegistro:{} ;
+            
+            const idIsInDatabase = await checkInDatabase(this.getDb(), this.collection, 'idIngrediente', String(id),  'number');
+
+            if (!idIsInDatabase)
+            {
+                respuesta.message = `El ingrediente no existe en la base de datos, no se puede modificar`;
+            }
+            else
+            {
+                console.log('Registro encontrado en BD');
+                let ficha = idIsInDatabase;
+
+                let campoValido = false;
+                
+                //campos modificables
+                // nombre, familia, descripcion, foto, calorias
+                const camposModificables = ['nombre', 'familia', 'descripcion', 'foto', 'calorias'];
+
+                // actualizamos los campos que nos vengan con contenido.
+                camposModificables.forEach( function(campo) 
+                {
+                    const valor = Object(datosNuevoRegistro)[campo];
+
+                    if( valor!==undefined && checkDataIsNotNull(valor) )
+                    {
+                        campoValido = true;
+                        console.log(`Cambiamos el valor ${ficha[campo]} por ${valor}`);
+                        ficha[campo] = valor;
+                    }
+                });
+
+                if(campoValido)
+                {
+                    // PTE de codificar la obtención del usuario logado y su ID
+                    const UsuarioLogado = '1';
+                    // FIN PTE
+
+                    ficha.usuario_modificacion = UsuarioLogado;
+                    ficha.fecha_modificacion = new Date().toISOString();
+
+                    const result = await this.update(this.collection, {idIngrediente: id}, ficha, 'ingrediente');
+
+                    if (result)
+                    {
+                        respuesta.status=result.status;
+                        respuesta.message=result.message;
+                        respuesta.ingrediente = result.item;
+                    }
+                }
+            }
         }
         else
         {
-            console.log('Registro encontrado en BD');
-            let ficha = idIsInDatabase;
-
-            let campoValido = false;
-            
-            //campos modificables
-            // nombre, familia, descripcion, foto, calorias
-            const camposModificables = ['nombre', 'familia', 'descripcion', 'foto', 'calorias'];
-
-            // actualizamos los campos que nos vengan con contenido.
-            camposModificables.forEach( function(campo) 
-            {
-                const valor = Object(datosNuevoRegistro)[campo];
-
-                if( valor!==undefined && checkDataIsNotNull(valor) )
-                {
-                    campoValido = true;
-                    console.log(`Cambiamos el valor ${ficha[campo]} por ${valor}`);
-                    ficha[campo] = valor;
-                }
-            });
-
-            if(campoValido)
-            {
-                // PTE de codificar la obtención del usuario logado y su ID
-                const UsuarioLogado = '1';
-                // FIN PTE
-
-                ficha.usuario_modificacion = UsuarioLogado;
-                ficha.fecha_modificacion = new Date().toISOString();
-
-                const result = await this.update(this.collection, {idIngrediente: id}, ficha, 'ingrediente');
-
-                if (result)
-                {
-                    respuesta.status=result.status;
-                    respuesta.message=result.message;
-                    respuesta.ingrediente = result.item;
-                }
-            }
+            console.log('No se puede proceder a la actualización del registro');
+            respuesta.message = 'No tiene permisos suficientes para realizar esta operación';
         }
         
         // pintamos los datos del resultado en el log
@@ -173,27 +194,35 @@ class IngredientesService extends ResolversOperationsService
         };
         respuesta.ingrediente = null;
 
-        const id = this.getVariables().idIngrediente;
-        
-        const idIsInDatabase = await checkInDatabase(this.getDb(), this.collection, 'idIngrediente', String(id),  'number');
-
-        if (!idIsInDatabase)
+        // solo los administradores .
+        const datosAcceso = tegoPermisos(this.getContext().token!, PERFILES.ADMIN);
+        if(datosAcceso.status)
         {
-            respuesta.message = `El ingrediente no existe en la base de datos, no se puede eliminar`;
+            const id = this.getVariables().idIngrediente;        
+            const idIsInDatabase = await checkInDatabase(this.getDb(), this.collection, 'idIngrediente', String(id),  'number');
+
+            if (!idIsInDatabase)
+            {
+                respuesta.message = `El ingrediente no existe en la base de datos, no se puede eliminar`;
+            }
+            else
+            {
+                console.log('Registro encontrado en BD');
+                const result = await this.del(this.collection, {idIngrediente: id}, 'ingrediente');
+
+                    if (result)
+                    {
+                        respuesta.status=result.status;
+                        respuesta.message=result.message;
+                        respuesta.ingrediente = idIsInDatabase;
+                    }
+            }
         }
         else
         {
-            console.log('Registro encontrado en BD');
-            const result = await this.del(this.collection, {idIngrediente: id}, 'ingrediente');
-
-                if (result)
-                {
-                    respuesta.status=result.status;
-                    respuesta.message=result.message;
-                    respuesta.ingrediente = idIsInDatabase;
-                }
+            console.log('No se puede proceder al borrrado del registro');
+            respuesta.message = 'No tiene permisos suficientes para realizar esta operación';
         }
-        
         // pintamos los datos del resultado en el log
         logResponse(respuesta.status, respuesta.message);
 
