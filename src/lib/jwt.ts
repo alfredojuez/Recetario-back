@@ -16,23 +16,51 @@ class JWT{
         );
     }
 
+    getInfo(token: string)
+    {
+        let respuesta = {
+            status: false,
+            message:  MENSAJES.LOGIN_VERIFICATION_KO,
+            usuario: {} || null
+        };
+        respuesta.usuario = null;
+        
+        try
+        {
+            const datos = jwt.verify(token, this.secretKey);
+            //convertimos lo devuelto por verify en un objeto recorrible
+            const datosToken = JSON.parse(JSON.stringify(Object.values(datos)[0]));            
+            console.log(`Usuario solicitante: ${chalk.yellow(datosToken.usuario)} con el ID: ${chalk.yellow(datosToken.id)}`);
+            respuesta = {
+                status: true,
+                message: MENSAJES.LOGIN_VERIFICATION_OK,
+                usuario: datosToken
+            };
+        }
+        catch
+        {
+                console.log('Validación de token incorrecta');
+        }
+        return respuesta;
+    }
+
     verify(token:string)
     {
         let respuesta = {
             status: false,
             message:  MENSAJES.LOGIN_VERIFICATION_KO,
             usuario: {} || null
-        }
+        };
         respuesta.usuario = null;
 
         try{
-            let datos = jwt.verify(token, this.secretKey);
-            //convertimos lo devuelto por verufy en un objeto recorrible
+            let datos = jwt.verify(token, this.secretKey);            
+            //convertimos lo devuelto por verify en un objeto recorrible
             datos = JSON.parse(JSON.stringify(Object.values(datos)[0]));
             respuesta = {
                 status: true,
                 message: MENSAJES.LOGIN_VERIFICATION_OK,
-                usuario: datos
+                usuario: JSON.parse(JSON.stringify(datos))
             };
         }
         catch

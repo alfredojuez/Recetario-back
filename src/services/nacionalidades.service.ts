@@ -2,7 +2,7 @@ import { COLLECTIONS } from '../config/constant';
 import { IContextDB } from '../interfaces/context-db.interface';
 import { IVariables } from '../interfaces/variable.interface';
 import ResolversOperationsService from './resolvers-operations.service';
-import {checkDataIsNotNull, checkInDatabase, logResponse} from '../functions';
+import {checkDataIsNotNull, checkInDatabase, logResponse, PERFILES, tegoPermisos} from '../functions';
 import chalk from 'chalk';
 import slugify from 'slugify';
 
@@ -35,40 +35,49 @@ class NacionalidadesService extends ResolversOperationsService
 
         let txtResumen = '';
         
-        //Si los campos son correctos.
-        if(ficha.idNacionalidad!==undefined && checkDataIsNotNull(ficha.idNacionalidad)
-        && ficha.nombre!==undefined && checkDataIsNotNull(ficha.nombre))
+        //Los usuarios no tienen permisos, solo los administradores y cocineros.
+        const datosAcceso = tegoPermisos(this.getContext().token!, PERFILES.USER);
+        if(!datosAcceso.status)
         {
-            //Comprobamos si existen en la BD
-            const idIsInDatabase = await checkInDatabase(this.getDb(), this.collection, 'idNacionalidad', ficha.idNacionalidad);
-            const nombreIsInDatabase = await checkInDatabase(this.getDb(), this.collection, 'nombre', ficha.nombre);
-            if (nombreIsInDatabase!==null || idIsInDatabase!==null)
+            //Si los campos son correctos.
+            if(ficha.idNacionalidad!==undefined && checkDataIsNotNull(ficha.idNacionalidad)
+            && ficha.nombre!==undefined && checkDataIsNotNull(ficha.nombre))
             {
-                const txtID =(idIsInDatabase) ? `La nacionalidad ${ficha.nombre} ya existe en la base de datos`: '';
-                const txtNombre = (nombreIsInDatabase) ? `El código ${ficha.idNacionalidad} ya existe en la base de datos`: '';
-                txtResumen += txtID + ' ' + txtNombre;
-            }
-            else
-            {
-                ficha.fecha_alta = new Date().toISOString();
-                ficha.icono= slugify(ficha.nombre,{lower:true}) + '.png';
-
-                // PTE de codificar la obtención del usuario logado y su ID
-                const UsuarioLogado = '1';
-                // FIN PTE
-    
-                ficha.usuario_alta = UsuarioLogado;
-                const result = await this.add(this.collection, ficha, 'nacionalidad');
-                
-                if (result.status)
+                //Comprobamos si existen en la BD
+                const idIsInDatabase = await checkInDatabase(this.getDb(), this.collection, 'idNacionalidad', ficha.idNacionalidad);
+                const nombreIsInDatabase = await checkInDatabase(this.getDb(), this.collection, 'nombre', ficha.nombre);
+                if (nombreIsInDatabase!==null || idIsInDatabase!==null)
                 {
-                    respuesta.status=result.status;
-                    respuesta.message=result.message;
-                    respuesta.nacionalidad = result.item;
+                    const txtID =(idIsInDatabase) ? `La nacionalidad ${ficha.nombre} ya existe en la base de datos`: '';
+                    const txtNombre = (nombreIsInDatabase) ? `El código ${ficha.idNacionalidad} ya existe en la base de datos`: '';
+                    txtResumen += txtID + ' ' + txtNombre;
+                }
+                else
+                {
+                    ficha.fecha_alta = new Date().toISOString();
+                    ficha.icono= slugify(ficha.nombre,{lower:true}) + '.png';
+
+                    // PTE de codificar la obtención del usuario logado y su ID
+                    const UsuarioLogado = '1';
+                    // FIN PTE
+        
+                    ficha.usuario_alta = UsuarioLogado;
+                    const result = await this.add(this.collection, ficha, 'nacionalidad');
+                    
+                    if (result.status)
+                    {
+                        respuesta.status=result.status;
+                        respuesta.message=result.message;
+                        respuesta.nacionalidad = result.item;
+                    }
                 }
             }
         }
-
+        else
+        {
+            console.log('No se puede proceder a la creación del registro');
+            respuesta.message = 'No tiene permisos suficientes para realizar esta operación';
+        }
         // pintamos los datos del resultado en el log
         (respuesta.status)?console.log(chalk.green(respuesta.message)):console.log(chalk.red(respuesta.message) + '\n' + chalk.hex('#FF3333')(txtResumen));
 
@@ -92,6 +101,7 @@ class NacionalidadesService extends ResolversOperationsService
         const result = await this.get(this.collection);
         return {status: result.status, message: result.message, nacionalidad: result.item};
     }
+
     // U: modificar
     async modify()
     {
@@ -104,64 +114,74 @@ class NacionalidadesService extends ResolversOperationsService
         };
         respuesta.nacionalidad = null;
 
-        const variables = this.getVariables();
-        const id = variables.idNacionalidad;
-        const datosNuevoRegistro = variables.nuevoRegistro?variables.nuevoRegistro:{} ;
-        
-        const idIsInDatabase = await checkInDatabase(this.getDb(), this.collection, 'idNacionalidad', String(id),  'string');
-
-        if (!idIsInDatabase)
+        //Los usuarios no tienen permisos, solo los administradores y cocineros.
+        const datosAcceso = tegoPermisos(this.getContext().token!, PERFILES.ADMIN);
+        if(datosAcceso.status)
         {
-            respuesta.message = `La nacionalidad no existe en la base de datos, no se puede modificar`;
-        }
-        else
-        {
-            console.log('Registro encontrado en BD');
-            let ficha = idIsInDatabase;
-
-            let campoValido = false;
+            const variables = this.getVariables();
+            const id = variables.idNacionalidad;
+            const datosNuevoRegistro = variables.nuevoRegistro?variables.nuevoRegistro:{} ;
             
-            //campos modificables
-            // nombre, familia, descripcion, foto, calorias
-            const camposModificables = ['nombre', 'descripcion', 'foto'];
+            const idIsInDatabase = await checkInDatabase(this.getDb(), this.collection, 'idNacionalidad', String(id),  'string');
 
-            // actualizamos los campos que nos vengan con contenido.
-            camposModificables.forEach( function(campo) 
+            if (!idIsInDatabase)
             {
-                const valor = Object(datosNuevoRegistro)[campo];
+                respuesta.message = `La nacionalidad no existe en la base de datos, no se puede modificar`;
+            }
+            else
+            {
+                console.log('Registro encontrado en BD');
+                let ficha = idIsInDatabase;
 
-                if( valor!==undefined && checkDataIsNotNull(valor) )
+                let campoValido = false;
+                
+                //campos modificables
+                // nombre, familia, descripcion, foto, calorias
+                const camposModificables = ['nombre', 'descripcion', 'foto'];
+
+                // actualizamos los campos que nos vengan con contenido.
+                camposModificables.forEach( function(campo) 
                 {
-                    campoValido = true;
-                    console.log(`Cambiamos el valor ${ficha[campo]} por ${valor}`);
-                    ficha[campo] = valor;
-                    if(campo === 'nombre')
+                    const valor = Object(datosNuevoRegistro)[campo];
+
+                    if( valor!==undefined && checkDataIsNotNull(valor) )
                     {
-                        ficha.icono= slugify(ficha.nombre,{lower:true}) + '.png';
+                        campoValido = true;
+                        console.log(`Cambiamos el valor ${ficha[campo]} por ${valor}`);
+                        ficha[campo] = valor;
+                        if(campo === 'nombre')
+                        {
+                            ficha.icono= slugify(ficha.nombre,{lower:true}) + '.png';
+                        }
                     }
-                }
-            });
+                });
 
-            if(campoValido)
-            {
-                // PTE de codificar la obtención del usuario logado y su ID
-                const UsuarioLogado = '1';
-                // FIN PTE
-
-                ficha.usuario_modificacion = UsuarioLogado;
-                ficha.fecha_modificacion = new Date().toISOString();
-
-                const result = await this.update(this.collection, {idNacionalidad: id}, ficha, 'nacionalidad');
-
-                if (result)
+                if(campoValido)
                 {
-                    respuesta.status=result.status;
-                    respuesta.message=result.message;
-                    respuesta.nacionalidad = result.item;
+                    // PTE de codificar la obtención del usuario logado y su ID
+                    const UsuarioLogado = '1';
+                    // FIN PTE
+
+                    ficha.usuario_modificacion = UsuarioLogado;
+                    ficha.fecha_modificacion = new Date().toISOString();
+
+                    const result = await this.update(this.collection, {idNacionalidad: id}, ficha, 'nacionalidad');
+
+                    if (result)
+                    {
+                        respuesta.status=result.status;
+                        respuesta.message=result.message;
+                        respuesta.nacionalidad = result.item;
+                    }
                 }
             }
         }
-        
+        else
+        {
+            console.log('No se puede proceder a la actualización del registro');
+            respuesta.message = 'No tiene permisos suficientes para realizar esta operación';
+        }
+
         // pintamos los datos del resultado en el log
         logResponse(respuesta.status, respuesta.message);
 
@@ -179,28 +199,36 @@ class NacionalidadesService extends ResolversOperationsService
             nacionalidad:  {} || null,
         };
         respuesta.nacionalidad = null;
-
-        const id = this.getVariables().idNacionalidad;
-        
-        const idIsInDatabase = await checkInDatabase(this.getDb(), this.collection, 'idNacionalidad', String(id),  'string');
-
-        if (!idIsInDatabase)
+        //Los usuarios no tienen permisos, solo los administradores y cocineros.
+        const datosAcceso = tegoPermisos(this.getContext().token!, PERFILES.ADMIN);
+        if(datosAcceso.status)
         {
-            respuesta.message = `La nacionalidad no existe en la base de datos, no se puede eliminar`;
+            const id = this.getVariables().idNacionalidad;
+            
+            const idIsInDatabase = await checkInDatabase(this.getDb(), this.collection, 'idNacionalidad', String(id),  'string');
+
+            if (!idIsInDatabase)
+            {
+                respuesta.message = `La nacionalidad no existe en la base de datos, no se puede eliminar`;
+            }
+            else
+            {
+                console.log('Registro encontrado en BD');
+                const result = await this.del(this.collection, {idNacionalidad: id}, 'nacionalidad');
+
+                    if (result)
+                    {
+                        respuesta.status=result.status;
+                        respuesta.message=result.message;
+                        respuesta.nacionalidad = idIsInDatabase;
+                    }
+            }
         }
         else
         {
-            console.log('Registro encontrado en BD');
-            const result = await this.del(this.collection, {idNacionalidad: id}, 'nacionalidad');
-
-                if (result)
-                {
-                    respuesta.status=result.status;
-                    respuesta.message=result.message;
-                    respuesta.nacionalidad = idIsInDatabase;
-                }
+            console.log('No se puede proceder al borrrado del registro');
+            respuesta.message = 'No tiene permisos suficientes para realizar esta operación';
         }
-        
         // pintamos los datos del resultado en el log
         logResponse(respuesta.status, respuesta.message);
 
