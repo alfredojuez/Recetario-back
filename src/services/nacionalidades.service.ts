@@ -61,7 +61,7 @@ class NacionalidadesService extends ResolversOperationsService
                     const UsuarioLogado = '1';
                     // FIN PTE
         
-                    ficha.usuario_alta = UsuarioLogado;
+                    ficha.usuario_alta = Number.parseInt(UsuarioLogado, 10);
                     const result = await this.add(this.collection, ficha, 'nacionalidad');
                     
                     if (result.status)
@@ -136,8 +136,8 @@ class NacionalidadesService extends ResolversOperationsService
                 let campoValido = false;
                 
                 //campos modificables
-                // nombre, familia, descripcion, foto, calorias
-                const camposModificables = ['nombre', 'descripcion', 'foto'];
+                // nombre, descripcion, foto, c
+                const camposModificables = ['nombre', 'descripcion'];
 
                 // actualizamos los campos que nos vengan con contenido.
                 camposModificables.forEach( function(campo) 
@@ -147,7 +147,6 @@ class NacionalidadesService extends ResolversOperationsService
                     if( valor!==undefined && checkDataIsNotNull(valor) )
                     {
                         campoValido = true;
-                        console.log(`Cambiamos el valor ${ficha[campo]} por ${valor}`);
                         ficha[campo] = valor;
                         if(campo === 'nombre')
                         {
@@ -162,7 +161,7 @@ class NacionalidadesService extends ResolversOperationsService
                     const UsuarioLogado = '1';
                     // FIN PTE
 
-                    ficha.usuario_modificacion = UsuarioLogado;
+                    ficha.usuario_modificacion = Number.parseInt(UsuarioLogado, 10);
                     ficha.fecha_modificacion = new Date().toISOString();
 
                     const result = await this.update(this.collection, {idNacionalidad: id}, ficha, 'nacionalidad');

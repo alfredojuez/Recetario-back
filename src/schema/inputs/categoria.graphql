@@ -2,7 +2,7 @@
 input CategoriaInput
 {
     idCategoria:    Int
-    nombre:         String!
+    nombre:         String
     descripcion:    String
     foto:           String
 }
