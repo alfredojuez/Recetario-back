@@ -1,4 +1,3 @@
-import chalk from 'chalk';
 import { COLLECTIONS } from '../config/constant';
 import { checkDataIsNotNull, checkInDatabase, logResponse, PERFILES, tegoPermisos } from '../functions';
 //import { ICategoria } from '../interfaces/categoria.interface';
@@ -58,7 +57,7 @@ class CategoriasService extends ResolversOperationsService
                     const UsuarioLogado = '1';
                     // FIN PTE
 
-                    ficha.usuario_alta = UsuarioLogado;
+                    ficha.usuario_alta = Number.parseInt(UsuarioLogado, 10);
 
                     const result = await this.add(this.collection, ficha, 'ingrediente');
                     
@@ -116,7 +115,7 @@ class CategoriasService extends ResolversOperationsService
         if(datosAcceso.status)
         {
             console.log('Permisos verificados, procedemos con la actualización');
-            const UsuarioLogado = datosAcceso.usuario;
+            const UsuarioLogado = JSON.parse(JSON.stringify(datosAcceso.usuario));
             const variables = this.getVariables();
             const id = variables.idCategoria;
             const datosNuevoRegistro = variables.nuevoRegistro?variables.nuevoRegistro:{} ;
@@ -140,14 +139,14 @@ class CategoriasService extends ResolversOperationsService
                     if( valor!==undefined && checkDataIsNotNull(valor) )
                     {
                         campoValido = true;     //indicamos que al menos un campo se ha actualizado
-                        console.log(`Cambiamos el valor ${ficha[campo]} por ${valor}`);
+                        // console.log(`Cambiamos el valor ${ficha[campo]} por ${valor}`);
                         ficha[campo] = valor;
                     }
                 });
     
                 if(campoValido)
                 {
-                    ficha.usuario_modificacion = UsuarioLogado;
+                    ficha.usuario_modificacion = Number.parseInt(UsuarioLogado.id, 10);
                     ficha.fecha_modificacion = new Date().toISOString();
     
                     const result = await this.update(this.collection, {idCategoria: id}, ficha, 'categoria');

@@ -57,8 +57,10 @@ class IngredientesService extends ResolversOperationsService
                     const UsuarioLogado = '1';
                     // FIN PTE
 
-                    ficha.usuario_alta = UsuarioLogado;
+                    ficha.usuario_alta = Number.parseInt(UsuarioLogado, 10);
 
+                    console.log('FICHA | ---------------------------------------------')
+                    console.log(ficha);
                     const result = await this.add(this.collection, ficha, 'ingrediente');
                     if (result)
                     {
@@ -68,7 +70,6 @@ class IngredientesService extends ResolversOperationsService
                     }
                 }            
             }
-
         }
         else
         {
@@ -136,6 +137,7 @@ class IngredientesService extends ResolversOperationsService
                 //campos modificables
                 // nombre, familia, descripcion, foto, calorias
                 const camposModificables = ['nombre', 'familia', 'descripcion', 'foto', 'calorias'];
+                //const camposModificables = ['nombre', 'familia', 'descripcion', 'foto'];
 
                 // actualizamos los campos que nos vengan con contenido.
                 camposModificables.forEach( function(campo) 
@@ -145,8 +147,15 @@ class IngredientesService extends ResolversOperationsService
                     if( valor!==undefined && checkDataIsNotNull(valor) )
                     {
                         campoValido = true;
-                        console.log(`Cambiamos el valor ${ficha[campo]} por ${valor}`);
-                        ficha[campo] = valor;
+                        // console.log(`Cambiamos el valor ${ficha[campo]} por ${valor}`);
+                        if (campo==='calorias')
+                        {
+                            ficha[campo] = isNaN(Number.parseInt(valor))?-1:Number.parseInt(valor);
+                        }
+                        else{
+                            ficha[campo] = valor;
+                        }
+                        
                     }
                 });
 
@@ -156,9 +165,8 @@ class IngredientesService extends ResolversOperationsService
                     const UsuarioLogado = '1';
                     // FIN PTE
 
-                    ficha.usuario_modificacion = UsuarioLogado;
+                    ficha.usuario_modificacion = Number.parseInt(UsuarioLogado, 10);
                     ficha.fecha_modificacion = new Date().toISOString();
-
                     const result = await this.update(this.collection, {idIngrediente: id}, ficha, 'ingrediente');
 
                     if (result)

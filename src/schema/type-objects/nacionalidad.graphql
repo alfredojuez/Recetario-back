@@ -6,7 +6,7 @@ type Nacionalidad implements Item
     icono: String
 
     fecha_alta: String!
-    usuario_alta: String!
+    usuario_alta: Int!
     fecha_modificacion: String
-    usuario_modificacion: String
+    usuario_modificacion: Int
 }

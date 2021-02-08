@@ -20,9 +20,9 @@ export interface IVariables{
 
     //comun a todo perro pichichi
     fecha_alta?: string;
-    usuario_alta?: string;
+    usuario_alta?: number;
     fecha_modificacion?: string;
-    usuario_modificacion?: string;
+    usuario_modificacion?: number;
 
     nuevoRegistro?: IVariables;
     usuario?: IUsuario;
