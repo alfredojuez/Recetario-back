@@ -1,6 +1,6 @@
 {
   "name": "recetario-back",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "description": "Backend del proyecto de recetario Node, Typescript y GraphQL con MongoDB",
   "main": "build/server.js",
   "scripts": {
