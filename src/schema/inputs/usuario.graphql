@@ -1,12 +1,12 @@
 input UsuarioInput
 {
     id: Int
-    email: String!
-    nombre: String!
+    email: String
+    nombre: String
     apellidos:  String = ""
-    usuario: String!
+    usuario: String
     pass: String
-    fecha_nacimiento: String!
+    fecha_nacimiento: String
     foto: String = ""
     nacionalidad: String = ""
     fecha_alta: String

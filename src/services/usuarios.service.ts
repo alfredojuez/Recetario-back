@@ -1,7 +1,6 @@
 import chalk from 'chalk';
 import { COLLECTIONS, LINEAS, MENSAJES } from '../config/constant';
 import logTime, {
-  checkDataIsNotNull,
   checkInDatabase,
   JWT_LENGTH,
   logResponse,
@@ -12,13 +11,11 @@ import { IContextDB } from '../interfaces/context-db.interface';
 import {
   asignacionID,
   findOneElement,
-  insertOneElement,
 } from '../lib/db-operations';
 import JWT from '../lib/jwt';
 import bcrypt from 'bcrypt';
 import ResolversOperationsService from './resolvers-operations.service';
 import { PERFILES } from '../functions';
-import { IVariables } from '../interfaces/variable.interface';
 
 class UsuariosService extends ResolversOperationsService {
   collection = COLLECTIONS.USUARIOS;
@@ -178,12 +175,10 @@ class UsuariosService extends ResolversOperationsService {
 
     //leemos los datos del token del usuario
     let tokenData = new JWT().verify(this.getContext().token!);
-
-    if (tokenData.status) {
+    if (tokenData.status) 
+    {
       //convertimos el objeto devuelto en uno válido.
-      const txt = `${chalk.green(
-        'Validación correcta'
-      )} del token para el usuario ${tokenData.usuario}`;
+      const txt = `${chalk.green('Validación correcta')} del token para el usuario ${tokenData.usuario}`;
       const txtPlano = `Validación correcta del token para el usuario ${tokenData.usuario}`;
       console.log(chalk.greenBright(txt));
       respuesta = {
@@ -192,9 +187,10 @@ class UsuariosService extends ResolversOperationsService {
         usuario: tokenData.usuario,
       };
     } else {
-      console.log(`${chalk.red(MENSAJES.LOGIN_VERIFICATION_KO)}`);
+      respuesta.message = MENSAJES.LOGIN_VERIFICATION_KO;
     }
-
+    
+    logResponse(respuesta.status, respuesta.message);
     console.timeEnd(LOG_NAME);
     return respuesta;
   }
@@ -401,65 +397,77 @@ class UsuariosService extends ResolversOperationsService {
     console.time(LOG_NAME);
     console.log(LINEAS.TITULO_X2);
     logTime();
-    console.log(chalk.blueBright(`Solicitada actualización de datos del usuario`));
+    console.log(chalk.blueBright(`Solicitada actualización de datos del usuario !`));
 
     //respuesta por defecto.
     let respuesta = 
     {
       status: false,
-      message: 'Datos de usuario no válidos',
+      message: 'Datos de usuario no válidos!',
       usuario: {} || null,
     };
     respuesta.usuario = null;
+
+    const datos = this.getVariables();  //id y usuario {}
+    const id = datos.id;
+    const nuevoRegistro = datos.usuario!; //para indicar que estamos leyendo los datos
     
-    const nuevoRegistro = this.getVariables().usuario!; //para indicar que estamos leyendo los datos
-
-    if ((nuevoRegistro !== undefined || null) && nuevoRegistro.id !== undefined ) 
+    if ((nuevoRegistro !== undefined || null) && id !== undefined ) 
     {
-        const datosAcceso = tegoPermisos(this.getContext().token!, PERFILES.ADMIN);
-        const UsuarioLogado = JSON.parse(JSON.stringify(datosAcceso.usuario));
-        if(datosAcceso.status || UsuarioLogado.id === nuevoRegistro.id)  //soy admin
+        const token = this.getContext().token?.toString();        
+        
+        if(token!== undefined)
         {
-            console.log('Permisos verificados, procedemos con la actualización'); 
-            //vamos a verificar si el registro existe antes
-            //hay que verificar que no existe ni el mail, ni el usuario
-            const userCheckID = await checkInDatabase(this.getDb(), this.collection, 'id', nuevoRegistro.id.toString(),TIPO_CAMPO.NUMBER);
-
-            if (userCheckID) 
+            const datosAcceso = tegoPermisos(token, PERFILES.ADMIN);  
+            const UsuarioLogado = JSON.parse(JSON.stringify(datosAcceso.usuario)); 
+            if(datosAcceso.status || (UsuarioLogado!== null  && UsuarioLogado.id === id))  //soy admin
             {
-                    console.log(`Usuario con ${chalk.yellow('id ' + nuevoRegistro.id)} encontrado`);
+                console.log('Permisos verificados, procedemos con la actualización'); 
+                //vamos a verificar si el registro existe antes
+                //hay que verificar que no existe ni el mail, ni el usuario
+                const userCheckID = await checkInDatabase(this.getDb(), this.collection, 'id', id.toString(),TIPO_CAMPO.NUMBER);
+    
+                if (userCheckID) 
+                {
+                        console.log(`Usuario con ${chalk.yellow('id ' + id)} encontrado`);
+    
+                        //Seleccionamos el filtro para la actualización
+                        const filter = { id };
+    
+                        if (nuevoRegistro.pass !== undefined && nuevoRegistro.pass !== '') 
+                        {
+                          nuevoRegistro.pass = bcrypt.hashSync(nuevoRegistro.pass, JWT_LENGTH);
+                        }
+    
+                        const resultado = await this.update( this.collection, filter, nuevoRegistro, 'usuario');
+                        if (resultado) 
+                        {
+                          respuesta = {
+                            status: true,
+                            message: 'Usuario actualizado correctamente',
+                            usuario: resultado.item,
+                          };
+                        } 
+                        else 
+                        {
+                          respuesta.message = 'No se ha podido realizar la actualización de los datos de usuario.';
+                        }
+                  } 
+                  else
+                  {
+                    respuesta.message ='No existe el registro indicado';
+                  }
+            }
+            else
+            {
+              console.log(datosAcceso.message + ' y no está intentando modificar sus propios datos');
+              respuesta.message = 'El usuario no tiene permisos suficientes para realizar la modificación solicitada.';
+            }
 
-                    //Seleccionamos el filtro para la actualización
-                    const filter = { id: nuevoRegistro.id };
-
-                    if (nuevoRegistro.pass !== undefined && nuevoRegistro.pass !== '') 
-                    {
-                      nuevoRegistro.pass = bcrypt.hashSync(nuevoRegistro.pass, JWT_LENGTH);
-                    }
-
-                    const resultado = await this.update( this.collection, filter, nuevoRegistro, 'usuario');
-                    if (resultado) 
-                    {
-                      respuesta = {
-                        status: true,
-                        message: 'Usuario actualizado correctamente',
-                        usuario: resultado.item,
-                      };
-                    } 
-                    else 
-                    {
-                      respuesta.message =
-                        'No se ha podido realizar la actualización de los datos de usuario.';
-                    }
-              } 
-              else
-              {
-                respuesta.message ='No existe el registro indicado';
-              }
         }
         else
         {
-          respuesta.message ='No tiene permisos para modificar la información de este usuario';
+            respuesta.message = 'Necesita un token, por valor lóguese en la aplicación';
         }
     }
 
@@ -470,8 +478,71 @@ class UsuariosService extends ResolversOperationsService {
   }
 
   // D: eliminar
-  async delete(realDelete: boolean = false) {
-    const verbo = realDelete ? 'ELIMINACIÓN' : 'DESACTIVACION';
+  async delete() {
+    const verbo = 'ELIMINACIÓN' ;
+    const LOG_NAME = `Ejecución GraphQL -> ${verbo} de usuario`;
+    console.time(LOG_NAME);
+    console.log(LINEAS.TITULO_X2);
+    logTime();
+
+    //respuesta por defecto.
+    let respuesta = {
+      status: false,
+      message: 'Datos de usuario no válidos',
+      usuario: {} || null,
+    };
+    respuesta.usuario = null;
+
+    console.log(chalk.blueBright(`Solicitada ${verbo} de usuario`));
+    const idRegistro = this.getVariables().id!; //para indicar que estamos leyendo los datos
+    const datosAcceso = tegoPermisos(this.getContext().token!, PERFILES.ADMIN);
+
+    const UsuarioLogado = JSON.parse(JSON.stringify(datosAcceso.usuario));
+    if(UsuarioLogado!== null )  // tenemos token
+    {
+      // Solo si soy ADMIN o el usuario en si puedo hacer el borrado del usuario
+      if(datosAcceso.status || UsuarioLogado.id === idRegistro)  //soy admin
+      {
+        console.log('Permisos verificados, procedemos con la actualización'); 
+        //desactivamos el usuario si le encontramos
+        const db = this.getDb();
+
+        const userCheckID = await checkInDatabase(db, this.collection, 'id', idRegistro.toString(), TIPO_CAMPO.NUMBER);
+        if (userCheckID) {
+          console.log(`Usuario con ${chalk.yellow('id ' + idRegistro)} encontrado`);
+          const result = await this.del(this.collection, { id: idRegistro }, 'usuario');
+
+          if (result !== null && result.status) {
+            respuesta = {
+              status: true,
+              message: `${verbo} de usuario realizada correctamente`,
+              usuario: userCheckID,
+            };
+          }
+        }
+        else
+        {
+          respuesta.message = `Usuario no localizado en la base de datos`;
+        }
+      }
+      else
+      {
+        respuesta.message ='No tiene permisos para eliminar la información de este usuario';
+      }
+    }
+    else
+    {
+      respuesta.message ='No estás logado o el token no es válido.';
+    }
+
+    logResponse(respuesta.status, respuesta.message);
+    console.timeEnd(LOG_NAME);
+
+    return respuesta;
+  }
+
+  async logicalDelete() {
+    const verbo = 'DESACTIVACION';
     const LOG_NAME = `Ejecución GraphQL -> ${verbo} de usuario`;
     console.time(LOG_NAME);
     console.log(LINEAS.TITULO_X2);
@@ -488,42 +559,125 @@ class UsuariosService extends ResolversOperationsService {
     console.log(chalk.blueBright(`Solicitada ${verbo} de usuario`));
 
     const idRegistro = this.getVariables().id!; //para indicar que estamos leyendo los datos
-
-
     const datosAcceso = tegoPermisos(this.getContext().token!, PERFILES.ADMIN);
     const UsuarioLogado = JSON.parse(JSON.stringify(datosAcceso.usuario));
 
     // Solo si soy ADMIN o el usuario en si puedo hacer el borrado del usuario
-    if(datosAcceso.status || UsuarioLogado.id === idRegistro)  //soy admin
+    if(UsuarioLogado)
     {
-      console.log('Permisos verificados, procedemos con la actualización'); 
-      //desactivamos el usuario si le encontramos
-      const db = this.getDb();
+      if(datosAcceso.status || UsuarioLogado.id === idRegistro)  //soy admin
+      {
+        console.log('Permisos verificados, procedemos con la actualización'); 
+        //desactivamos el usuario si le encontramos
+        const db = this.getDb();
 
-      const userCheckID = await checkInDatabase(db, this.collection, 'id', idRegistro.toString(), TIPO_CAMPO.NUMBER);
-      if (userCheckID) {
-        console.log(`Usuario con ${chalk.yellow('id ' + idRegistro)} encontrado`);
+        const userCheckID = await checkInDatabase(db, this.collection, 'id', idRegistro.toString(), TIPO_CAMPO.NUMBER);
+        if (userCheckID) 
+        {
+          console.log(`Usuario con ${chalk.yellow('id ' + idRegistro)} encontrado`);
 
-        // procedemos a borrar el registro de manera logica
-        let result = null;
-        if (realDelete) {
-          result = await this.del(this.collection, { id: idRegistro }, 'usuario');
-        } else {
-          result = await this.LogicalDel( this.collection, { id: idRegistro }, 'usuario');
+          // procedemos a borrar el registro de manera logica
+          let result = null;
+          result = await this.block( this.collection, { id: idRegistro }, 'usuario');
+
+          if (result.status) {
+            respuesta = {
+              status: true,
+              message: `${verbo} de usuario realizada correctamente`,
+              usuario: userCheckID,
+            };
+          }
+          else
+          {
+            respuesta.message = result.message;
+          }
         }
-
-        if (result.status) {
-          respuesta = {
-            status: true,
-            message: `${verbo} de usuario realizada correctamente`,
-            usuario: userCheckID,
-          };
+        else
+        {
+          respuesta.message ='El usuario no se ha podido encontrar en la BD';
         }
+      }
+      else
+      {
+        respuesta.message ='No tiene permisos para eliminar la información de este usuario';
       }
     }
     else
     {
-      respuesta.message ='No tiene permisos para eliminar la información de este usuario';
+      respuesta.message = 'No se dispone de token válido, autentíquese.';
+    }
+
+    logResponse(respuesta.status, respuesta.message);
+    console.timeEnd(LOG_NAME);
+
+    return respuesta;
+  }
+
+  
+  async logicalUndelete() {
+    const verbo = 'ACTIVACION';
+    const LOG_NAME = `Ejecución GraphQL -> ${verbo} de usuario`;
+    console.time(LOG_NAME);
+    console.log(LINEAS.TITULO_X2);
+    logTime();
+
+    //respuesta por defecto.
+    let respuesta = {
+      status: false,
+      message: 'Datos de usuario no válidos',
+      usuario: {} || null,
+    };
+    respuesta.usuario = null;
+
+    console.log(chalk.blueBright(`Solicitada ${verbo} de usuario`));
+
+    const idRegistro = this.getVariables().id!; //para indicar que estamos leyendo los datos
+    const datosAcceso = tegoPermisos(this.getContext().token!, PERFILES.ADMIN);
+    const UsuarioLogado = JSON.parse(JSON.stringify(datosAcceso.usuario));
+
+    // Solo si soy ADMIN o el usuario en si puedo hacer el borrado del usuario
+    if(UsuarioLogado)
+    {
+      if(datosAcceso.status || UsuarioLogado.id === idRegistro)  //soy admin
+      {
+        console.log('Permisos verificados, procedemos con la actualización'); 
+        //desactivamos el usuario si le encontramos
+        const db = this.getDb();
+
+        const userCheckID = await checkInDatabase(db, this.collection, 'id', idRegistro.toString(), TIPO_CAMPO.NUMBER);
+        if (userCheckID) 
+        {
+          console.log(`Usuario con ${chalk.yellow('id ' + idRegistro)} encontrado`);
+
+          // procedemos a borrar el registro de manera logica
+          let result = null;
+          result = await this.unblock( this.collection, { id: idRegistro }, 'usuario');
+
+          if (result.status) {
+            respuesta = {
+              status: true,
+              message: `${verbo} de usuario realizada correctamente`,
+              usuario: userCheckID,
+            };
+          }
+          else
+          {
+            respuesta.message = result.message;
+          }
+        }
+        else
+        {
+          respuesta.message ='El usuario no se ha podido encontrar en la BD';
+        }
+      }
+      else
+      {
+        respuesta.message ='No tiene permisos para eliminar la información de este usuario';
+      }
+    }
+    else
+    {
+      respuesta.message = 'No se dispone de token válido, autentíquese.';
     }
 
     logResponse(respuesta.status, respuesta.message);

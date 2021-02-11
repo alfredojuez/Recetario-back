@@ -33,7 +33,6 @@ const resolversMutationIngrediente: IResolvers = {
     },
     async updateIngrediente(_, variables, contexto) {
       const LOG_NAME = `Ejecución GraphQL -> Actualización de ingrediente `;
-      
       console.time(LOG_NAME);
       console.log(LINEAS.TITULO_X2);
       logTime();
@@ -47,7 +46,6 @@ const resolversMutationIngrediente: IResolvers = {
     },
     async deleteIngrediente(_, variables, contexto) {
       const LOG_NAME = `Ejecución GraphQL -> Eliminación de ingrediente `;
-      
       console.time(LOG_NAME);
       console.log(LINEAS.TITULO_X2);
       logTime();
