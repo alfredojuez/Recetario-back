@@ -27,8 +27,7 @@ class JWT{
         
         try
         {
-            const datos = jwt.verify(token, this.secretKey);
-            //convertimos lo devuelto por verify en un objeto recorrible
+            const datos = jwt.verify(token, this.secretKey);     //convertimos lo devuelto por verify en un objeto recorrible
             const datosToken = JSON.parse(JSON.stringify(Object.values(datos)[0]));            
             console.log(`Usuario solicitante: ${chalk.yellow(datosToken.usuario)} con el ID: ${chalk.yellow(datosToken.id)}`);
             respuesta = {
@@ -39,7 +38,7 @@ class JWT{
         }
         catch
         {
-                console.log('Validación de token incorrecta');
+            // do nothing
         }
         return respuesta;
     }
@@ -65,7 +64,7 @@ class JWT{
         }
         catch
         {
-                console.log('Validación de token incorrecta');
+                console.log('Validación de token incorrecta 1');
         }
         return respuesta;
     }

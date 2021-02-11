@@ -44,8 +44,7 @@ export function tegoPermisos(token: string, opcPerfil: string)
     respuesta.usuario = null;
 
     const datosToken = JSON.parse(JSON.stringify(new JWT().getInfo(token)));
-
-    if(datosToken.status )
+    if(datosToken.status)
     {
         if(datosToken.usuario.perfil === opcPerfil)
         {
@@ -58,7 +57,8 @@ export function tegoPermisos(token: string, opcPerfil: string)
           respuesta.message = `El usuario tiene permisos de ${datosToken.usuario.perfil}`;
         }
     }
-    else{  respuesta.message = 'TOKEN no válido';}
+    else
+    {  respuesta.message = datosToken.message;}
 
     return respuesta;
 }
@@ -82,21 +82,6 @@ export function checkDataIsNotNull(value: string)
  */
 export async function checkInDatabase(db: Db, collection: string, clave: string, valor: string, tipo: string = 'string') 
 {  
-  // Si es un number va sin comillas, si no con ellas.
-  const debug=false;
-  if (debug)
-  {
-    console.log('== IS IN DATABASE ? ========================================================================');
-    console.log('collection: ' + collection);
-    console.log('=====================================================');
-    console.log('clave: ' + clave);
-    console.log('=====================================================');
-    console.log('valor:' + valor);
-    console.log('=====================================================');
-    console.log('tipo:' + tipo);
-    console.log('===========================================================================================');
-  }
-
   let filtro = (tipo==='number') ? JSON.parse('{"' + clave + '":'+ valor +'}'):JSON.parse('{"' + clave + '":"'+ valor +'"}');
   return  await findOneElement(db, collection, filtro);
 }

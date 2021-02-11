@@ -199,12 +199,12 @@ class CategoriasService extends ResolversOperationsService
                 console.log('Registro encontrado en BD');
                 const result = await this.del(this.collection, {idCategoria: id}, 'categoria');
 
-                    if (result)
-                    {
-                        respuesta.status=result.status;
-                        respuesta.message=result.message;
-                        respuesta.categoria = idIsInDatabase;
-                    }
+                if (result)
+                {
+                    respuesta.status=result.status;
+                    respuesta.message=result.message;
+                    respuesta.categoria = idIsInDatabase;
+                }
             }
         }
         else

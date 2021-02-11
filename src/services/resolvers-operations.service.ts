@@ -58,7 +58,7 @@ class ResolversOperationsService
     protected async list(collection: string, listElement: string, filtro: object = {}, page: number = 1, itemsPage: number = 20) 
     {
         const variables = this.getVariables();
-        const paginationData = await pagination(this.getDb(), collection, filtro,  variables.pagination?.page, variables.pagination?.itemsPage);
+        const paginationData = await pagination(this.getDb(), collection, filtro, variables.pagination?.page, variables.pagination?.itemsPage);
 
         //por defecto la respuesta es que no se ha podido hacer, salvo que obtengamos datos
         let respuesta = {
@@ -191,10 +191,15 @@ class ResolversOperationsService
         return respuesta;
     }
 
-    protected async LogicalDel(collection:string, filter:object, item:string)
+    protected async block(collection:string, filter:object, item:string)
     {
         const respuesta = await this.update(collection, filter, { activo:false }, item);
-        //La desactivación es poner el campo active a falso.        
+        return respuesta;
+    }
+
+    protected async unblock(collection:string, filter:object, item:string)
+    {
+        const respuesta = await this.update(collection, filter, { activo:true }, item);
         return respuesta;
     }
 }
