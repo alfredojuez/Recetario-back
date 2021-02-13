@@ -51,7 +51,6 @@ const resolversMutationIngrediente: IResolvers = {
       logTime();
 
       console.log(`Solicitada eliminación de ingrediente con el ${chalk.yellow('ID: "' + variables.idIngrediente + '"')} con los datos:`);
-      console.log(variables.nuevoRegistro);
       
       const respuesta = await new IngredientesService(_, variables, contexto).delete();
       console.timeEnd(LOG_NAME);

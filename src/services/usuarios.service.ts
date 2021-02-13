@@ -197,11 +197,6 @@ class UsuariosService extends ResolversOperationsService {
 
   // C: añadir
   async insert() {
-    const LOG_NAME = 'Ejecución GraphQL -> Registro de usuario';
-    console.time(LOG_NAME);
-    console.log(LINEAS.TITULO_X2);
-    logTime();
-
     //respuesta por defecto.
     let respuesta = {
       status: false,
@@ -310,10 +305,6 @@ class UsuariosService extends ResolversOperationsService {
         }
       }
     }
-
-    logResponse(respuesta.status, respuesta.message);
-    console.timeEnd(LOG_NAME);
-
     return respuesta;
   }
 
@@ -480,11 +471,6 @@ class UsuariosService extends ResolversOperationsService {
   // D: eliminar
   async delete() {
     const verbo = 'ELIMINACIÓN' ;
-    const LOG_NAME = `Ejecución GraphQL -> ${verbo} de usuario`;
-    console.time(LOG_NAME);
-    console.log(LINEAS.TITULO_X2);
-    logTime();
-
     //respuesta por defecto.
     let respuesta = {
       status: false,
@@ -493,7 +479,6 @@ class UsuariosService extends ResolversOperationsService {
     };
     respuesta.usuario = null;
 
-    console.log(chalk.blueBright(`Solicitada ${verbo} de usuario`));
     const idRegistro = this.getVariables().id!; //para indicar que estamos leyendo los datos
     const datosAcceso = tegoPermisos(this.getContext().token!, PERFILES.ADMIN);
 
@@ -504,12 +489,12 @@ class UsuariosService extends ResolversOperationsService {
       if(datosAcceso.status || UsuarioLogado.id === idRegistro)  //soy admin
       {
         console.log('Permisos verificados, procedemos con la actualización'); 
-        //desactivamos el usuario si le encontramos
         const db = this.getDb();
 
         const userCheckID = await checkInDatabase(db, this.collection, 'id', idRegistro.toString(), TIPO_CAMPO.NUMBER);
         if (userCheckID) {
-          console.log(`Usuario con ${chalk.yellow('id ' + idRegistro)} encontrado`);
+          console.log(`Usuario con ${chalk.yellow('ID ' + idRegistro)}  ${chalk.green('encontrado')}`);
+          console.log(userCheckID);
           const result = await this.del(this.collection, { id: idRegistro }, 'usuario');
 
           if (result !== null && result.status) {
@@ -535,18 +520,11 @@ class UsuariosService extends ResolversOperationsService {
       respuesta.message ='No estás logado o el token no es válido.';
     }
 
-    logResponse(respuesta.status, respuesta.message);
-    console.timeEnd(LOG_NAME);
-
     return respuesta;
   }
 
   async logicalDelete() {
     const verbo = 'DESACTIVACION';
-    const LOG_NAME = `Ejecución GraphQL -> ${verbo} de usuario`;
-    console.time(LOG_NAME);
-    console.log(LINEAS.TITULO_X2);
-    logTime();
 
     //respuesta por defecto.
     let respuesta = {
@@ -555,8 +533,6 @@ class UsuariosService extends ResolversOperationsService {
       usuario: {} || null,
     };
     respuesta.usuario = null;
-
-    console.log(chalk.blueBright(`Solicitada ${verbo} de usuario`));
 
     const idRegistro = this.getVariables().id!; //para indicar que estamos leyendo los datos
     const datosAcceso = tegoPermisos(this.getContext().token!, PERFILES.ADMIN);
@@ -607,19 +583,11 @@ class UsuariosService extends ResolversOperationsService {
       respuesta.message = 'No se dispone de token válido, autentíquese.';
     }
 
-    logResponse(respuesta.status, respuesta.message);
-    console.timeEnd(LOG_NAME);
-
     return respuesta;
   }
 
-  
   async logicalUndelete() {
     const verbo = 'ACTIVACION';
-    const LOG_NAME = `Ejecución GraphQL -> ${verbo} de usuario`;
-    console.time(LOG_NAME);
-    console.log(LINEAS.TITULO_X2);
-    logTime();
 
     //respuesta por defecto.
     let respuesta = {
@@ -628,8 +596,6 @@ class UsuariosService extends ResolversOperationsService {
       usuario: {} || null,
     };
     respuesta.usuario = null;
-
-    console.log(chalk.blueBright(`Solicitada ${verbo} de usuario`));
 
     const idRegistro = this.getVariables().id!; //para indicar que estamos leyendo los datos
     const datosAcceso = tegoPermisos(this.getContext().token!, PERFILES.ADMIN);
@@ -679,10 +645,6 @@ class UsuariosService extends ResolversOperationsService {
     {
       respuesta.message = 'No se dispone de token válido, autentíquese.';
     }
-
-    logResponse(respuesta.status, respuesta.message);
-    console.timeEnd(LOG_NAME);
-
     return respuesta;
   }
 }
