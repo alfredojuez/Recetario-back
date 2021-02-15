@@ -1,5 +1,5 @@
 import { COLLECTIONS } from '../config/constant';
-import { checkDataIsNotNull, checkInDatabase, logResponse, PERFILES, tegoPermisos } from '../functions';
+import { checkDataIsNotNull, checkInDatabase, logResponse, PERFILES, tengoPermisos } from '../functions';
 import { IContextDB } from '../interfaces/context-db.interface';
 import { IVariables } from '../interfaces/variable.interface';
 import { asignacionID } from '../lib/db-operations';
@@ -31,7 +31,7 @@ class IngredientesService extends ResolversOperationsService
         respuesta.ingrediente = null;
 
         //Los usuarios no tienen permisos, solo los administradores y cocineros.
-        const datosAcceso = tegoPermisos(this.getContext().token!, PERFILES.USER);
+        const datosAcceso = tengoPermisos(this.getContext().token!, PERFILES.USER);
         if(!datosAcceso.status)
         {
 
@@ -113,7 +113,7 @@ class IngredientesService extends ResolversOperationsService
         respuesta.ingrediente = null;
         
         //Sólo admin
-        const datosAcceso = tegoPermisos(this.getContext().token!, PERFILES.ADMIN);
+        const datosAcceso = tengoPermisos(this.getContext().token!, PERFILES.ADMIN);
         if(datosAcceso.status)
         {
 
@@ -203,7 +203,7 @@ class IngredientesService extends ResolversOperationsService
         respuesta.ingrediente = null;
 
         // solo los administradores .
-        const datosAcceso = tegoPermisos(this.getContext().token!, PERFILES.ADMIN);
+        const datosAcceso = tengoPermisos(this.getContext().token!, PERFILES.ADMIN);
         if(datosAcceso.status)
         {
             const id = this.getVariables().idIngrediente;        

@@ -11,6 +11,5 @@ input UsuarioInput
     nacionalidad: String = ""
     fecha_alta: String
     perfil: Perfil="USER"
-    activo: Boolean!=true
-    
+    activo: Boolean!=true   
 }

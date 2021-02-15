@@ -34,7 +34,7 @@ export function logResponse(status: boolean, text: string)
  * @param token 
  * @param opcPerfil 
  */
-export function tegoPermisos(token: string, opcPerfil: string)
+export function tengoPermisos(token: string, opcPerfil: string)
 {
     let  respuesta = {
         status: false,

@@ -23,10 +23,11 @@ class Database {
 
     if (client.isConnected()) {
       console.log(LINEAS.IMPORTANTE_X2);
-      console.log(`# Conectando con la base de datos...`);
+      console.log(`# ${chalk.blueBright('Conectando con la base de datos...')}`);
+      console.log(`# ${LINEAS.SEPARADOR}`)
       console.log(`# STATUS: ${chalk.green('ONLINE')}`);
-      console.log(`# NOMBRE: ${chalk.green(db.databaseName)}`);
-      console.log(LINEAS.IMPORTANTE_X2);
+      console.log(`# MESSAGE: ${chalk.green('Conexión con la base de datos: "' + db.databaseName + '"')}`);
+      
     }
     return db;  
   }

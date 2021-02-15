@@ -2,10 +2,7 @@ import chalk from 'chalk';
 import { IResolvers } from 'graphql-tools';
 
 import { COLLECTIONS, LINEAS, MENSAJES } from '../../config/constant';
-import logTime, { logResponse } from '../../functions';
-import JWT from '../../lib/jwt';
-import { findElements, findOneElement } from '../../lib/db-operations';
-import ResolversOperationsService from '../../services/resolvers-operations.service';
+import { logTime, logResponse } from '../../functions';
 import UsuariosService from '../../services/usuarios.service';
 
 //*********************************************************

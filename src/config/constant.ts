@@ -27,6 +27,13 @@ export enum MENSAJES
     USER_NO_REGISTERED ='El usuario que está usando no está registrado.',
 }
 
+export enum MAIL_TYPES
+{
+    PRUEBA='Mail de prueba',
+    BIENVENIDA='Mail de bienvenida',
+    LINK_ACTIVACION='Activación de usuario'
+}
+
 /**
  * M = Minutos
  * H = Horas

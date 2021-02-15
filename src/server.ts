@@ -11,6 +11,7 @@ import environment from './config/environments';
 import Database from './lib/database';
 import chalk from 'chalk';
 import IContext from './interfaces/context.interface';
+import { LINEAS } from './config/constant';
 
 if (process.env.NODE_ENV !== 'production') {
   const env = environment;
@@ -67,8 +68,11 @@ async function init() {
       port: Puerto,
     },
     () => {
-      console.log(`Escuchando en el puerto ${Puerto}`);
-      console.log(`http://localhost:${Puerto}`);
+      console.log(LINEAS.IMPORTANTE_X2);
+      console.log(`# ${chalk.blueBright('Preparando servidor GraphQL...')}`);
+      console.log(`# ${LINEAS.SEPARADOR}`);
+      console.log(`# STATUS: ${chalk.green('ONLINE')}`);
+      console.log(`# MESSAGE: ${chalk.green(`Acceso desde la URL: http://localhost:${Puerto}`)}`);
     }
   );
 }

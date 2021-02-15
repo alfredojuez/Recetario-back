@@ -2,7 +2,7 @@ import { COLLECTIONS } from '../config/constant';
 import { IContextDB } from '../interfaces/context-db.interface';
 import { IVariables } from '../interfaces/variable.interface';
 import ResolversOperationsService from './resolvers-operations.service';
-import {checkDataIsNotNull, checkInDatabase, logResponse, PERFILES, tegoPermisos} from '../functions';
+import {checkDataIsNotNull, checkInDatabase, logResponse, PERFILES, tengoPermisos} from '../functions';
 import chalk from 'chalk';
 import slugify from 'slugify';
 
@@ -36,7 +36,7 @@ class NacionalidadesService extends ResolversOperationsService
         let txtResumen = '';
         
         //Los usuarios no tienen permisos, solo los administradores y cocineros.
-        const datosAcceso = tegoPermisos(this.getContext().token!, PERFILES.USER);
+        const datosAcceso = tengoPermisos(this.getContext().token!, PERFILES.USER);
         if(!datosAcceso.status)
         {
             //Si los campos son correctos.
@@ -115,7 +115,7 @@ class NacionalidadesService extends ResolversOperationsService
         respuesta.nacionalidad = null;
 
         //Los usuarios no tienen permisos, solo los administradores y cocineros.
-        const datosAcceso = tegoPermisos(this.getContext().token!, PERFILES.ADMIN);
+        const datosAcceso = tengoPermisos(this.getContext().token!, PERFILES.ADMIN);
         const UsuarioLogado = JSON.parse(JSON.stringify(datosAcceso.usuario));
         if(datosAcceso.status)
         {
@@ -200,7 +200,7 @@ class NacionalidadesService extends ResolversOperationsService
         };
         respuesta.nacionalidad = null;
         //Los usuarios no tienen permisos, solo los administradores y cocineros.
-        const datosAcceso = tegoPermisos(this.getContext().token!, PERFILES.ADMIN);
+        const datosAcceso = tengoPermisos(this.getContext().token!, PERFILES.ADMIN);
         if(datosAcceso.status)
         {
             const id = this.getVariables().idNacionalidad;

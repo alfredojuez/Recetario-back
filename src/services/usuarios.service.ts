@@ -1,10 +1,10 @@
 import chalk from 'chalk';
-import { COLLECTIONS, LINEAS, MENSAJES } from '../config/constant';
+import { COLLECTIONS, LINEAS, MAIL_TYPES, MENSAJES } from '../config/constant';
 import logTime, {
   checkInDatabase,
   JWT_LENGTH,
   logResponse,
-  tegoPermisos,
+  tengoPermisos,
   TIPO_CAMPO,
 } from '../functions';
 import { IContextDB } from '../interfaces/context-db.interface';
@@ -409,7 +409,7 @@ class UsuariosService extends ResolversOperationsService {
         
         if(token!== undefined)
         {
-            const datosAcceso = tegoPermisos(token, PERFILES.ADMIN);  
+            const datosAcceso = tengoPermisos(token, PERFILES.ADMIN);  
             const UsuarioLogado = JSON.parse(JSON.stringify(datosAcceso.usuario)); 
             if(datosAcceso.status || (UsuarioLogado!== null  && UsuarioLogado.id === id))  //soy admin
             {
@@ -480,7 +480,7 @@ class UsuariosService extends ResolversOperationsService {
     respuesta.usuario = null;
 
     const idRegistro = this.getVariables().id!; //para indicar que estamos leyendo los datos
-    const datosAcceso = tegoPermisos(this.getContext().token!, PERFILES.ADMIN);
+    const datosAcceso = tengoPermisos(this.getContext().token!, PERFILES.ADMIN);
 
     const UsuarioLogado = JSON.parse(JSON.stringify(datosAcceso.usuario));
     if(UsuarioLogado!== null )  // tenemos token
@@ -535,7 +535,7 @@ class UsuariosService extends ResolversOperationsService {
     respuesta.usuario = null;
 
     const idRegistro = this.getVariables().id!; //para indicar que estamos leyendo los datos
-    const datosAcceso = tegoPermisos(this.getContext().token!, PERFILES.ADMIN);
+    const datosAcceso = tengoPermisos(this.getContext().token!, PERFILES.ADMIN);
     const UsuarioLogado = JSON.parse(JSON.stringify(datosAcceso.usuario));
 
     // Solo si soy ADMIN o el usuario en si puedo hacer el borrado del usuario
@@ -597,19 +597,45 @@ class UsuariosService extends ResolversOperationsService {
     };
     respuesta.usuario = null;
 
-    const idRegistro = this.getVariables().id!; //para indicar que estamos leyendo los datos
-    const datosAcceso = tegoPermisos(this.getContext().token!, PERFILES.ADMIN);
-    const UsuarioLogado = JSON.parse(JSON.stringify(datosAcceso.usuario));
+    
+    const variables = this.getVariables(); //para indicar que estamos leyendo los datos
+    const idRegistro = variables.id!; //para indicar que estamos leyendo los datos
+    const checkToken = new JWT().verify(this.getContext().token!.toString());
+    const datosToken = Object(checkToken)['usuario'];
+
+    //dependiendo del tipo de acceso, permitiremos entrar
+    let UsuarioLogado = { id:0, usuario: ''};
+    let datosAcceso = false;
+
+    // VERIFICACION DE ACCESO
+    if (datosToken.tipo_mail !== undefined)
+    {
+      // verificacion parcial, el token viene de un mail con valor temporal
+      if(datosToken.tipo_mail === MAIL_TYPES.LINK_ACTIVACION)
+      {
+        //los datos que vienen son   id, usuario, email
+        datosAcceso = true;
+        UsuarioLogado.id = datosToken.id;
+        console.log('Verificación de token mediante LINK TOKEN');
+      }
+    }
+    else
+    {
+      // verificación normal del token
+      const soyAdmin = tengoPermisos(this.getContext().token!, PERFILES.ADMIN);
+      datosAcceso = (soyAdmin.status) ? true : false;
+      UsuarioLogado = JSON.parse(JSON.stringify(soyAdmin.usuario));
+      console.log('Verificación de token completada correctamente');
+    }
+
 
     // Solo si soy ADMIN o el usuario en si puedo hacer el borrado del usuario
-    if(UsuarioLogado)
-    {
-      if(datosAcceso.status || UsuarioLogado.id === idRegistro)  //soy admin
+      if(datosAcceso || UsuarioLogado.id === idRegistro)  //soy admin
       {
         console.log('Permisos verificados, procedemos con la actualización'); 
         //desactivamos el usuario si le encontramos
         const db = this.getDb();
-
+        // console.log(`Buscamos en la base de datos el ID ${idRegistro} en la tabla ${this.collection}`);
         const userCheckID = await checkInDatabase(db, this.collection, 'id', idRegistro.toString(), TIPO_CAMPO.NUMBER);
         if (userCheckID) 
         {
@@ -618,7 +644,6 @@ class UsuariosService extends ResolversOperationsService {
           // procedemos a borrar el registro de manera logica
           let result = null;
           result = await this.unblock( this.collection, { id: idRegistro }, 'usuario');
-
           if (result.status) {
             respuesta = {
               status: true,
@@ -640,11 +665,6 @@ class UsuariosService extends ResolversOperationsService {
       {
         respuesta.message ='No tiene permisos para eliminar la información de este usuario';
       }
-    }
-    else
-    {
-      respuesta.message = 'No se dispone de token válido, autentíquese.';
-    }
     return respuesta;
   }
 }

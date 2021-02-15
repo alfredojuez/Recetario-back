@@ -1,0 +1,6 @@
+type ResultMail implements Result
+{
+    status: Boolean!
+    message: String!
+    mail: Mail
+}
