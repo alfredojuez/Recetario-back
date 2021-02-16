@@ -31,7 +31,8 @@ export enum MAIL_TYPES
 {
     PRUEBA='Mail de prueba',
     BIENVENIDA='Mail de bienvenida',
-    LINK_ACTIVACION='Activación de usuario'
+    LINK_ACTIVACION='Activación de usuario',
+    RESET_PASSWORD='Reseteo de contraseña',
 }
 
 /**

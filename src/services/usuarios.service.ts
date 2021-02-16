@@ -596,7 +596,6 @@ class UsuariosService extends ResolversOperationsService {
       usuario: {} || null,
     };
     respuesta.usuario = null;
-
     
     const variables = this.getVariables(); //para indicar que estamos leyendo los datos
     const idRegistro = variables.id!; //para indicar que estamos leyendo los datos
@@ -606,17 +605,26 @@ class UsuariosService extends ResolversOperationsService {
     //dependiendo del tipo de acceso, permitiremos entrar
     let UsuarioLogado = { id:0, usuario: ''};
     let datosAcceso = false;
-
     // VERIFICACION DE ACCESO
     if (datosToken.tipo_mail !== undefined)
     {
       // verificacion parcial, el token viene de un mail con valor temporal
       if(datosToken.tipo_mail === MAIL_TYPES.LINK_ACTIVACION)
       {
-        //los datos que vienen son   id, usuario, email
-        datosAcceso = true;
-        UsuarioLogado.id = datosToken.id;
         console.log('Verificación de token mediante LINK TOKEN');
+        if (variables.id === datosToken.id)
+        {
+          //los datos que vienen son   id, usuario, email
+          datosAcceso = true;
+          UsuarioLogado.id = datosToken.id;
+          console.log('Datos verificados')
+        }
+        else
+        {
+          console.log('Datos erroneos');
+          //si el usuario a desbloquear no es el mismo que el que viene en el token....
+          respuesta.message = 'Los datos del usuario que se desea desbloquear no han pasado la validación correctamente';
+        }
       }
     }
     else
@@ -628,7 +636,6 @@ class UsuariosService extends ResolversOperationsService {
       console.log('Verificación de token completada correctamente');
     }
 
-
     // Solo si soy ADMIN o el usuario en si puedo hacer el borrado del usuario
       if(datosAcceso || UsuarioLogado.id === idRegistro)  //soy admin
       {
@@ -636,6 +643,7 @@ class UsuariosService extends ResolversOperationsService {
         //desactivamos el usuario si le encontramos
         const db = this.getDb();
         // console.log(`Buscamos en la base de datos el ID ${idRegistro} en la tabla ${this.collection}`);
+
         const userCheckID = await checkInDatabase(db, this.collection, 'id', idRegistro.toString(), TIPO_CAMPO.NUMBER);
         if (userCheckID) 
         {

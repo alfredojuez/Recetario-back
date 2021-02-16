@@ -41,5 +41,8 @@ type Mutation{
     "Envio de un email para reactivar a un usuario bloqueado"
     activateUserEmail(id: Int!, usuario: String, email: String!): ResultMail
     "Recoge el link del mail y realiza la activación con la nueva pass"
-    activateUserAction(id: Int!, password: String!): ResultMail
+    activateUserAction(id: Int!): ResultMail
+    "Reseteo de contraseña"
+    resetPasswordEmail(mail: String!): ResultMail
+    resetPasswordAction(id: Int!, pass: String!): ResultMail
 }
