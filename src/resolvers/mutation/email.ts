@@ -128,36 +128,8 @@ const resolversMutationMails: IResolvers = {
       logTime();
       console.log(`Solicitado Reseteo de password mediante link`);
 
-      // en las variables viene el ID del usuario y la nueva password
-      // en el contexto, tenemos el token y en el token
-      // tenemos el tipo de mail que se ha enviado, para
-      // saber lo que tenemos que hacer, y el id y mail del 
-      // usuario, para verificar que es quien dice ser.
-      let respuesta = {
-        status: false,
-        message: 'El periodo para cambiar la contraseña ha expirado.'
-      };
-
-      //verificamos que el token no ha expirado
-      const checkToken = new JWT().verify(context.token);
-      if (checkToken.status)
-      {
-        const datosToken = Object(checkToken)['usuario'];
-        console.log(`Usuario solicitante con ID: ${chalk.yellow(datosToken.id)}`);
-        const filtro = {id: variables.id };
-        const newPass = bcrypt.hashSync(variables.pass,10);
-        const updateData = {pass: newPass};
-        const res = await updateOneElement(context.db, COLLECTIONS.USUARIOS, filtro, updateData);
-        if (res.result.ok)
-        {
-          respuesta.status = true;
-          respuesta.message = 'Registro actualizado correctamente';
-        }
-      }
-      else
-      {
-        respuesta.message = 'El periodo para activar el usuario ha expirado.';
-      }
+      const respuesta =  Object(await new PasswordService(_, {usuario: variables}, context).change());
+      //const res = await updateOneElement(context.db, COLLECTIONS.USUARIOS, filtro, updateData);
 
       logResponse(respuesta.status, respuesta.message);
       console.timeEnd(LOG_NAME);

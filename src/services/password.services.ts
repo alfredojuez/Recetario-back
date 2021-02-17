@@ -1,11 +1,12 @@
+import chalk from 'chalk';
 import { COLLECTIONS, EXPIRATION_TIME, LINEAS, MAIL_TYPES } from '../config/constant';
-import { logResponse, logTime } from '../functions';
 import { IContextDB } from '../interfaces/context-db.interface';
-import IContext from '../interfaces/context.interface';
-import { findOneElement } from '../lib/db-operations';
+import { findOneElement, updateOneElement } from '../lib/db-operations';
 import JWT from '../lib/jwt';
 import MailService from './mail.service';
 import ResolversOperationsService from './resolvers-operations.service';
+import bcrypt from 'bcrypt';
+import { JWT_LENGTH } from '../functions';
 
 class PasswordService extends ResolversOperationsService
 {
@@ -73,7 +74,55 @@ class PasswordService extends ResolversOperationsService
         return respuesta;
     }
 
+    async change()
+    {
+      // en las variables viene el ID del usuario y la nueva password
+      // en el contexto, tenemos el token y en el token
+      // tenemos el tipo de mail que se ha enviado, para
+      // saber lo que tenemos que hacer, y el id y mail del 
+      // usuario, para verificar que es quien dice ser.
+      let respuesta = {
+        status: false,
+        message: 'Error al cambiar la contraseña ha expirado.'
+      };
 
+      const context = Object(this.getContext());
+      const variables = Object(this.getVariables()).usuario;
+
+      //verificamos que el token no ha expirado
+      const checkToken = new JWT().verify(context.token);
+      if (checkToken.status)
+      {
+        const datosToken = Object(checkToken)['usuario'];
+        console.log(`Usuario solicitante con ID: ${chalk.yellow(datosToken.id)}`);
+        const filtro = {id: variables.id };
+        const newPass = bcrypt.hashSync(variables.pass, JWT_LENGTH);    
+        console.log('Encriptado de contraseña');
+        const updateData = {pass: newPass};
+
+        //verificaciones extra
+        
+        //const res = await updateOneElement(context.db, COLLECTIONS.USUARIOS, filtro, updateData);
+        const res = await this.update(COLLECTIONS.USUARIOS, filtro, updateData, 'usuario');
+        if (res.status)
+        {
+            respuesta.status = res.status;
+            console.log(res.message);
+            respuesta.message = 'Contraseña actualizada.';
+        }
+        else
+        {
+            respuesta.status = res.status;
+            respuesta.message = res.message;
+        }
+      }
+      else
+      {
+        respuesta.message = 'El periodo para activar el usuario ha expirado.';
+      }
+
+      return respuesta;
+    }
 
 
 
