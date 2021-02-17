@@ -1,5 +1,5 @@
 import { COLLECTIONS } from '../config/constant';
-import { checkDataIsNotNull, checkInDatabase, logResponse, PERFILES, tegoPermisos } from '../functions';
+import { checkDataIsNotNull, checkInDatabase, logResponse, PERFILES, tengoPermisos } from '../functions';
 //import { ICategoria } from '../interfaces/categoria.interface';
 import { IContextDB } from '../interfaces/context-db.interface';
 import { IVariables } from '../interfaces/variable.interface';
@@ -33,7 +33,7 @@ class CategoriasService extends ResolversOperationsService
         respuesta.categoria = null;
 
         //Los usuarios no tienen permisos, solo los administradores y cocineros.
-        const datosAcceso = tegoPermisos(this.getContext().token!, PERFILES.USER);
+        const datosAcceso = tengoPermisos(this.getContext().token!, PERFILES.USER);
         if(!datosAcceso.status)
         {
 
@@ -111,7 +111,7 @@ class CategoriasService extends ResolversOperationsService
         respuesta.categoria = null;
 
         // solo los administradores pueden modificar categorias.
-        const datosAcceso = tegoPermisos(this.getContext().token!, PERFILES.ADMIN);
+        const datosAcceso = tengoPermisos(this.getContext().token!, PERFILES.ADMIN);
         if(datosAcceso.status)
         {
             console.log('Permisos verificados, procedemos con la actualización');
@@ -183,7 +183,7 @@ class CategoriasService extends ResolversOperationsService
         respuesta.categoria = null;
 
          //Sólo el usuario admin puede borrar cosas.
-         const datosAcceso = tegoPermisos(this.getContext().token!, PERFILES.ADMIN);
+         const datosAcceso = tengoPermisos(this.getContext().token!, PERFILES.ADMIN);
          if(datosAcceso.status)
          {
             const id = this.getVariables().idCategoria;

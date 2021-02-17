@@ -1,4 +1,4 @@
-import { EXPIRATION_TIME, MENSAJES, SECRET_KEY } from '../config/constant';
+import { EXPIRATION_TIME, LINEAS, MENSAJES, SECRET_KEY } from '../config/constant';
 import jwt from 'jsonwebtoken';
 import { IJwt } from '../interfaces/jwt.interface';
 import chalk from 'chalk';
@@ -28,7 +28,7 @@ class JWT{
         try
         {
             const datos = jwt.verify(token, this.secretKey);     //convertimos lo devuelto por verify en un objeto recorrible
-            const datosToken = JSON.parse(JSON.stringify(Object.values(datos)[0]));            
+            const datosToken = Object(datos)['usuario'];
             console.log(`Usuario solicitante: ${chalk.yellow(datosToken.usuario)} con el ID: ${chalk.yellow(datosToken.id)}`);
             respuesta = {
                 status: true,
@@ -52,20 +52,20 @@ class JWT{
         };
         respuesta.usuario = null;
 
+        console.log('Verificacion de token')
         try{
             let datos = jwt.verify(token, this.secretKey);            
-            //convertimos lo devuelto por verify en un objeto recorrible
-            datos = JSON.parse(JSON.stringify(Object.values(datos)[0]));
             respuesta = {
                 status: true,
                 message: MENSAJES.LOGIN_VERIFICATION_OK,
-                usuario: JSON.parse(JSON.stringify(datos))
+                usuario: Object(datos)['usuario']
             };
         }
         catch
         {
-                console.log('Validación de token incorrecta 1');
+                console.log('Validación de token incorrecta');
         }
+
         return respuesta;
     }
 }

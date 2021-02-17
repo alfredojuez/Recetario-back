@@ -1,5 +1,5 @@
-import { IUsuario } from './usuario.interface';
+import { IUserId4email, IUsuario } from './usuario.interface';
 
 export interface IJwt{
-    usuario?: IUsuario;
+    usuario?: IUsuario | IUserId4email;
 }

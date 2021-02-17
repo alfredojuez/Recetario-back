@@ -14,9 +14,10 @@ export interface IUsuario{
     activo: Boolean;
 }
 
-// enum Perfil
-// {
-//     ADMIN,
-//     COOKER,
-//     USER
-// }
+export interface IUserId4email
+{
+    id: String;
+    usuario: String;
+    email: String;
+    tipo_mail: String;
+}

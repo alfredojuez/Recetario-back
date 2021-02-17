@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import { IResolvers } from 'graphql-tools';
 import { LINEAS } from '../../config/constant';
-import { logTime } from '../../functions';
+import { logResponse, logTime } from '../../functions';
 import UsuariosService from '../../services/usuarios.service';
 
 
@@ -36,12 +36,13 @@ const resolversMutationUsuario: IResolvers = {
       return respuesta;
     },
     async deleteUsuario(_, variables, contexto) {  
-      const LOG_NAME = `Ejecución GraphQL -> Borrado de usuario `;
+      const LOG_NAME = `Ejecución GraphQL -> Borrado de usuario`;
       console.time(LOG_NAME);
       console.log(LINEAS.TITULO_X2);
       logTime();
-      console.log(`Solicitado borrado de usuario  ${ chalk.yellow('"' + variables.usuario.usuario + '"') } con código ${ chalk.yellow('"' + variables.usuario.id + '"')}`);        
-      const respuesta = new UsuariosService(_, variables, contexto ).delete();
+      console.log(`Solicitado borrado de usuario con ID ${ chalk.yellow(variables.id)}`);        
+      const respuesta = await new UsuariosService(_, variables, contexto ).delete();
+      logResponse(respuesta.status, respuesta.message);
       console.timeEnd(LOG_NAME);
       return respuesta;
     },
@@ -50,7 +51,8 @@ const resolversMutationUsuario: IResolvers = {
       console.time(LOG_NAME);
       console.log(LINEAS.TITULO_X2);
       logTime();
-      console.log(`Solicitado bloqueo de usuario  ${ chalk.yellow('"' + variables.usuario.usuario + '"') } con código ${ chalk.yellow('"' + variables.usuario.id + '"')}`);        
+      console.log(variables)
+      console.log(`Solicitado bloqueo de usuario con ID ${ chalk.yellow(variables.id)}`);        
       const respuesta = new UsuariosService(_, variables, contexto ).logicalDelete();
       console.timeEnd(LOG_NAME);
       return respuesta;
@@ -60,7 +62,7 @@ const resolversMutationUsuario: IResolvers = {
       console.time(LOG_NAME);
       console.log(LINEAS.TITULO_X2);
       logTime();
-      console.log(`Solicitado desbloqueo de usuario  ${ chalk.yellow('"' + variables.usuario.usuario + '"') } con código ${ chalk.yellow('"' + variables.usuario.id + '"')}`);        
+      console.log(`Solicitado desbloqueo de usuario con ID ${ chalk.yellow(variables.id)}`);        
       const respuesta = new UsuariosService(_, variables, contexto ).logicalUndelete();
       console.timeEnd(LOG_NAME);
       return respuesta;

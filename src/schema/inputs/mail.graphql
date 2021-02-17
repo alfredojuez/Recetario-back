@@ -1,0 +1,11 @@
+input MailInput
+{
+    "Quien envia el mail"
+    from: String = "mailerviaweb@gmail.com"
+    "A quien o quienes enviamos el mail"
+    to: String!
+    "Asunto del mail"
+    subject: String!
+    "Contenido del propio mail a enviar"
+    html: String!
+}

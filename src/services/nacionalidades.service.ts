@@ -2,7 +2,7 @@ import { COLLECTIONS } from '../config/constant';
 import { IContextDB } from '../interfaces/context-db.interface';
 import { IVariables } from '../interfaces/variable.interface';
 import ResolversOperationsService from './resolvers-operations.service';
-import {checkDataIsNotNull, checkInDatabase, logResponse, PERFILES, tegoPermisos} from '../functions';
+import {checkDataIsNotNull, checkInDatabase, logResponse, PERFILES, tengoPermisos} from '../functions';
 import chalk from 'chalk';
 import slugify from 'slugify';
 
@@ -36,7 +36,7 @@ class NacionalidadesService extends ResolversOperationsService
         let txtResumen = '';
         
         //Los usuarios no tienen permisos, solo los administradores y cocineros.
-        const datosAcceso = tegoPermisos(this.getContext().token!, PERFILES.USER);
+        const datosAcceso = tengoPermisos(this.getContext().token!, PERFILES.USER);
         if(!datosAcceso.status)
         {
             //Si los campos son correctos.
@@ -115,7 +115,8 @@ class NacionalidadesService extends ResolversOperationsService
         respuesta.nacionalidad = null;
 
         //Los usuarios no tienen permisos, solo los administradores y cocineros.
-        const datosAcceso = tegoPermisos(this.getContext().token!, PERFILES.ADMIN);
+        const datosAcceso = tengoPermisos(this.getContext().token!, PERFILES.ADMIN);
+        const UsuarioLogado = JSON.parse(JSON.stringify(datosAcceso.usuario));
         if(datosAcceso.status)
         {
             const variables = this.getVariables();
@@ -137,13 +138,13 @@ class NacionalidadesService extends ResolversOperationsService
                 
                 //campos modificables
                 // nombre, descripcion, foto, c
-                const camposModificables = ['nombre', 'descripcion'];
+                const camposModificables = ['idNacionalidad', 'nombre', 'icono'];
+                //si el campo icono viene, le guardamos, si no, le creamos 
 
                 // actualizamos los campos que nos vengan con contenido.
                 camposModificables.forEach( function(campo) 
                 {
                     const valor = Object(datosNuevoRegistro)[campo];
-
                     if( valor!==undefined && checkDataIsNotNull(valor) )
                     {
                         campoValido = true;
@@ -158,10 +159,10 @@ class NacionalidadesService extends ResolversOperationsService
                 if(campoValido)
                 {
                     // PTE de codificar la obtención del usuario logado y su ID
-                    const UsuarioLogado = '1';
+                    // const UsuarioLogado = '1';
                     // FIN PTE
 
-                    ficha.usuario_modificacion = Number.parseInt(UsuarioLogado, 10);
+                    ficha.usuario_modificacion = Number.parseInt(UsuarioLogado.id, 10);
                     ficha.fecha_modificacion = new Date().toISOString();
 
                     const result = await this.update(this.collection, {idNacionalidad: id}, ficha, 'nacionalidad');
@@ -199,7 +200,7 @@ class NacionalidadesService extends ResolversOperationsService
         };
         respuesta.nacionalidad = null;
         //Los usuarios no tienen permisos, solo los administradores y cocineros.
-        const datosAcceso = tegoPermisos(this.getContext().token!, PERFILES.ADMIN);
+        const datosAcceso = tengoPermisos(this.getContext().token!, PERFILES.ADMIN);
         if(datosAcceso.status)
         {
             const id = this.getVariables().idNacionalidad;
