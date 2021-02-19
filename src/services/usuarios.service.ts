@@ -416,10 +416,10 @@ class UsuariosService extends ResolversOperationsService {
             let datosAccesoTemporal = JSON.parse(JSON.stringify(new JWT().getInfo(token))).usuario;
             const tengoAccesoTemporal = (datosAccesoTemporal.tipo_mail === undefined) ? false : true;
             const soyAdmin = tengoPermisos(token, PERFILES.ADMIN);
-            const tengoPermisoAcceso = soyAdmin.status || tengoAccesoTemporal;  
+            const tengoPermisoAcceso = soyAdmin.status || tengoAccesoTemporal;
             UsuarioLogado = (tengoAccesoTemporal)? datosAccesoTemporal : JSON.parse(JSON.stringify(soyAdmin));
 
-            if(tengoPermisoAcceso && UsuarioLogado.id === id) 
+            if((tengoPermisoAcceso && UsuarioLogado.id === id ) || soyAdmin) 
             {
                 console.log('Permisos verificados, procedemos con la actualización'); 
                 //vamos a verificar si el registro existe antes
@@ -459,7 +459,6 @@ class UsuariosService extends ResolversOperationsService {
             }
             else
             {
-              console.log(soyAdmin.message + ' y no está intentando modificar sus propios datos');
               respuesta.message = 'El usuario no tiene permisos suficientes para realizar la modificación solicitada.';
             }
 
