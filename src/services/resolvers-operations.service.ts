@@ -149,6 +149,7 @@ class ResolversOperationsService
             }
             else
             {
+                respuesta.status = true;    //el trabajo ya estaba hecho.
                 respuesta.message = `No había campos que actualizar en la BD, ya eran correctos`;
             }
         }catch (error)

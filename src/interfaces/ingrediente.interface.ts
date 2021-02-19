@@ -6,10 +6,3 @@ export interface IIngrediente{
     foto?: String;
     calorias?: String;
 }
-
-// enum Perfil
-// {
-//     ADMIN,
-//     COOKER,
-//     USER
-// }

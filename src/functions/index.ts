@@ -54,7 +54,7 @@ export function tengoPermisos(token: string, opcPerfil: string)
         }
         else
         {
-          respuesta.message = `El usuario tiene permisos de ${datosToken.usuario.perfil}`;
+          respuesta.message = `El usuario NO tiene permisos de ${opcPerfil}`;
         }
     }
     else
@@ -101,8 +101,4 @@ export const PERFILES =
 
 export const JWT_LENGTH = 10;
 
-function version()
-{
-
-}
-export default version;
+export default logTime;

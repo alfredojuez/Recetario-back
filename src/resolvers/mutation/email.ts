@@ -50,7 +50,7 @@ const resolversMutationMails: IResolvers = {
                     <br><br>
                     Para activar la cuenta deberá seguir este enlace:
                     <br><br>
-                    <a href="${process.env.CLIENT_URL}#/active/${token}">Click aquí para solicitar activación de usuario</a>
+                    <a href="${process.env.CLIENT_URL}/active/${token}">Click aquí para solicitar activación de usuario</a>
                     <br><br>
                     Que tenga un buen día
                     <br><br>`;
@@ -72,7 +72,7 @@ const resolversMutationMails: IResolvers = {
       console.time(LOG_NAME);
       console.log(LINEAS.TITULO_X2);
       logTime();
-      console.log(`Solicitada activación de usuario mediante link`);
+      console.log(`Solicitada activación mediante link`);
 
       // en el contexto, tenemos el token y en el token
       // tenemos el tipo de mail que se ha enviado, para
@@ -80,8 +80,10 @@ const resolversMutationMails: IResolvers = {
       // usuario, para verificar que es quien dice ser.
       let respuesta = {
         status: false,
-        message: 'El periodo para activar el usuario ha expirado.'
+        message: 'El periodo para activar el usuario ha expirado.',
+        usuario: {} || null
       };
+      respuesta.usuario = null;
 
       //verificamos que el token no ha expirado
       const checkToken = new JWT().verify(context.token);
@@ -89,9 +91,27 @@ const resolversMutationMails: IResolvers = {
       {
         const datosToken = Object(checkToken)['usuario'];
         console.log(`Usuario solicitante con ID: ${chalk.yellow(datosToken.id)}`);
+        
         const res = await new UsuariosService(_, variables, context).logicalUndelete();
-        respuesta.status = res.status;
-        respuesta.message = res.message;
+        
+        if(res.status) 
+        {
+          console.log(`Activación de usuario realizada correctamente`) ;
+          const res2 = await new UsuariosService(_, {id: variables.id, usuario: variables}, context).modify(true);
+          if(res2.status) {
+              respuesta.status = true;
+              respuesta.message = res2.message;
+              respuesta.usuario = res2.usuario;
+            }
+            else 
+            {
+              respuesta.message = 'No se ha podido actualizar la contraseña';
+            }
+        }
+        else 
+        {
+          respuesta.message = 'No se ha podido realizar la activación de usuario';
+        }
       }
       else
       {
@@ -126,7 +146,7 @@ const resolversMutationMails: IResolvers = {
       console.time(LOG_NAME);
       console.log(LINEAS.TITULO_X2);
       logTime();
-      console.log(`Solicitado Reseteo de password mediante link`);
+      console.log(`Solicitada activación mediante link`);
 
       const respuesta =  Object(await new PasswordService(_, {usuario: variables}, context).change());
       //const res = await updateOneElement(context.db, COLLECTIONS.USUARIOS, filtro, updateData);

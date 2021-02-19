@@ -52,7 +52,6 @@ class JWT{
         };
         respuesta.usuario = null;
 
-        console.log('Verificacion de token')
         try{
             let datos = jwt.verify(token, this.secretKey);            
             respuesta = {
