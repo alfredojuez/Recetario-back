@@ -29,7 +29,7 @@ class MailService
             else
             { 
                 respuesta.status = true;
-                respuesta.message = 'Email correctamente enviado a ' + mail.to;
+                respuesta.message = 'Se ha enviado un correo a ' + mail.to + ' para finalizar el registro del usuario.';
             }
 
             resolve(respuesta);

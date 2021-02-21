@@ -166,6 +166,7 @@ class UsuariosService extends ResolversOperationsService {
     console.log(LINEAS.TITULO_X2);
     logTime();
 
+    console.log('Solicitud de información de usuario.')
     let respuesta = {
       status: false,
       message: `Validación de token incorrecta`,
@@ -177,17 +178,18 @@ class UsuariosService extends ResolversOperationsService {
     let tokenData = new JWT().verify(this.getContext().token!);
     if (tokenData.status) 
     {
+      
       //convertimos el objeto devuelto en uno válido.
-      const txt = `${chalk.green('Validación correcta')} del token para el usuario ${tokenData.usuario}`;
-      const txtPlano = `Validación correcta del token para el usuario ${tokenData.usuario}`;
-      console.log(chalk.greenBright(txt));
+      const txtPlano = `Validación correcta del token para el usuario ${Object(tokenData.usuario).usuario}`;
       respuesta = {
         status: true,
         message: txtPlano,
         usuario: tokenData.usuario,
       };
-    } else {
-      respuesta.message = MENSAJES.LOGIN_VERIFICATION_KO;
+    } 
+    else 
+    {
+      respuesta.message = tokenData.message;
     }
     
     logResponse(respuesta.status, respuesta.message);
