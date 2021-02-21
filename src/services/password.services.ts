@@ -55,7 +55,7 @@ class PasswordService extends ResolversOperationsService
                         <br><br>
                         Por favor, siga este enlace:
                         <br><br>
-                        <a href="${process.env.CLIENT_URL}#/reset/${token}">Click aquí para solicitar el cambio de password de este usuario</a>
+                        <a href="${process.env.CLIENT_URL}/reset/${token}">Click aquí para solicitar el cambio de password de este usuario</a>
                         <br><br>
                         Recuerda que el link es válido durante 15 minutos.
                         <br><br>

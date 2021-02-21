@@ -19,6 +19,7 @@ export enum COLLECTIONS{
 
 export enum MENSAJES
 {
+    NO_TOKEN='No hay token',
     LOGIN_OK='Usuario verificado.',
     LOGIN_KO='Usuario-contraseña incorrectos.',
     LOGIN_ERROR ='No se han podido comprobar las credenciales del usuario.',

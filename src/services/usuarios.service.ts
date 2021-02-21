@@ -166,6 +166,7 @@ class UsuariosService extends ResolversOperationsService {
     console.log(LINEAS.TITULO_X2);
     logTime();
 
+    console.log('Solicitud de información de usuario.')
     let respuesta = {
       status: false,
       message: `Validación de token incorrecta`,
@@ -177,17 +178,18 @@ class UsuariosService extends ResolversOperationsService {
     let tokenData = new JWT().verify(this.getContext().token!);
     if (tokenData.status) 
     {
+      
       //convertimos el objeto devuelto en uno válido.
-      const txt = `${chalk.green('Validación correcta')} del token para el usuario ${tokenData.usuario}`;
-      const txtPlano = `Validación correcta del token para el usuario ${tokenData.usuario}`;
-      console.log(chalk.greenBright(txt));
+      const txtPlano = `Validación correcta del token para el usuario ${Object(tokenData.usuario).usuario}`;
       respuesta = {
         status: true,
         message: txtPlano,
         usuario: tokenData.usuario,
       };
-    } else {
-      respuesta.message = MENSAJES.LOGIN_VERIFICATION_KO;
+    } 
+    else 
+    {
+      respuesta.message = tokenData.message;
     }
     
     logResponse(respuesta.status, respuesta.message);
@@ -382,13 +384,17 @@ class UsuariosService extends ResolversOperationsService {
   /**
    * Solo deberían modificar un usuario los ADMINs o el usuario sobre su propio registro.
    */
-  async modify() 
+  async modify(silenceMode: Boolean = false) 
   {
     const LOG_NAME = 'Ejecución GraphQL -> Actualización de usuario';
-    console.time(LOG_NAME);
-    console.log(LINEAS.TITULO_X2);
-    logTime();
-    console.log(chalk.blueBright(`Solicitada actualización de datos del usuario !`));
+
+    if (!silenceMode)
+    {
+      console.time(LOG_NAME);
+      console.log(LINEAS.TITULO_X2);
+      logTime();
+      console.log(chalk.blueBright(`Solicitada actualización de datos del usuario !`));
+    }
 
     //respuesta por defecto.
     let respuesta = 
@@ -402,16 +408,20 @@ class UsuariosService extends ResolversOperationsService {
     const datos = this.getVariables();  //id y usuario {}
     const id = datos.id;
     const nuevoRegistro = datos.usuario!; //para indicar que estamos leyendo los datos
-    
+
+    let UsuarioLogado = null;
     if ((nuevoRegistro !== undefined || null) && id !== undefined ) 
     {
         const token = this.getContext().token?.toString();        
-        
         if(token!== undefined)
         {
-            const datosAcceso = tengoPermisos(token, PERFILES.ADMIN);  
-            const UsuarioLogado = JSON.parse(JSON.stringify(datosAcceso.usuario)); 
-            if(datosAcceso.status || (UsuarioLogado!== null  && UsuarioLogado.id === id))  //soy admin
+            let datosAccesoTemporal = JSON.parse(JSON.stringify(new JWT().getInfo(token))).usuario;
+            const tengoAccesoTemporal = (datosAccesoTemporal.tipo_mail === undefined) ? false : true;
+            const soyAdmin = tengoPermisos(token, PERFILES.ADMIN);
+            const tengoPermisoAcceso = soyAdmin.status || tengoAccesoTemporal;
+            UsuarioLogado = (tengoAccesoTemporal)? datosAccesoTemporal : JSON.parse(JSON.stringify(soyAdmin));
+
+            if((tengoPermisoAcceso && UsuarioLogado.id === id ) || soyAdmin) 
             {
                 console.log('Permisos verificados, procedemos con la actualización'); 
                 //vamos a verificar si el registro existe antes
@@ -436,7 +446,7 @@ class UsuariosService extends ResolversOperationsService {
                           respuesta = {
                             status: true,
                             message: 'Usuario actualizado correctamente',
-                            usuario: resultado.item,
+                            usuario: userCheckID,
                           };
                         } 
                         else 
@@ -451,7 +461,6 @@ class UsuariosService extends ResolversOperationsService {
             }
             else
             {
-              console.log(datosAcceso.message + ' y no está intentando modificar sus propios datos');
               respuesta.message = 'El usuario no tiene permisos suficientes para realizar la modificación solicitada.';
             }
 
@@ -462,8 +471,11 @@ class UsuariosService extends ResolversOperationsService {
         }
     }
 
-    logResponse(respuesta.status, respuesta.message);
-    console.timeEnd(LOG_NAME);
+    if (!silenceMode)
+    {
+      logResponse(respuesta.status, respuesta.message);
+      console.timeEnd(LOG_NAME);
+    }
 
     return respuesta;
   }
@@ -608,16 +620,16 @@ class UsuariosService extends ResolversOperationsService {
     // VERIFICACION DE ACCESO
     if (datosToken.tipo_mail !== undefined)
     {
+      console.log(`Solicitud: ${datosToken.tipo_mail}`)
       // verificacion parcial, el token viene de un mail con valor temporal
       if(datosToken.tipo_mail === MAIL_TYPES.LINK_ACTIVACION)
       {
-        console.log('Verificación de token mediante LINK TOKEN');
+        //console.log('Verificación de token mediante LINK TOKEN');
         if (variables.id === datosToken.id)
         {
           //los datos que vienen son   id, usuario, email
           datosAcceso = true;
           UsuarioLogado.id = datosToken.id;
-          console.log('Datos verificados')
         }
         else
         {
@@ -647,8 +659,7 @@ class UsuariosService extends ResolversOperationsService {
         const userCheckID = await checkInDatabase(db, this.collection, 'id', idRegistro.toString(), TIPO_CAMPO.NUMBER);
         if (userCheckID) 
         {
-          console.log(`Usuario con ${chalk.yellow('id ' + idRegistro)} encontrado`);
-
+          console.log(`Usuario ${chalk.yellow(userCheckID.usuario)} con ${chalk.yellow('id ' + idRegistro)} encontrado`);
           // procedemos a borrar el registro de manera logica
           let result = null;
           result = await this.unblock( this.collection, { id: idRegistro }, 'usuario');

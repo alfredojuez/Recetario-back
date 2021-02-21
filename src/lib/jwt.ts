@@ -20,7 +20,7 @@ class JWT{
     {
         let respuesta = {
             status: false,
-            message:  MENSAJES.LOGIN_VERIFICATION_KO,
+            message:  'No se ha encontrado ningún token',
             usuario: {} || null
         };
         respuesta.usuario = null;
@@ -38,7 +38,7 @@ class JWT{
         }
         catch
         {
-            // do nothing
+                // nothing
         }
         return respuesta;
     }
@@ -52,18 +52,26 @@ class JWT{
         };
         respuesta.usuario = null;
 
-        console.log('Verificacion de token')
         try{
-            let datos = jwt.verify(token, this.secretKey);            
-            respuesta = {
-                status: true,
-                message: MENSAJES.LOGIN_VERIFICATION_OK,
-                usuario: Object(datos)['usuario']
-            };
+            if(token!==undefined && token !== '')
+            {
+                let datos = jwt.verify(token, this.secretKey);            
+                respuesta = {
+                    status: true,
+                    message: MENSAJES.LOGIN_VERIFICATION_OK,
+                    usuario: Object(datos)['usuario']
+                };
+            }
+            else
+            {
+                
+                respuesta.message =  MENSAJES.NO_TOKEN;
+            }
         }
         catch
         {
                 console.log('Validación de token incorrecta');
+                
         }
 
         return respuesta;
