@@ -1,0 +1,7 @@
+"Tipos de perfiles permitidos"
+enum UserStatus
+{
+    ACTIVOS
+    INACTIVOS
+    TODOS
+}

@@ -3,12 +3,8 @@
    significa que no sea nulo"""
 type Query
 {
-    # Lista de usuarios activos en la base de datos
-    ListadoUsuarios(page: Int = 1, itemsPage: Int = 20): ResultUsuarios
-    # Lista de usuarios inactivos  en la base de datos
-    ListadoUsuariosInactivos(page: Int = 1, itemsPage: Int = 20): ResultUsuarios
     # Lista de usuarios registrados en la base de datos
-    ListadoUsuariosCompleto(page: Int = 1, itemsPage: Int = 20): ResultUsuarios
+    ListadoUsuariosCompleto(page: Int = 1, itemsPage: Int = 20, active: UserStatus = TODOS): ResultUsuarios
 
     # Permite obtener un token tras iniciar sesión
     login(email:String!, pass: String!): ResultLogin
