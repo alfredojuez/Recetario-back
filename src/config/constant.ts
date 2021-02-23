@@ -36,6 +36,13 @@ export enum MAIL_TYPES
     RESET_PASSWORD='Reseteo de contraseña',
 }
 
+export enum USER_STATUS_FILTER
+{
+    ACTIVOS = 'ACTIVOS',
+    INACTIVOS = 'INACTIVOS',
+    TODOS = 'TODOS',
+}
+
 /**
  * M = Minutos
  * H = Horas

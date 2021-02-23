@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { COLLECTIONS, LINEAS, MAIL_TYPES, MENSAJES } from '../config/constant';
+import { COLLECTIONS, LINEAS, MAIL_TYPES, MENSAJES, USER_STATUS_FILTER } from '../config/constant';
 import logTime, {
   checkInDatabase,
   JWT_LENGTH,
@@ -166,7 +166,7 @@ class UsuariosService extends ResolversOperationsService {
     console.log(LINEAS.TITULO_X2);
     logTime();
 
-    console.log('Solicitud de información de usuario.')
+    console.log('Solicitud de información de usuario.');
     let respuesta = {
       status: false,
       message: `Validación de token incorrecta`,
@@ -311,53 +311,30 @@ class UsuariosService extends ResolversOperationsService {
   }
 
   // R: listar
-  async items() {
-    const page = this.getVariables().pagination?.page;
-    const itemsPage = this.getVariables().pagination?.itemsPage;
 
-    const result = await this.list(
-      this.collection,
-      'usuarios',
-      { activo: true },
-      page,
-      itemsPage
-    );
-    return {
-      info: result.info,
-      status: result.status,
-      message: result.message,
-      usuarios: result.items,
-    };
-  }
+  async items(active: String = USER_STATUS_FILTER.TODOS) {
+    let filter: object = {};  // por defcto mostramos todos
+    if (active === USER_STATUS_FILTER.INACTIVOS)
+    {
+      filter = { activo: false };
+    }
 
-  async inactiveItems() {
+    if (active === USER_STATUS_FILTER.ACTIVOS)
+    {
+      filter =  { activo: true };
+    }
+
+    console.log(active)
+    console.log("filtro: ")
+    console.log(filter)
+
     const page = this.getVariables().pagination?.page!;
     const itemsPage = this.getVariables().pagination?.itemsPage;
 
     const result = await this.list(
       this.collection,
       'usuarios',
-      { activo: false },
-      page,
-      itemsPage
-    );
-
-    return {
-      info: result.info,
-      status: result.status,
-      message: result.message,
-      usuarios: result.items,
-    };
-  }
-
-  async allItems() {
-    const page = this.getVariables().pagination?.page!;
-    const itemsPage = this.getVariables().pagination?.itemsPage;
-
-    const result = await this.list(
-      this.collection,
-      'usuarios',
-      {},
+      filter,
       page,
       itemsPage
     );
@@ -620,7 +597,7 @@ class UsuariosService extends ResolversOperationsService {
     // VERIFICACION DE ACCESO
     if (datosToken.tipo_mail !== undefined)
     {
-      console.log(`Solicitud: ${datosToken.tipo_mail}`)
+      console.log(`Solicitud: ${datosToken.tipo_mail}`);
       // verificacion parcial, el token viene de un mail con valor temporal
       if(datosToken.tipo_mail === MAIL_TYPES.LINK_ACTIVACION)
       {

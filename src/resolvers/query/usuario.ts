@@ -16,39 +16,6 @@ import UsuariosService from '../../services/usuarios.service';
 const resolversQueryUsuarios: IResolvers = {
   Query: {
     
-    async ListadoUsuarios(_, variables, { db })  
-    {
-      const LOG_NAME = `Ejecución GraphQL -> Listado de ${COLLECTIONS.USUARIOS} ACTIVOS`;
-      console.time(LOG_NAME);
-      console.log(LINEAS.TITULO_X2);
-      logTime();
-      console.log(`Solicitada búsqueda en la tabla ${COLLECTIONS.USUARIOS}:  ${chalk.yellow(JSON.stringify(variables))} `);
-
-      const respuesta = await new UsuariosService(_, {pagination: variables}, { db }).items();
-      
-      logResponse(respuesta.status, respuesta.message);
-      console.timeEnd(LOG_NAME);
-
-      return respuesta;
-    },
-
-    async ListadoUsuariosInactivos(_, variables, { db })  
-    {
-      const LOG_NAME = `Ejecución GraphQL -> Listado de ${COLLECTIONS.USUARIOS} INACTIVOS`;
-      console.time(LOG_NAME);
-      console.log(LINEAS.TITULO_X2);
-      logTime();
-      console.log(`Solicitada búsqueda en la tabla ${COLLECTIONS.USUARIOS}:  ${chalk.yellow(JSON.stringify(variables))} `);
-
-      const respuesta = await new UsuariosService(_, {pagination: variables}, { db }).inactiveItems();
-      
-      // pintamos los datos del resultado en el log
-      logResponse(respuesta.status, respuesta.message);
-      console.timeEnd(LOG_NAME);
-
-      return respuesta;
-    },
-
     async ListadoUsuariosCompleto(_, variables, { db })  
     {
       const LOG_NAME = `Ejecución GraphQL -> Listado de ${COLLECTIONS.USUARIOS} COMPLETO`;
@@ -56,8 +23,8 @@ const resolversQueryUsuarios: IResolvers = {
       console.log(LINEAS.TITULO_X2);
       logTime();
       console.log(`Solicitada búsqueda en la tabla ${COLLECTIONS.USUARIOS}:  ${chalk.yellow(JSON.stringify(variables))} `);
-
-      const respuesta = await new UsuariosService(_, {pagination: variables}, { db }).allItems();
+console.log(variables)
+      const respuesta = await new UsuariosService(_, {pagination: variables}, { db }).items(variables.active);
       
       // pintamos los datos del resultado en el log
       logResponse(respuesta.status, respuesta.message);
