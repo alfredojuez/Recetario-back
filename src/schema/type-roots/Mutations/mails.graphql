@@ -1,0 +1,13 @@
+"Acciones de escritura"
+type Mutation{
+    "Envio de un email"
+    sendEmail(mail: MailInput!): ResultMail
+    "Envio de un email para reactivar a un usuario bloqueado"
+    activateUserEmail(id: Int!, usuario: String, email: String!): ResultMail
+    "Realiza la activación con la nueva pass"
+    activateUserAction(id: Int!, pass: String!): ResultUsuario
+    "Envio de email para el reseteo de contraseña"
+    resetPasswordEmail(mail: String!): ResultMail
+    "Acción de cambio de contraseña"
+    resetPasswordAction(id: Int!, pass: String!): ResultMail
+}

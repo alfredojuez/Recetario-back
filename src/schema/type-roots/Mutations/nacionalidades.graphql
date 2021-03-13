@@ -1,0 +1,6 @@
+"Acciones de escritura"
+type Mutation{
+    addNacionalidad(nacionalidad: NacionalidadInput!): ResultNacionalidad
+    updateNacionalidad(idNacionalidad: String!, nuevoRegistro: NacionalidadInput!): ResultNacionalidad
+    deleteNacionalidad(idNacionalidad: String!): ResultNacionalidad
+}

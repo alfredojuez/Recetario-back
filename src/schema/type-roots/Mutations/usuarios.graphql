@@ -1,0 +1,8 @@
+"Acciones de escritura"
+type Mutation{
+    addUsuario(usuario: UsuarioInput!): ResultUsuario
+    updateUsuario(id: Int!, usuario: UsuarioInput!): ResultUsuario
+    deleteUsuario(id: Int): ResultUsuario
+    blockUsuario(id: Int): ResultUsuario
+    unblockUsuario(id: Int): ResultUsuario
+}

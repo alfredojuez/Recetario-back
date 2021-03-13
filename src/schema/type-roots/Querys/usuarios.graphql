@@ -1,0 +1,26 @@
+"""
+Definiciones de los tipos de raiz lista de tipos Usuarios registrados en a la BD
+la admiración tras el tipo significa que es obligatorio - la admiracion del final
+significa que no sea nulo
+"""
+type Query {
+  # Lista de usuarios registrados en la base de datos
+  ListadoUsuariosCompleto(
+    "Página a la que accederemos"
+    page: Int = 1,
+    "Numero de elementos por página que queremos"
+    itemsPage: Int = 20
+    "Estado de los usuarios que queremos mostrar"
+    active: UserStatus = TODOS
+  ): ResultUsuarios
+
+  # Permite obtener un token tras iniciar sesión
+  login(
+    "email o username con el que queremos logar al usuario"
+    email: String!,
+    "contraseña asociada al usuario"
+    pass: String!): ResultLogin
+
+  # Información del usuario logado haciendo uso del token obtenido en el login
+  me: ResultUsuario
+}

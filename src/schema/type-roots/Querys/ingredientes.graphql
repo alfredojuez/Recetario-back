@@ -1,0 +1,10 @@
+type Query {
+  # Listado de ingredientes
+  ListadoIngredientes(
+    "Página a la que accederemos"
+    page: Int = 1, 
+    "Numero de elementos por página que queremos"
+    itemsPage: Int = 20): ResultIngredientes
+  # Muestra la información de un ingrediente en concreto
+  DetalleIngrediente(idIngrediente: Int!): ResultIngrediente
+}

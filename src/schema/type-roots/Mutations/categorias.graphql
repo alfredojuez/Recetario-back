@@ -1,0 +1,6 @@
+"Acciones de escritura"
+type Mutation{
+    addCategoria(categoria: CategoriaInput!): ResultCategoria
+    updateCategoria(idCategoria: Int!, nuevoRegistro: CategoriaInput!): ResultCategoria
+    deleteCategoria(idCategoria: Int!): ResultCategoria
+}

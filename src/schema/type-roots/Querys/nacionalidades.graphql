@@ -1,0 +1,13 @@
+
+type Query {
+  # Listado de nacionalidades
+  ListadoNacionalidades(
+    "Página a la que accederemos"
+    page: Int = 1,
+    "Numero de elementos por página que queremos"
+    itemsPage: Int = 20
+  ): ResultNacionalidades
+  
+  # Muestra la información de una nacionalidad en concreto
+  DetalleNacionalidad(idNacionalidad: ID!): ResultNacionalidad
+}
