@@ -1,0 +1,11 @@
+type Query {
+  # Listado de categorias
+  ListadoIngredientesXReceta(
+    "Página a la que accederemos"
+    page: Int = 1, 
+    "Numero de elementos por página que queremos"
+    itemsPage: Int = 20): ResultIngredientesXReceta
+
+  # Muestra la información de una categoria en concreto
+  DetalleResultIngredientesXReceta(idIngrediente:Int!, idReceta: Int!): ResultIngredientesXReceta
+}

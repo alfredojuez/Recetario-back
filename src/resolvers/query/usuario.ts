@@ -23,7 +23,7 @@ const resolversQueryUsuarios: IResolvers = {
       console.log(LINEAS.TITULO_X2);
       logTime();
       console.log(`Solicitada búsqueda en la tabla ${COLLECTIONS.USUARIOS}:  ${chalk.yellow(JSON.stringify(variables))} `);
-console.log(variables)
+
       const respuesta = await new UsuariosService(_, {pagination: variables}, { db }).items(variables.active);
       
       // pintamos los datos del resultado en el log

@@ -9,9 +9,11 @@ export interface IVariables{
     idCategoria?: number;    
     // Ingrediente{
     idIngrediente?: number;    
-    // Nacinalidad
+    // Nacionalidad
     idNacionalidad?: string;
-    // Comun a los tres...
+    //Receta
+    idReceta?: number;
+    // Comun a los muchos...
     nombre?: string;
     //otros campos
     foto?: string;

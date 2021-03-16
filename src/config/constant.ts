@@ -11,7 +11,9 @@ export enum COLLECTIONS{
     USUARIOS='usuarios',
     CATEGORIAS='categorias',
     INGREDIENTES='ingredientes',
+    INGREDIENTES_X_RECETA='ingredientesxreceta',
     NACIONALIDADES='nacionalidades',
+    RECETAS='recetas',
 }
 
 //Mensaje para mostrar en las funciones que queremos evaluar su tiempo de ejecición

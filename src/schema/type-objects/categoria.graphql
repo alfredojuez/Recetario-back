@@ -11,3 +11,4 @@ type Categoria implements Item
     fecha_modificacion: String
     usuario_modificacion: Int
 }
+

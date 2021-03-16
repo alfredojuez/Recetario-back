@@ -1,0 +1,31 @@
+"Tipos de objetos de recetas de las recetas"
+type Receta implements Item
+{
+    idReceta: Int!
+    "Nombre de la receta"
+    titulo: String!
+    "Información acerca de la receta en si"
+    descripcion: String
+    "Fotografía para la portada"
+    foto: String
+    "Pais del que es originaria la receta"
+    idNacionalidad: String
+    "valor del resolver del campo idNacionalidad"
+    nacionalidad: Nacionalidad
+    "Ingredientes que necesitamos para la elaboración"
+    ingredientes: [IngredientesXReceta]
+    "Categorias a las que asociamos la receta"
+    categorias: [Categoria]
+    "pasos que se deben seguir para elaborar la receta"
+    pasos: [Int]!
+    "Fecha en la que se dió de alta en el sistema"
+    fecha_alta: String!
+    "Usuario que la dió de alta"
+    usuario_alta: Int!
+    "Fecha en la que se actualizó la receta"
+    fecha_modificacion: String
+    "Usuario que actualizó la receta (propietario, autorizado, o admin)"
+    usuario_modificacion: Int
+}
+
+

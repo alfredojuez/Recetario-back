@@ -1,0 +1,15 @@
+input RecetaInput
+{
+    idReceta:       Int
+    titulo:         String
+    descripcion:    String
+    foto:           String
+
+    categorias: [Int]
+	calorias: Int
+    tiempo: String
+    idNivel: Int
+    personas: Int
+    puntuacion: Int
+    valoraciones: Int
+}

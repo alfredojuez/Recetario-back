@@ -1,0 +1,6 @@
+input IngredientesXRecetaInput
+{
+    idReceta:       Int
+    cantidad:       String
+    idIngrediente:  Int
+}

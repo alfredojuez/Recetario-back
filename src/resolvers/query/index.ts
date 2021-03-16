@@ -1,6 +1,7 @@
 import resolversQueryCategorias from './categoria';
 import resolversQueryIngredientes from './ingrediente';
 import resolversQueryNacionalidades from './nacionalidad';
+import resolversQueryRecetas from './receta';
 import resolversQueryUsuarios from './usuario';
 
 //este import no funciona
@@ -12,6 +13,7 @@ const queryResolvers = GMR.merge([
     resolversQueryIngredientes, 
     resolversQueryCategorias,
     resolversQueryNacionalidades,
+    resolversQueryRecetas,
 ]);
 
 export default queryResolvers;

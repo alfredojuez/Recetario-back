@@ -1,0 +1,10 @@
+type ResultIngredientesXReceta implements Result
+{    
+    "Estado de la operacion"
+    status: Boolean!
+    "mensaje de la operacion para dar feedback"
+    message: String!
+    "Información una receta"
+    ingredientesxreceta: [IngredientesXReceta]
+}
+

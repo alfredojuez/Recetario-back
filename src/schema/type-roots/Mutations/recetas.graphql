@@ -1,0 +1,6 @@
+"Acciones de escritura"
+type Mutation{
+    addReceta(receta: RecetaInput!): ResultReceta
+    updateReceta(idReceta: Int!, nuevoRegistro: RecetaInput!): ResultReceta
+    deleteReceta(idReceta: Int!): ResultReceta
+}
